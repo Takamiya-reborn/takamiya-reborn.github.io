@@ -1,0 +1,149 @@
+{
+  "generatedAt": "2026-10-15T18:22:59.321Z",
+  "user": "Takamiya-reborn",
+  "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-15T18:19:40Z",
+      "language": "Vue",
+      "topics": []
+    },
+    {
+      "name": "OuterWildsShipLog",
+      "description": "OuterWilds 航行日志",
+      "html_url": "https://github.com/Takamiya-reborn/OuterWildsShipLog",
+      "homepage": "https://takamiya-reborn.github.io/OuterWildsShipLog/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-15T08:42:27Z",
+      "language": "JavaScript",
+      "topics": []
+    },
+    {
+      "name": "L2Dviewer",
+      "description": "碧蓝航线(Azur Lane)皮肤查看器",
+      "html_url": "https://github.com/Takamiya-reborn/L2Dviewer",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-14T18:48:18Z",
+      "language": "JavaScript",
+      "topics": []
+    },
+    {
+      "name": "DrPaper",
+      "description": "论文写作 Agent",
+      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-13T20:51:25Z",
+      "language": "Python",
+      "topics": []
+    },
+    {
+      "name": "Hello-manim",
+      "description": null,
+      "html_url": "https://github.com/Takamiya-reborn/Hello-manim",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-11T13:19:31Z",
+      "language": "Python",
+      "topics": []
+    },
+    {
+      "name": "Auto-Chaldea",
+      "description": "Fate/GO 辅助工具",
+      "html_url": "https://github.com/Takamiya-reborn/Auto-Chaldea",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-09T19:27:49Z",
+      "language": "Python",
+      "topics": []
+    },
+    {
+      "name": "Hello-LoRA",
+      "description": null,
+      "html_url": "https://github.com/Takamiya-reborn/Hello-LoRA",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-08T15:42:15Z",
+      "language": "Python",
+      "topics": []
+    },
+    {
+      "name": "ebpf-demo",
+      "description": "基于 [libbpf-bootstrap](https://github.com/libbpf/libbpf-bootstrap) 的 eBPF 学习与性能观测项目。仓库包含上游示例、面向 CPU/磁盘/文件/内存/网络的自定义 eBPF 工具，以及一个可选的 Web 控制台和 Prometheus 监控环境。",
+      "html_url": "https://github.com/Takamiya-reborn/ebpf-demo",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-04T07:19:28Z",
+      "language": "C",
+      "topics": []
+    },
+    {
+      "name": "Wolffia",
+      "description": "基于Python + Vanilla的Windows平台的自用本地音乐播放器",
+      "html_url": "https://github.com/Takamiya-reborn/Wolffia",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-09-30T16:40:37Z",
+      "language": "JavaScript",
+      "topics": []
+    },
+    {
+      "name": "Offibot",
+      "description": "基于python-docx/openpyxl/python-pptx开发的命令行 Office AI 助手",
+      "html_url": "https://github.com/Takamiya-reborn/Offibot",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-09-30T10:42:43Z",
+      "language": "Python",
+      "topics": []
+    },
+    {
+      "name": "Takamiya-reborn",
+      "description": "I came back from hell",
+      "html_url": "https://github.com/Takamiya-reborn/Takamiya-reborn",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-09-26T19:34:55Z",
+      "language": null,
+      "topics": []
+    },
+    {
+      "name": "Hello-YOLO",
+      "description": null,
+      "html_url": "https://github.com/Takamiya-reborn/Hello-YOLO",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-09-24T16:51:09Z",
+      "language": "Python",
+      "topics": []
+    },
+    {
+      "name": "Uxplorer",
+      "description": "一个基于 PySide6 的 Windows 文件浏览器，专注浏览 C:\\Users 下的用户目录，并为每个目录标注手动更改的风险等级——高危、存疑、安全，帮助你判断哪些东西能动、哪些千万别碰。",
+      "html_url": "https://github.com/Takamiya-reborn/Uxplorer",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-09-22T15:22:40Z",
+      "language": "Python",
+      "topics": []
+    }
+  ]
+}
