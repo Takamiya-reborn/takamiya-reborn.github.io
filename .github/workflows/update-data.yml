@@ -1,0 +1,53 @@
+name: Update data
+
+# 每天拉取 Steam / GitHub 数据写入 public/*.json；
+# 注意 GITHUB_TOKEN 的 push 不会触发 deploy.yml，末尾需显式触发重新部署
+on:
+  schedule:
+    # UTC 16:37 = 北京时间 0:37，凌晨刷新不占用白天的配额
+    - cron: "37 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch Steam data
+        run: node scripts/fetch-steam.mjs
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+
+      # 内置 GITHUB_TOKEN 即可读取公开贡献数据，无需额外 Secret
+      - name: Fetch GitHub data
+        run: node scripts/fetch-github.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/steam.json public/github.json
+          git diff --cached --quiet || git commit -m "chore: refresh site data"
+          git pull --rebase origin main
+          git push
+
+      - name: Trigger deploy
+        # Pages 提供的是构建时快照，新数据文件必须重新部署才会生效
+        run: gh workflow run "Deploy" --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

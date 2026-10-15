@@ -36,9 +36,19 @@ export default defineNuxtConfig({
           name: 'description',
           content: 'Takamiya 的个人主页 —— 关于我、技能、项目与联系方式。',
         },
-        { name: 'theme-color', content: '#0b0e14' },
+        { property: 'og:title', content: 'Takamiya' },
+        {
+          property: 'og:description',
+          content: 'Takamiya 的个人主页 —— 关于我、技能、项目与联系方式。',
+        },
+        { property: 'og:type', content: 'website' },
+        { name: 'theme-color', content: '#06070d' },
       ],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        // 主字体预加载（中文汉仪文黑 + 英文/数字 Consolas）
+        { rel: 'preload', as: 'font', type: 'font/woff2', href: '/fonts/HYWenHei-85W.woff2', crossorigin: '' },
+      ],
     },
   },
 

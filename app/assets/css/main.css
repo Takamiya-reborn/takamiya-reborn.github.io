@@ -1,32 +1,58 @@
-/* ============================================================
-   设计令牌 + 全局基础样式
-   改主题只需调整 :root 里的变量
-   ============================================================ */
+/* 设计令牌 + 全局基础样式，改主题只需调整 :root 变量 */
+
+/* 汉仪文黑 H85W：中文主字体（单字重，注册为全权重避免伪加粗） */
+@font-face {
+  font-family: 'HYWenHei-85W';
+  src: url('/fonts/HYWenHei-85W.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   color-scheme: dark;
 
-  /* 色板 */
-  --bg: #0b0e14;
+  /* 色板：深空底 + 靛蓝/青/紫三色渐变体系 */
+  --bg: #06070d;
+  --bg-soft: #0b0e17;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.09);
-  --text: #e6e9f0;
-  --muted: #8b93a7;
-  --accent: #818cf8;        /* indigo-400 */
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #e8ecf4;
+  --muted: #94a0b8;
+  --accent: #818cf8;
+  /* indigo-400 */
+  --accent-2: #22d3ee;
+  /* cyan-400 */
+  --accent-3: #c084fc;
+  /* purple-400 */
   --accent-soft: rgba(129, 140, 248, 0.14);
+  --gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --gradient-3: linear-gradient(120deg, var(--accent), var(--accent-3), var(--accent-2));
 
-  /* 字体 */
+  /* 发光与阴影 */
+  --glow: 0 0 2.5rem rgba(129, 140, 248, 0.22);
+  --shadow-card: 0 1.5rem 3rem -1rem rgba(0, 0, 0, 0.5);
+
+  /* 字体：英文/数字走 Consolas（逐字符回退），中文走汉仪文黑 H85W */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+    Consolas, 'HYWenHei-85W', 'PingFang SC', 'Microsoft YaHei',
+    'Noto Sans SC', ui-sans-serif, sans-serif;
+  --font-display:
+    Consolas, 'HYWenHei-85W', 'PingFang SC', 'Microsoft YaHei',
+    ui-sans-serif, sans-serif;
   --font-mono:
-    ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+    Consolas, ui-monospace, 'Cascadia Code', 'JetBrains Mono', monospace;
 
   /* 几何 */
   --radius: 1.25rem;
   --radius-sm: 0.75rem;
   --gap: 1rem;
+
+  /* 缓动曲线：快出慢停 + 弹簧过冲 */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 *,
@@ -46,6 +72,7 @@ body {
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a {
@@ -59,18 +86,225 @@ p {
   margin: 0;
 }
 
-ul {
+ul,
+ol {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+::selection {
+  color: var(--text);
+  background: rgba(129, 140, 248, 0.35);
+}
+
+/* 滚动条：Firefox 走标准属性兜底，@supports 隔离避免 Chrome 覆盖伪元素样式 */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #60a5fa transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0.95rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* 上蓝下红平滑渐变 */
+  background-image: linear-gradient(180deg, #3b82f6, #ef4444);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 用长写属性换色，避免简写重置 background-clip */
+::-webkit-scrollbar-thumb:hover {
+  background-image: linear-gradient(180deg, #60a5fa, #f87171);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-image: linear-gradient(180deg, #2563eb, #dc2626);
+}
+
+/* 键盘可达性 */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---- 全局按钮 ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0b1020;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: var(--glow);
+  transition:
+    transform 0.3s var(--ease-bouncy),
+    box-shadow 0.3s,
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 3rem rgba(129, 140, 248, 0.4);
+}
+
+.btn--ghost {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-strong);
+  box-shadow: none;
+}
+
+.btn--ghost:hover {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+/* ---- 滚动浮现（配合 v-reveal 指令） ---- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(1.6rem);
+  transition:
+    opacity 0.7s ease var(--reveal-delay, 0ms),
+    transform 0.8s var(--ease-out) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: none;
+  /* 浮现完成后释放提升的合成层：否则内部倾斜文字只按旧纹理重采样，会发糊 */
+  will-change: auto;
+}
+
+/* ---- 关键帧 ---- */
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(4rem, -2.5rem, 0) scale(1.12);
+  }
+
+  100% {
+    transform: translate3d(-3rem, 2rem, 0) scale(0.95);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+  }
+
+  70% {
+    box-shadow: 0 0 0 0.45rem rgba(52, 211, 153, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  100% {
+    transform: translateY(-1.1rem) rotate(5deg);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.35);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes drop {
+  from {
+    transform: translateY(-6vh) rotate(0deg);
+  }
+
+  to {
+    transform: translateY(112vh) rotate(720deg);
+  }
+}
+
+@keyframes hue-spin {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
 /* 减少动效偏好 */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

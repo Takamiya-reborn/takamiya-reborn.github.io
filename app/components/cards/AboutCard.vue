@@ -3,20 +3,25 @@ defineProps<{ paragraphs: string[] }>()
 </script>
 
 <template>
-  <BaseCard>
-    <SectionTitle icon="lucide:user-round" title="关于我" />
+  <div class="about">
     <p v-for="(paragraph, i) in paragraphs" :key="i" class="paragraph">
       {{ paragraph }}
     </p>
-  </BaseCard>
+  </div>
 </template>
 
 <style scoped>
+.about {
+  max-width: 38rem;
+}
+
 .paragraph {
+  font-size: 1.02rem;
+  line-height: 1.9;
   color: var(--muted);
 }
 
-.paragraph + .paragraph {
-  margin-top: 0.6rem;
+.paragraph+.paragraph {
+  margin-top: 0.8rem;
 }
 </style>

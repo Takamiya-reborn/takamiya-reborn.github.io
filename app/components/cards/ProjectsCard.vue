@@ -1,136 +1,212 @@
 <script setup lang="ts">
-import type { Project } from '~/config/site'
+import { site } from '~/config/site'
+import type { Project } from '~/config/types'
 
-defineProps<{ projects: Project[] }>()
+const props = defineProps<{ projects: Project[] }>()
+
+// 运行时从 GitHub 拉取最活跃的前 3 个仓库，失败时回退到静态配置
+const { projects, loading } = useGitHubProjects(
+  site.profile.githubUser,
+  props.projects,
+  3,
+)
 </script>
 
 <template>
-  <BaseCard>
-    <SectionTitle icon="lucide:folder-git-2" title="项目" subtitle="一些正在维护的作品" />
-    <div class="grid">
-      <article v-for="project in projects" :key="project.title" class="project">
-        <header class="head">
-          <span class="icon-badge">
-            <Icon :name="project.icon" size="17" />
-          </span>
-          <h3 class="title">{{ project.title }}</h3>
-        </header>
+  <div class="projects">
+    <!-- 加载骨架屏 -->
+    <template v-if="loading">
+      <div v-for="i in 3" :key="`skeleton-${i}`" class="project skeleton" aria-hidden="true">
+        <span class="icon-badge" />
+        <div class="body">
+          <div class="bar w40" />
+          <div class="bar w90" />
+          <div class="bar w60" />
+        </div>
+      </div>
+    </template>
 
-        <p class="desc">{{ project.description }}</p>
+    <template v-else>
+      <article v-for="(project, i) in projects" :key="project.title" v-reveal="{ delay: i * 100 }" class="project">
+        <span class="icon-badge">
+          <Icon :name="project.icon" size="20" />
+        </span>
 
-        <footer class="foot">
+        <div class="body">
+          <header class="head">
+            <h3 class="title">{{ project.title }}</h3>
+            <div class="links">
+              <a v-if="project.repo" :href="project.repo" target="_blank" rel="noopener" aria-label="仓库" class="link">
+                <Icon name="lucide:github" size="17" />
+              </a>
+              <a v-if="project.link" :href="project.link" target="_blank" rel="noopener" aria-label="演示" class="link">
+                <Icon name="lucide:external-link" size="17" />
+              </a>
+            </div>
+          </header>
+
+          <p class="desc">{{ project.description }}</p>
+
           <ul class="tags">
             <li v-for="tag in project.tags" :key="tag">
               <TagPill :label="tag" />
             </li>
           </ul>
-          <div class="links">
-            <a
-              v-if="project.repo"
-              :href="project.repo"
-              target="_blank"
-              rel="noopener"
-              aria-label="仓库"
-              class="link"
-            >
-              <Icon name="lucide:github" size="16" />
-            </a>
-            <a
-              v-if="project.link"
-              :href="project.link"
-              target="_blank"
-              rel="noopener"
-              aria-label="演示"
-              class="link"
-            >
-              <Icon name="lucide:external-link" size="16" />
-            </a>
-          </div>
-        </footer>
+        </div>
       </article>
-    </div>
-  </BaseCard>
+    </template>
+  </div>
 </template>
 
 <style scoped>
-.grid {
+.projects {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
 .project {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  gap: 1.1rem;
+  padding: 1.3rem 1.5rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  transition: border-color 0.2s, background 0.2s;
+  border-radius: var(--radius);
+  transition:
+    border-color 0.25s,
+    transform 0.35s var(--ease-bouncy),
+    box-shadow 0.3s;
+}
+
+/* 玻璃背景独立到 ::before：backdrop-filter 与悬停倾斜同元素时文字会糊 */
+.project::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  transition: background 0.25s;
 }
 
 .project:hover {
+  border-color: rgba(129, 140, 248, 0.45);
+  transform: translateY(-4px) rotate(-0.5deg);
+  box-shadow: var(--glow);
+}
+
+.project:hover::before {
   background: var(--surface-hover);
-  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.icon-badge {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent-soft), rgba(34, 211, 238, 0.1));
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: var(--radius-sm);
+  transition: transform 0.35s var(--ease-bouncy);
+}
+
+.project:hover .icon-badge {
+  transform: scale(1.12) rotate(-10deg);
+}
+
+.body {
+  flex-grow: 1;
+  min-width: 0;
 }
 
 .head {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-.icon-badge {
+.title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.links {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.link {
   display: grid;
   place-items: center;
   width: 1.9rem;
   height: 1.9rem;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 0.55rem;
+  color: var(--muted);
+  border-radius: 0.45rem;
+  transition:
+    color 0.2s,
+    transform 0.3s var(--ease-bouncy);
 }
 
-.title {
-  font-size: 0.95rem;
-  font-weight: 600;
+.link:hover {
+  color: var(--accent-2);
+  transform: translateY(-2px);
 }
 
 .desc {
-  flex-grow: 1;
-  font-size: 0.85rem;
+  margin-top: 0.45rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
   color: var(--muted);
-}
-
-.foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+  margin-top: 0.7rem;
 }
 
-.links {
-  display: flex;
-  gap: 0.4rem;
+/* GitHub 数据加载中的骨架屏 */
+.skeleton {
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-.link {
-  display: grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  color: var(--muted);
-  border-radius: 0.45rem;
-  transition: color 0.2s;
+.skeleton .icon-badge {
+  border: none;
 }
 
-.link:hover {
-  color: var(--text);
+.skeleton .bar {
+  height: 0.9rem;
+  margin: 0.45rem 0;
+  background: var(--border);
+  border-radius: 0.4rem;
+}
+
+.skeleton .w40 {
+  width: 40%;
+}
+
+.skeleton .w90 {
+  width: 90%;
+}
+
+.skeleton .w60 {
+  width: 60%;
+}
+
+@keyframes skeleton-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
 }
 </style>
