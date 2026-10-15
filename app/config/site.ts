@@ -25,11 +25,9 @@ export const site = {
       "Game / 3D Dev 爱好者",
       "Game Enthusiast 🎮",
     ],
-    location: "China",
+    location: "木炉星",
     // 一句话签名
     bio: "专注于全栈开发与人工智能的信条：构建可扩展、高性能的系统，同时保持直观易用的体验。",
-    // 当前状态（显示在头像旁的小徽章）
-    status: "In-Game",
     // GitHub 用户名，项目区据此动态拉取仓库
     githubUser: "Takamiya-reborn",
   },
@@ -100,7 +98,12 @@ export const site = {
     {
       title: "编程语言",
       icon: "lucide:braces",
-      skills: ["Python", "TypeScript", "JavaScript", "C++", "Go"],
+      skills: [
+        "Python",
+        { name: "JavaScript", children: ["TypeScript"] },
+        "C++",
+        "Go",
+      ],
     },
     {
       title: "前端与图形",
@@ -108,8 +111,7 @@ export const site = {
       skills: [
         "HTML",
         "CSS",
-        "Vue",
-        "Nuxt",
+        { name: "Vue", children: ["Nuxt"] },
         "TailwindCSS",
         "Anime.js",
         "Konva",
@@ -123,8 +125,7 @@ export const site = {
         "Flask",
         "PyQt",
         "Streamlit",
-        "Node.js",
-        "Electron",
+        { name: "Node.js", children: ["Electron"] },
         ".NET",
       ],
     },

@@ -9,7 +9,6 @@ const props = defineProps<{
     tagline: string
     location: string
     bio: string
-    status: string
   }
   socials: SocialLink[]
 }>()
@@ -28,11 +27,6 @@ const emailUrl = computed(
 <template>
   <section class="hero">
     <div v-reveal class="hero-main">
-      <p class="status">
-        <span class="dot" aria-hidden="true" />
-        {{ profile.status }}
-      </p>
-
       <h1 class="name">{{ profile.name }}</h1>
 
       <p class="tagline">
@@ -92,28 +86,6 @@ const emailUrl = computed(
   align-items: center;
   gap: clamp(2rem, 6vw, 4rem);
   padding-block: clamp(4rem, 10vh, 6.5rem) clamp(2.5rem, 7vh, 4.5rem);
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  width: fit-content;
-  padding: 0.25rem 0.8rem;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-}
-
-.dot {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: #34d399;
-  animation: pulse-dot 2.2s ease-out infinite;
 }
 
 .name {

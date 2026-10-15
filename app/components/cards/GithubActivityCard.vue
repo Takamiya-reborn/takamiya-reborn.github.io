@@ -39,10 +39,10 @@ function dayLabel(day: GithubDay): string {
 
 <template>
   <!-- 数据未加载或 github.json 缺失时整卡隐藏，不留空壳 -->
-  <BaseCard v-if="!loading && columns.length" class="github-activity">
+  <BaseCard v-if="!loading && columns.length" class="github-activity" :glass="false">
     <div class="gh-head">
       <span class="gh-label">
-        <Icon name="lucide:github" size="15" />
+        <Icon name="lucide:github" size="16" />
         GitHub
       </span>
       <span class="gh-window">近 30 天</span>
@@ -72,7 +72,7 @@ function dayLabel(day: GithubDay): string {
       </span>
       <a v-if="githubUser" class="gh-link" :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
         @{{ githubUser }}
-        <Icon name="lucide:arrow-up-right" size="12" />
+        <Icon name="lucide:arrow-up-right" size="13" />
       </a>
     </div>
   </BaseCard>
@@ -80,9 +80,10 @@ function dayLabel(day: GithubDay): string {
 
 <style scoped>
 /* 与「正在游玩」呼应但刻意不对等：反向小角度倾斜、收窄（内容少）、轻微上浮，
-   游戏卡是 -1.2deg + 下沉 2.5rem */
+   游戏卡是 -1.2deg + 下沉 2.5rem。
+   卡片和字号整体放大一档：倾斜重采样时小字号笔画最容易糊 */
 .github-activity {
-  max-width: 23rem;
+  max-width: 27rem;
   transform: rotate(0.8deg) translateY(-0.6rem);
 }
 
@@ -102,14 +103,14 @@ function dayLabel(day: GithubDay): string {
   align-items: center;
   gap: 0.4rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   letter-spacing: 0.18em;
   color: var(--muted);
 }
 
 .gh-window {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--muted);
   opacity: 0.8;
 }
@@ -122,7 +123,7 @@ function dayLabel(day: GithubDay): string {
 }
 
 .gh-num {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
   line-height: 1.1;
   background: var(--gradient);
@@ -132,7 +133,7 @@ function dayLabel(day: GithubDay): string {
 }
 
 .gh-unit {
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 
@@ -149,9 +150,9 @@ function dayLabel(day: GithubDay): string {
 }
 
 .gh-cell {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -192,14 +193,14 @@ function dayLabel(day: GithubDay): string {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
   opacity: 0.8;
 }
 
 .gh-legend .gh-cell {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 2px;
 }
 
@@ -208,7 +209,7 @@ function dayLabel(day: GithubDay): string {
   align-items: center;
   gap: 0.2rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   color: var(--muted);
   transition: color 0.2s;
 }

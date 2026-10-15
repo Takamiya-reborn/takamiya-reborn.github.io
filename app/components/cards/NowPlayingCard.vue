@@ -37,12 +37,13 @@ const displayGames = computed(() =>
 </script>
 
 <template>
-  <BaseCard class="now-playing">
+  <!-- 倾斜卡片必须关毛玻璃，否则整卡进合成层、文字旋转后发糊 -->
+  <BaseCard class="now-playing" :glass="false">
     <ul class="np-list">
       <li v-for="game in displayGames" :key="game.title" class="np-item">
         <span class="np-platform" :title="PLATFORMS[game.platform].label"
           :style="{ color: PLATFORMS[game.platform].color }">
-          <Icon :name="PLATFORMS[game.platform].icon" size="15" />
+          <Icon :name="PLATFORMS[game.platform].icon" size="17" />
         </span>
         <div class="np-info">
           <p class="np-title">{{ game.title }}</p>
@@ -60,9 +61,10 @@ const displayGames = computed(() =>
 </template>
 
 <style scoped>
-/* 故意倾斜 + 下沉，打破对齐感 */
+/* 故意倾斜 + 下沉，打破对齐感。
+   卡片和字号整体放大一档：倾斜重采样时小字号笔画只有一两个像素宽，最容易糊 */
 .now-playing {
-  max-width: 26rem;
+  max-width: 30rem;
   transform: rotate(-1.2deg) translateY(8rem);
 }
 
@@ -79,7 +81,7 @@ const displayGames = computed(() =>
 
 .np-label {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   letter-spacing: 0.18em;
   color: var(--muted);
 }
@@ -89,7 +91,7 @@ const displayGames = computed(() =>
   align-items: center;
   gap: 0.35rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: #34d399;
 }
 
@@ -115,8 +117,8 @@ const displayGames = computed(() =>
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2rem;
+  height: 2rem;
   margin-top: 0.1rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border);
@@ -124,13 +126,13 @@ const displayGames = computed(() =>
 }
 
 .np-title {
-  font-size: 0.92rem;
+  font-size: 1.02rem;
   font-weight: 600;
 }
 
 .np-note {
   margin-top: 0.1rem;
-  font-size: 0.76rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }
 
@@ -138,13 +140,13 @@ const displayGames = computed(() =>
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .np-bar {
   flex-grow: 1;
-  max-width: 9rem;
-  height: 0.3rem;
+  max-width: 10rem;
+  height: 0.35rem;
   background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   overflow: hidden;
@@ -158,12 +160,12 @@ const displayGames = computed(() =>
 
 .np-pct {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 
 .np-foot {
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   color: var(--muted);
   opacity: 0.8;
 }

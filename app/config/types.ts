@@ -8,10 +8,19 @@ export interface SocialLink {
   url: string;
 }
 
+export interface SkillEntry {
+  name: string;
+  /** 进阶子技能（如 Vue → Nuxt），思维导图中向外再展开一层 */
+  children?: SkillItem[];
+}
+
+/** 技能项：纯字符串，或带进阶链的嵌套节点 */
+export type SkillItem = string | SkillEntry;
+
 export interface SkillGroup {
   title: string;
   icon: string;
-  skills: string[];
+  skills: SkillItem[];
 }
 
 export interface Project {

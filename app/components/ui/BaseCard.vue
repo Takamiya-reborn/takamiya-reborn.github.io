@@ -6,8 +6,11 @@ withDefaults(
     hover?: boolean
     // 是否启用鼠标跟随聚光灯
     spotlight?: boolean
+    // 是否启用毛玻璃背景；倾斜的卡片必须关闭——backdrop-filter 会把整卡
+    // 推进 GPU 合成层，文字被当作纹理旋转重采样而发糊
+    glass?: boolean
   }>(),
-  { hover: true, spotlight: true },
+  { hover: true, spotlight: true, glass: true },
 )
 
 function onPointerMove(event: PointerEvent) {
@@ -19,7 +22,7 @@ function onPointerMove(event: PointerEvent) {
 </script>
 
 <template>
-  <section class="card" :class="{ 'card--hover': hover, 'card--spotlight': spotlight }"
+  <section class="card" :class="{ 'card--hover': hover, 'card--spotlight': spotlight, 'card--no-glass': !glass }"
     @pointermove="spotlight ? onPointerMove($event) : undefined">
     <!-- 玻璃背景独立成层：backdrop-filter 不能和倾斜变换同元素，否则整个表面被重采样、文字发糊 -->
     <span class="card-bg" aria-hidden="true" />
@@ -54,6 +57,12 @@ function onPointerMove(event: PointerEvent) {
   background: var(--surface);
   backdrop-filter: blur(12px);
   transition: background 0.3s ease;
+}
+
+/* 倾斜卡片：去掉 backdrop-filter，让文字保持 CPU 光栅化，旋转后依然锐利 */
+.card--no-glass .card-bg {
+  backdrop-filter: none;
+  background: var(--surface-strong, rgba(255, 255, 255, 0.05));
 }
 
 /* 鼠标跟随聚光灯 */
