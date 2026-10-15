@@ -3,7 +3,7 @@ import type { GithubDay } from '~/composables/useGithubActivity'
 
 defineProps<{ githubUser?: string }>()
 
-const { days, total, loading } = useGithubActivity()
+const { days, total } = useGithubActivity()
 
 // 贡献量分档 → 色阶档位（0-4，与主题 accent 同色系）
 function level(count: number): number {
@@ -18,7 +18,7 @@ function level(count: number): number {
 const columns = computed(() => {
   const cols: (GithubDay | null)[][] = []
   let current: (GithubDay | null)[] = []
-  days.value.forEach((day, i) => {
+  days.forEach((day, i) => {
     if (i === 0) current = Array.from({ length: new Date(`${day.date}T00:00:00Z`).getUTCDay() }, () => null)
     current.push(day)
     if (current.length === 7) {
@@ -38,8 +38,8 @@ function dayLabel(day: GithubDay): string {
 </script>
 
 <template>
-  <!-- 数据未加载或 github.json 缺失时整卡隐藏，不留空壳 -->
-  <BaseCard v-if="!loading && columns.length" class="github-activity" :glass="false">
+  <!-- 贡献数据为空时整卡隐藏，不留空壳 -->
+  <BaseCard v-if="columns.length" class="github-activity" :glass="false">
     <div class="gh-head">
       <span class="gh-label">
         <Icon name="lucide:github" size="16" />

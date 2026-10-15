@@ -1,5 +1,8 @@
-// GitHub 贡献数据交互层：数据由 scripts/fetch-github.mjs 定时生成到 public/github.json，
-// 这里只做同源读取；文件缺失或请求失败时保持空数据，由调用方隐藏活动区块
+// GitHub 贡献数据：由 scripts/fetch-github.mjs 定时生成到 app/config/github.json，
+// 构建时静态注入（?raw 按字符串导入，JSON.parse 一次转对象），运行时零请求；
+// days 为空时由调用方隐藏活动区块
+
+import githubRaw from '../config/github.json?raw'
 
 export interface GithubDay {
   /** 日期，YYYY-MM-DD */
@@ -8,6 +11,7 @@ export interface GithubDay {
   count: number
 }
 
+// Actions 预生成的 app/config/github.json 结构（见 scripts/fetch-github.mjs）
 interface GithubData {
   generatedAt: string
   user: string
@@ -15,25 +19,9 @@ interface GithubData {
   days: GithubDay[]
 }
 
-// 读取 github.json，返回逐日贡献数组与合计；失败时为空数组，调用方据此回退
+// 返回逐日贡献数组与合计；数据缺失时为空数组，调用方据此隐藏
 export function useGithubActivity() {
-  const days = ref<GithubDay[]>([])
-  const total = ref(0)
-  const loading = ref(true)
-
-  onMounted(async () => {
-    try {
-      const res = await fetch('/github.json', { headers: { Accept: 'application/json' } })
-      if (!res.ok) throw new Error(`github.json ${res.status}`)
-      const data = (await res.json()) as GithubData
-      days.value = data.days ?? []
-      total.value = data.total ?? days.value.reduce((sum, d) => sum + d.count, 0)
-    } catch {
-      // 保持空数据，调用方隐藏活动区块
-    } finally {
-      loading.value = false
-    }
-  })
-
-  return { days, total, loading }
+  const data = JSON.parse(githubRaw) as GithubData
+  const days = data.days ?? []
+  return { days, total: data.total ?? days.reduce((sum, d) => sum + d.count, 0) }
 }

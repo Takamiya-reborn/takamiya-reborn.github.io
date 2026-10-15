@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { sections } from '~/config/site'
 import type { SocialLink } from '~/config/types'
 
 const props = defineProps<{ socials: SocialLink[] }>()
 
-// 导航栏右侧只放平台类图标，邮箱留在名片里
+// 导航栏右侧放平台图标 + 邮箱，RSS 不放
 const headerSocials = computed(() =>
-  props.socials.filter((s) => !['Email', 'RSS'].includes(s.label)),
-)
-
-// 锚点导航由 site.ts 的 sections 生成
-const links = computed(() =>
-  sections.map((s) => ({ href: `#${s.id}`, num: s.num, text: s.title })),
+  props.socials.filter((s) => !['RSS'].includes(s.label)),
 )
 </script>
 
@@ -22,12 +16,6 @@ const links = computed(() =>
         Takamiya
         <span class="logo-dot" aria-hidden="true" />
       </a>
-
-      <div class="nav-links">
-        <a v-for="link in links" :key="link.href" :href="link.href">
-          <span class="num">{{ link.num }}.</span>{{ link.text }}
-        </a>
-      </div>
 
       <div class="socials">
         <a v-for="social in headerSocials" :key="social.label" :href="social.url" target="_blank" rel="noopener"
@@ -77,46 +65,6 @@ const links = computed(() =>
   animation: pulse-dot 2.2s ease-out infinite;
 }
 
-.nav-links {
-  display: flex;
-  gap: 1.4rem;
-  margin-left: 0.5rem;
-}
-
-.nav-links a {
-  position: relative;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -5px;
-  width: 100%;
-  height: 2px;
-  background: var(--gradient);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s var(--ease-bouncy);
-}
-
-.nav-links a:hover {
-  color: var(--text);
-}
-
-.nav-links a:hover::after {
-  transform: scaleX(1);
-}
-
-.num {
-  color: var(--accent);
-}
-
 .socials {
   display: flex;
   gap: 0.5rem;
@@ -142,11 +90,5 @@ const links = computed(() =>
   color: var(--text);
   border-color: var(--accent);
   transform: translateY(-3px);
-}
-
-@media (max-width: 42rem) {
-  .nav-links {
-    display: none;
-  }
 }
 </style>

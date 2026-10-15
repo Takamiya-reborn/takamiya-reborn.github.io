@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// 拉取 GitHub 公开仓库生成 public/repos.json，由 .github/workflows/update-data.yml 定时执行
+// 拉取 GitHub 公开仓库生成 app/config/repos.json，由 .github/workflows/update-data.yml 定时执行
 // 用法：GITHUB_TOKEN=xxx node scripts/fetch-repos.mjs
-// 浏览器改为同源读取 repos.json，避免访客（尤其国内）直连 api.github.com 缓慢；
-// 这里只存原始字段，筛选、排序与展示映射仍在前端 useGitHubProjects 中做
+// 数据在构建时由 useGitHubProjects 静态导入（不再运行时请求 api.github.com）；
+// 这里只存原始字段，筛选、排序与展示映射仍在 useGitHubProjects 中做
 
 import { readFile, writeFile } from 'node:fs/promises'
 
@@ -47,7 +47,7 @@ const out = {
   repos,
 }
 await writeFile(
-  new URL('../public/repos.json', import.meta.url),
+  new URL('../app/config/repos.json', import.meta.url),
   `${JSON.stringify(out, null, 2)}\n`,
 )
-console.log(`已写入 public/repos.json：${repos.length} 个仓库`)
+console.log(`已写入 app/config/repos.json：${repos.length} 个仓库`)

@@ -1,3 +1,6 @@
 <template>
-  <NuxtPage />
+  <div>
+    <NuxtPage />
+    <CursorRipples />
+  </div>
 </template>

@@ -18,11 +18,12 @@ function formatPlaytime(minutes: number): string {
   return hours >= 1 ? `${hours.toFixed(hours >= 10 ? 0 : 1)} 小时` : `${minutes} 分钟`
 }
 
-// 带 steamAppId + liveNote 的条目用 steam.json 的实时数据替换 note；
-// 数据未加载或查询失败时保留 site.ts 里的手写回退文案
+// 带 steamAppId + liveNote 的条目用 steam.json 定时注入的数据替换 note；
+// steam.json 缺该条目时回退 site.ts 的 defaultStats（复制自最近一次抓取的保底值）
 const displayGames = computed(() =>
   props.games.map((game) => {
-    const stat = game.steamAppId ? steamStats.value[String(game.steamAppId)] : undefined
+    const stat = (game.steamAppId ? steamStats[String(game.steamAppId)] : undefined)
+      ?? game.defaultStats
     if (!stat) return game
 
     let note = game.note
@@ -31,7 +32,14 @@ const displayGames = computed(() =>
     else if (game.liveNote === 'playtime' && stat.playtimeMinutes != null)
       note = `已游玩 ${formatPlaytime(stat.playtimeMinutes)}`
 
-    return note === game.note ? game : { ...game, note }
+    // 进度条以实时成就完成度为准，拿不到数据时回退 site.ts 的静态 progress
+    const progress = stat.achievements?.total
+      ? Math.round((stat.achievements.unlocked / stat.achievements.total) * 100)
+      : game.progress
+
+    return note === game.note && progress === game.progress
+      ? game
+      : { ...game, note, progress }
   }),
 )
 </script>
@@ -154,7 +162,18 @@ const displayGames = computed(() =>
 
 .np-fill {
   height: 100%;
-  background: var(--gradient);
+  /* 一道从红到紫的彩虹渐变，色值取自暗色背景下的 tailwind 400 系，避免刺眼 */
+  background: linear-gradient(
+    90deg,
+    #f87171,
+    #fb923c,
+    #facc15,
+    #a3e635,
+    #34d399,
+    #22d3ee,
+    #818cf8,
+    #e879f9
+  );
   border-radius: inherit;
 }
 

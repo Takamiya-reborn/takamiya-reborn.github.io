@@ -1,4 +1,6 @@
 import type { Project } from '~/config/types'
+// 构建时注入的仓库数据（?raw 按字符串导入，JSON.parse 一次转对象）
+import reposRaw from '../config/repos.json?raw'
 
 // GitHub REST API 返回的仓库字段（只取用到的部分）
 interface GitHubRepo {
@@ -45,7 +47,7 @@ const langIcons: Record<string, string> = {
 // 未知语言的回退图标池（按名次轮换）
 const rankIcons = ['lucide:rocket', 'lucide:terminal', 'lucide:cpu']
 
-// Actions 预生成的 public/repos.json 结构（原始仓库字段，见 scripts/fetch-repos.mjs）
+// Actions 预生成的 app/config/repos.json 结构（原始仓库字段，见 scripts/fetch-repos.mjs）
 interface ReposData {
   generatedAt: string
   user: string
@@ -65,7 +67,7 @@ function mapRepos(repos: GitHubRepo[], user: string, count: number): Project[] {
     .slice(0, count)
     .map((r, i) => ({
       title: r.name,
-      description: r.description || '（仓库暂无简介）',
+      description: r.description || undefined,
       tags: [r.language, ...r.topics.slice(0, 2)].filter((t): t is string => Boolean(t)),
       repo: r.html_url,
       link: r.homepage || undefined,
@@ -74,45 +76,11 @@ function mapRepos(repos: GitHubRepo[], user: string, count: number): Project[] {
     }))
 }
 
-// 拉取用户公开仓库，按最近推送取前 count 个；失败时保留 fallback 数据
+// 仓库数据由 Actions 每日预生成（scripts/fetch-repos.mjs → app/config/repos.json），
+// 更新后工作流会触发重新部署，因此构建时静态导入即是最新数据：
+// 首屏 HTML 直接渲染真实项目，访客零请求，也不再需要加载骨架屏
 export function useGitHubProjects(user: string, fallback: readonly Project[], count = 3) {
-  const projects = ref<Project[]>([...fallback])
-  const loading = ref(true)
-  const failed = ref(false)
-
-  onMounted(async () => {
-    // 优先读取 Actions 预生成的同源 repos.json，避免访客直连 api.github.com 缓慢；
-    // 文件缺失（本地未跑脚本）或为空时回退实时 API
-    try {
-      const res = await fetch('/repos.json', { headers: { Accept: 'application/json' } })
-      if (!res.ok) throw new Error(`repos.json ${res.status}`)
-      const data = (await res.json()) as ReposData
-      const ranked = mapRepos(data.repos ?? [], user, count)
-      if (ranked.length) {
-        projects.value = ranked
-        return
-      }
-    } catch {
-      // 回退实时 API
-    }
-
-    try {
-      const res = await fetch(
-        `https://api.github.com/users/${user}/repos?per_page=100&sort=pushed`,
-        { headers: { Accept: 'application/vnd.github+json' } },
-      )
-      if (!res.ok) throw new Error(`GitHub API ${res.status}`)
-
-      const repos = (await res.json()) as GitHubRepo[]
-      const ranked = mapRepos(repos, user, count)
-      if (ranked.length) projects.value = ranked
-      else failed.value = true
-    } catch {
-      failed.value = true
-    } finally {
-      loading.value = false
-    }
-  })
-
-  return { projects, loading, failed }
+  const data = JSON.parse(reposRaw) as ReposData
+  const ranked = mapRepos(data.repos ?? [], user, count)
+  return { projects: ranked.length ? ranked : [...fallback] }
 }

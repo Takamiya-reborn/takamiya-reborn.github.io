@@ -15,8 +15,8 @@ export const site = {
   // 基本信息
   profile: {
     name: "Takamiya",
-    // 头像图片地址；留空则显示首字母渐变占位头像
-    avatar: "",
+    // 头像图片地址；public/avatar.png 由定时任务从 GitHub 拉取，留空则显示首字母渐变占位头像
+    avatar: "/avatar.png",
     tagline: "Full-Stack Developer",
     // 打字机轮播的身份标签（首位为静态回退文案）
     roles: [
@@ -27,7 +27,7 @@ export const site = {
     ],
     location: "木炉星",
     // 一句话签名
-    bio: "专注于全栈开发与人工智能的信条：构建可扩展、高性能的系统，同时保持直观易用的体验。",
+    bio: "专注于全栈与 AI，构建跑得稳、用得顺的系统。",
     // GitHub 用户名，项目区据此动态拉取仓库
     githubUser: "Takamiya-reborn",
   },
@@ -40,9 +40,19 @@ export const site = {
       url: "https://github.com/Takamiya-reborn",
     },
     {
+      label: "Bilibili",
+      icon: "simple-icons:bilibili",
+      url: "https://space.bilibili.com/1573097602",
+    },
+    {
       label: "Steam",
       icon: "simple-icons:steam",
       url: "https://steamcommunity.com/profiles/76561199163260767/",
+    },
+    {
+      label: "Pixiv",
+      icon: "simple-icons:pixiv",
+      url: "https://www.pixiv.net/users/97966543",
     },
     {
       label: "Email",
@@ -51,13 +61,11 @@ export const site = {
     },
   ] satisfies SocialLink[],
 
-  // 正在游玩的游戏；带 steamAppId 的条目由 steam.json 定时注入实时数据，
-  // liveNote 指定替换 note 的字段（achievements=成就数 / playtime=游戏时长）
   games: [
     {
       title: "宝可梦 朱／紫",
       platform: "ns",
-      note: "烈咬陆鲨，多拉贡荡死",
+      note: "多拉贡荡死",
     },
     {
       title: "Minecraft",
@@ -65,26 +73,33 @@ export const site = {
       note: "这几百个模组加上，不得牛逼炸了",
     },
     {
-      title: "泰拉瑞亚",
+      title: "Terraria",
       platform: "steam",
-      note: "大师模式开荒中",
-      progress: 45,
       steamAppId: 105600,
       liveNote: "achievements",
+      defaultStats: {
+        playtimeMinutes: 35738,
+        achievements: { unlocked: 137, total: 137 },
+      },
     },
     {
       title: "饥荒联机版",
       platform: "steam",
-      note: "生存 300 天",
       steamAppId: 322330,
       liveNote: "playtime",
+      defaultStats: {
+        playtimeMinutes: 18742,
+        achievements: null,
+      },
     },
   ] satisfies GameEntry[],
 
   // 关于我
   about: [
-    "你好，我是 Takamiya。一名兴趣驱动开发者，专注于全栈开发 🌏 与人工智能 🧿 —— 信奉在构建可扩展、高性能系统的同时，保持直观易用的交互体验。",
-    "工程之外，好奇心也相当广泛：历史 🗿、生物 🧬🦖 与天文 🔭 都有所涉猎。随时欢迎有意义的技术交流与合作项目。",
+    "Hi，我是 Takamiya，一名兴趣驱动开发者。",
+    "专注于全栈开发 🌏 与人工智能 🧿 —— 信奉在构建可扩展、高性能系统的同时，保持直观易用的交互体验。",
+    "工程之外，对很多领域充满好奇：历史 🗿、医学 🩺、音乐 🎹、绘画 🎨、生物 🦖 与天文 🔭 等等。",
+    "随时欢迎有意义的技术交流与合作项目。",
   ] as string[],
 
   // 关于区右列、GitHub 卡片下方的补充段落（与左侧关于我同级的纯文本）
@@ -168,16 +183,10 @@ export const site = {
   // 时间线（倒序）
   timeline: [
     {
-      period: "2024 — 至今",
-      title: "软件工程师",
-      org: "某科技公司",
-      description: "负责核心业务的前端架构与性能优化。",
-    },
-    {
-      period: "2020 — 2024",
-      title: "计算机科学与技术 · 本科",
-      org: "某大学",
-      description: "打基础，写代码，参加比赛。",
+      period: "2023 — 至今",
+      title: "大学本科",
+      org: "西安邮电大学",
+      description: "西安邮电大学 - 计算机学院 - 软件工程",
     },
   ] satisfies TimelineItem[],
 } as const;
@@ -185,7 +194,10 @@ export const site = {
 export type Site = typeof site;
 
 // 章节元信息：驱动章节标题与导航锚点，id 对应 index.vue 的 <section id>
+// 首条 Intro 指向页面顶部的 #top（英雄区），不渲染章节标题，只供目录与回顶跳转
 export const sections = [
+  { id: "top", num: "", title: "Intro" },
+  { id: "quote", num: "00", title: "Quote", subtitle: "随机抽取 · QUOTE" },
   { id: "about", num: "01", title: "关于我", subtitle: "玩家档案 · PLAYER 1" },
   { id: "skills", num: "02", title: "技能", subtitle: "已点亮的技能树" },
   { id: "projects", num: "03", title: "项目", subtitle: "主线成就展示" },
@@ -193,9 +205,14 @@ export const sections = [
 ] satisfies SectionMeta[];
 
 // 彩蛋与提示文案
+// 秘技按键序列：页脚提示与 useKonami 的监听都从这里取，只改这一处
+const konamiKeys = ["↑", "↑", "↓", "↓", "←", "→", "←", "→", "B", "A"] as const;
+
 export const easterEgg = {
+  // 秘技按键序列，传给 useKonami
+  keys: konamiKeys,
   // 页脚的彩蛋提示
-  hint: "隐藏彩蛋：↑ ↑ ↓ ↓ ← → ← → B A",
+  hint: `隐藏彩蛋：${konamiKeys.join(" ")}`,
   // 秘技触发后的 toast
   toast: "🎮 秘技发动！你发现了彩蛋",
   // 进站成就弹窗

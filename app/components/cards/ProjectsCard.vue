@@ -4,57 +4,44 @@ import type { Project } from '~/config/types'
 
 const props = defineProps<{ projects: Project[] }>()
 
-// 运行时从 GitHub 拉取最活跃的前 3 个仓库，失败时回退到静态配置
-const { projects, loading } = useGitHubProjects(
+// 构建时注入的仓库数据里取最活跃的前 6 个，数据缺失时回退到静态配置
+const { projects } = useGitHubProjects(
   site.profile.githubUser,
   props.projects,
-  3,
+  6,
 )
 </script>
 
 <template>
   <div class="projects">
-    <!-- 加载骨架屏 -->
-    <template v-if="loading">
-      <div v-for="i in 3" :key="`skeleton-${i}`" class="project skeleton" aria-hidden="true">
-        <span class="icon-badge" />
-        <div class="body">
-          <div class="bar w40" />
-          <div class="bar w90" />
-          <div class="bar w60" />
-        </div>
+    <article v-for="(project, i) in projects" :key="project.title" v-reveal="{ delay: i * 100 }" class="project">
+      <span class="icon-badge">
+        <Icon :name="project.icon" size="20" />
+      </span>
+
+      <div class="body">
+        <header class="head">
+          <h3 class="title">{{ project.title }}</h3>
+          <div class="links">
+            <a v-if="project.repo" :href="project.repo" target="_blank" rel="noopener" aria-label="仓库" class="link">
+              <Icon name="lucide:github" size="17" />
+            </a>
+            <a v-if="project.link" :href="project.link" target="_blank" rel="noopener" aria-label="演示" class="link">
+              <Icon name="lucide:external-link" size="17" />
+            </a>
+          </div>
+        </header>
+
+        <!-- 无简介时渲染不换行空格撑住行高，避免两列卡片高度不齐 -->
+        <p class="desc">{{ project.description || ' ' }}</p>
+
+        <ul class="tags">
+          <li v-for="tag in project.tags" :key="tag">
+            <TagPill :label="tag" />
+          </li>
+        </ul>
       </div>
-    </template>
-
-    <template v-else>
-      <article v-for="(project, i) in projects" :key="project.title" v-reveal="{ delay: i * 100 }" class="project">
-        <span class="icon-badge">
-          <Icon :name="project.icon" size="20" />
-        </span>
-
-        <div class="body">
-          <header class="head">
-            <h3 class="title">{{ project.title }}</h3>
-            <div class="links">
-              <a v-if="project.repo" :href="project.repo" target="_blank" rel="noopener" aria-label="仓库" class="link">
-                <Icon name="lucide:github" size="17" />
-              </a>
-              <a v-if="project.link" :href="project.link" target="_blank" rel="noopener" aria-label="演示" class="link">
-                <Icon name="lucide:external-link" size="17" />
-              </a>
-            </div>
-          </header>
-
-          <p class="desc">{{ project.description }}</p>
-
-          <ul class="tags">
-            <li v-for="tag in project.tags" :key="tag">
-              <TagPill :label="tag" />
-            </li>
-          </ul>
-        </div>
-      </article>
-    </template>
+    </article>
   </div>
 </template>
 
@@ -62,6 +49,14 @@ const { projects, loading } = useGitHubProjects(
 .projects {
   display: grid;
   gap: 1rem;
+}
+
+/* 宽屏两列，窄屏回落单列 */
+@media (min-width: 720px) {
+  .projects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
 }
 
 .project {
@@ -139,20 +134,27 @@ const { projects, loading } = useGitHubProjects(
   gap: 0.35rem;
 }
 
+/* 淡底色 + 描边提示可点击 */
 .link {
   display: grid;
   place-items: center;
   width: 1.9rem;
   height: 1.9rem;
   color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 0.45rem;
   transition:
     color 0.2s,
+    background 0.2s,
+    border-color 0.2s,
     transform 0.3s var(--ease-bouncy);
 }
 
 .link:hover {
   color: var(--accent-2);
+  background: var(--accent-soft);
+  border-color: rgba(34, 211, 238, 0.4);
   transform: translateY(-2px);
 }
 
@@ -168,45 +170,5 @@ const { projects, loading } = useGitHubProjects(
   flex-wrap: wrap;
   gap: 0.35rem;
   margin-top: 0.7rem;
-}
-
-/* GitHub 数据加载中的骨架屏 */
-.skeleton {
-  animation: skeleton-pulse 1.4s ease-in-out infinite;
-}
-
-.skeleton .icon-badge {
-  border: none;
-}
-
-.skeleton .bar {
-  height: 0.9rem;
-  margin: 0.45rem 0;
-  background: var(--border);
-  border-radius: 0.4rem;
-}
-
-.skeleton .w40 {
-  width: 40%;
-}
-
-.skeleton .w90 {
-  width: 90%;
-}
-
-.skeleton .w60 {
-  width: 60%;
-}
-
-@keyframes skeleton-pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.55;
-  }
 }
 </style>

@@ -5,8 +5,12 @@ useHead({
   title: site.profile.name,
 })
 
-// 按 id 取章节元信息（标题/编号/副标题）
-const meta = (id: string) => sections.find((s) => s.id === id)!
+// 按 id 取章节元信息（标题/编号/副标题）；id 拼错时立即报错指出是哪个 id
+const meta = (id: string) => {
+  const section = sections.find((s) => s.id === id)
+  if (!section) throw new Error(`site.ts 的 sections 缺少 id "${id}"`)
+  return section
+}
 
 // ---------- 科乐美秘技彩蛋 ----------
 interface ConfettiPiece {
@@ -48,7 +52,7 @@ function celebrate() {
   }, 4200)
 }
 
-useKonami(celebrate)
+useKonami(celebrate, easterEgg.keys)
 
 // ---------- 进站成就（Xbox 风格弹窗） ----------
 const achievement = ref(false)
@@ -93,7 +97,15 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
 
     <main class="container">
       <!-- 英雄区 -->
-      <ProfileCard :profile="site.profile" :socials="site.socials" />
+      <ProfileCard :profile="site.profile" />
+
+      <!-- quote 抽取器 -->
+      <section id="quote" class="section">
+        <SectionTitle :index="meta('quote').num" :title="meta('quote').title" :subtitle="meta('quote').subtitle" />
+        <div v-reveal>
+          <QuoteCard />
+        </div>
+      </section>
 
       <!-- 关于 -->
       <section id="about" class="section">
@@ -140,6 +152,9 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
         <p class="footer-hint">{{ easterEgg.hint }}</p>
       </footer>
     </main>
+
+    <!-- 右侧目录：md 文档站风格，宽屏才显示 -->
+    <SideToc />
 
     <!-- 彩蛋：五彩纸屑 + toast -->
     <div class="confetti-layer" aria-hidden="true">

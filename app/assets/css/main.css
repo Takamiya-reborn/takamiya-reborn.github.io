@@ -31,7 +31,6 @@
   /* purple-400 */
   --accent-soft: rgba(129, 140, 248, 0.14);
   --gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
-  --gradient-3: linear-gradient(120deg, var(--accent), var(--accent-3), var(--accent-2));
 
   /* 发光与阴影 */
   --glow: 0 0 2.5rem rgba(129, 140, 248, 0.22);
@@ -45,12 +44,12 @@
     Consolas, 'HYWenHei-85W', 'PingFang SC', 'Microsoft YaHei',
     ui-sans-serif, sans-serif;
   --font-mono:
-    Consolas, ui-monospace, 'Cascadia Code', 'JetBrains Mono', monospace;
+    Consolas, ui-monospace, 'Cascadia Code', 'JetBrains Mono',
+    'HYWenHei-85W', 'PingFang SC', 'Microsoft YaHei', monospace;
 
   /* 几何 */
   --radius: 1.25rem;
   --radius-sm: 0.75rem;
-  --gap: 1rem;
 
   /* 缓动曲线：快出慢停 + 弹簧过冲 */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -266,20 +265,6 @@ ol {
 
   100% {
     transform: translateY(-1.1rem) rotate(5deg);
-  }
-}
-
-@keyframes pop {
-  0% {
-    transform: scale(1);
-  }
-
-  40% {
-    transform: scale(1.35);
-  }
-
-  100% {
-    transform: scale(1);
   }
 }
 

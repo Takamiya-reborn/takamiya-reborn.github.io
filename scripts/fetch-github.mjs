@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 拉取 GitHub 贡献数据生成 public/github.json，由 .github/workflows/update-data.yml 定时执行
+// 拉取 GitHub 贡献数据生成 app/config/github.json，由 .github/workflows/update-data.yml 定时执行
 // 用法：GITHUB_TOKEN=xxx node scripts/fetch-github.mjs
 // Token 只需要能读公开数据（Actions 内置 GITHUB_TOKEN 即可），不会进入仓库；
 // 数据口径与个人资料页贡献图一致，私有贡献取决于账号的隐私设置
@@ -65,7 +65,16 @@ const out = {
   days,
 }
 await writeFile(
-  new URL('../public/github.json', import.meta.url),
+  new URL('../app/config/github.json', import.meta.url),
   `${JSON.stringify(out, null, 2)}\n`,
 )
-console.log(`已写入 public/github.json：${from} 起 ${days.length} 天，共 ${out.total} 次贡献`)
+console.log(`已写入 app/config/github.json：${from} 起 ${days.length} 天，共 ${out.total} 次贡献`)
+
+// 顺便下载最新头像到 public/avatar.png，同源直出，访客无需直连 GitHub CDN
+const avatarRes = await fetch(`https://github.com/${login}.png?size=460`)
+if (!avatarRes.ok) throw new Error(`avatar → HTTP ${avatarRes.status}`)
+await writeFile(
+  new URL('../public/avatar.png', import.meta.url),
+  Buffer.from(await avatarRes.arrayBuffer()),
+)
+console.log(`已写入 public/avatar.png`)

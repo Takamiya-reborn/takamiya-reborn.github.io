@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { site } from '~/config/site'
-import type { SocialLink } from '~/config/types'
 
 const props = defineProps<{
   profile: {
@@ -10,7 +9,6 @@ const props = defineProps<{
     location: string
     bio: string
   }
-  socials: SocialLink[]
 }>()
 
 // 打字机轮播身份标签，回退到静态 tagline
@@ -19,13 +17,60 @@ const roles = computed(() =>
 )
 const { text: typedRole } = useTypewriter(() => roles.value)
 
-const emailUrl = computed(
-  () => props.socials.find((s) => s.label === 'Email')?.url ?? '#',
+
+// 头像加载失败（如定时任务尚未生成 avatar.png）时回退为首字母占位
+const avatarFailed = ref(false)
+const avatarSrc = computed(() =>
+  avatarFailed.value ? '' : props.profile.avatar,
 )
+
+// 鼠标在头像上方或附近时，头像朝鼠标方向的 3D 视角跟随
+const MAX_TILT = 22 // 最大倾斜角度（deg）
+const RANGE_FACTOR = 1.8 // 生效半径 = 头像尺寸 × 该系数，超出即回正
+const tiltX = ref(0)
+const tiltY = ref(0)
+const zoneEl = ref<HTMLElement | null>(null)
+const prefersReducedMotion = ref(false)
+
+onMounted(() => {
+  prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
+
+function onTiltMove(e: PointerEvent) {
+  if (prefersReducedMotion.value) return
+  const zone = zoneEl.value
+  if (!zone) return
+  const rect = zone.getBoundingClientRect()
+  const cx = rect.left + rect.width / 2
+  const cy = rect.top + rect.height / 2
+  const dx = e.clientX - cx
+  const dy = e.clientY - cy
+  const dist = Math.hypot(dx, dy)
+  const range = rect.width * RANGE_FACTOR
+  if (dist > range) {
+    resetTilt()
+    return
+  }
+  // 强度包络：头像中心为 0，头像边缘达到峰值，向外线性衰减到生效半径处归零
+  const peak = rect.width / 2
+  const env = dist <= peak ? dist / peak : 1 - (dist - peak) / (range - peak)
+  tiltY.value = (dx / dist) * env * MAX_TILT
+  tiltX.value = (-dy / dist) * env * MAX_TILT
+}
+
+function resetTilt() {
+  tiltX.value = 0
+  tiltY.value = 0
+}
+
+const tiltStyle = computed(() => ({
+  '--tilt-x': `${tiltX.value}deg`,
+  '--tilt-y': `${tiltY.value}deg`,
+}))
 </script>
 
 <template>
-  <section class="hero">
+  <section class="hero" @pointermove="onTiltMove" @pointerleave="resetTilt">
     <div v-reveal class="hero-main">
       <h1 class="name">{{ profile.name }}</h1>
 
@@ -47,19 +92,15 @@ const emailUrl = computed(
           看看我的战利品
           <Icon name="lucide:arrow-down" size="16" />
         </a>
-        <a :href="emailUrl" class="btn btn--ghost">
-          <Icon name="lucide:mail" size="16" />
-          发邮件
-        </a>
       </div>
     </div>
 
     <div v-reveal="{ delay: 150 }" class="hero-art">
-      <div class="avatar-zone">
+      <div ref="zoneEl" class="avatar-zone" :style="tiltStyle">
         <span class="avatar-glow" aria-hidden="true" />
         <div class="avatar-ring">
           <span class="ring-spin" aria-hidden="true" />
-          <img v-if="profile.avatar" :src="profile.avatar" :alt="profile.name" class="avatar" />
+          <img v-if="avatarSrc" :src="avatarSrc" :alt="profile.name" class="avatar" @error="avatarFailed = true" />
           <span v-else class="avatar avatar--initial">
             {{ profile.name.charAt(0).toUpperCase() }}
           </span>
@@ -164,6 +205,9 @@ const emailUrl = computed(
 .avatar-zone {
   position: relative;
   width: fit-content;
+  transform: perspective(700px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.25s ease-out;
+  will-change: transform;
 }
 
 .avatar-glow {
@@ -174,17 +218,11 @@ const emailUrl = computed(
   pointer-events: none;
 }
 
-/* 旋转渐变光环头像（可以"捏一下"） */
+/* 旋转渐变光环头像 */
 .avatar-ring {
   position: relative;
   width: clamp(8rem, 14vw, 11rem);
   aspect-ratio: 1;
-  cursor: pointer;
-  transition: transform 0.3s var(--ease-bouncy);
-}
-
-.avatar-ring:active {
-  transform: scale(0.9) rotate(-5deg);
 }
 
 .ring-spin {
