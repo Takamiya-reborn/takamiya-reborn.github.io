@@ -5,67 +5,113 @@ import type { Quote } from '~/config/types'
 const { quotes, draw } = useQuotes()
 
 const current = ref<Quote>()
-// 抽取次数：作为 Transition 的 key 驱动换句动画
+// 抽取次数：作为 blockquote 的 key 驱动换句，key 变化重新挂载就会重放浮现动画
 const drawCount = ref(0)
-// 短暂锁死按钮，等换句动画走完再允许下一次抽取
-let rolling = false
+// 浮现期间锁死按钮，整句浮现完再允许下一次抽取
+const rolling = ref(false)
 
-function next() {
-  if (rolling) return
-  const quote = draw()
-  if (!quote) return
-  rolling = true
-  current.value = quote
-  drawCount.value++
-  setTimeout(() => (rolling = false), 420)
-}
+// 浮现总时长：行间错开 0.18s，每行 0.6s，与句子长短无关
+const REVEAL_MS = 1000
 
-onMounted(() => {
-  current.value = draw()
-  drawCount.value = 1
-})
+// 隐藏量高容器：按真实样式渲染每条 quote，取最高的锁住卡片高度
+const measureBox = ref<HTMLElement>()
+// quote 舞台的最小高度，保证换句时卡片高度不抖
+const stageMinHeight = ref<string>()
 
 // 主句：有原文用原文，没有则译文顶上
-const mainText = computed(() => current.value?.text || current.value?.translation || '')
+function mainOf(quote: Quote) {
+  return quote.text || quote.translation || ''
+}
 
-// 署名行：原名为主，译名附在英文括号里；无原名时译名直接作为署名
-const authorLine = computed(() => {
-  const { author, authorTranslation } = current.value ?? {}
-  if (author) return authorTranslation ? `${author}(${authorTranslation})` : author
-  return authorTranslation ?? ''
-})
+// 署名作者：原名为主，译名附在英文括号里；无原名时译名直接作为署名
+function authorOf(quote: Quote) {
+  if (quote.author) {
+    return quote.authorTranslation ? `${quote.author}(${quote.authorTranslation})` : quote.author
+  }
+  return quote.authorTranslation ?? ''
+}
+
+// 连同破折号和出处的完整署名
+function fromOf(quote: Quote) {
+  const author = authorOf(quote)
+  if (!author && !quote.source) return ''
+  return `—— ${author}${quote.source ? `·${quote.source}` : ''}`
+}
+
+const mainText = computed(() => (current.value ? mainOf(current.value) : ''))
+const fromLine = computed(() => (current.value ? fromOf(current.value) : ''))
 
 // 把当前这句连同作者丢给搜索引擎，找原文出处
 const searchUrl = computed(() => {
   const quote = current.value
   if (!quote) return undefined
-  const query = authorLine.value ? `${mainText.value} ${authorLine.value}` : mainText.value
+  const author = authorOf(quote)
+  const query = author ? `${mainOf(quote)} ${author}` : mainOf(quote)
   return `https://www.bing.com/search?q=${encodeURIComponent(query)}`
 })
+
+// 按真实排版量出所有 quote 的最大高度，锁住卡片高度
+function measure() {
+  if (!measureBox.value || quotes.length === 0) return
+  const tallest = Math.max(...Array.from(measureBox.value.children, el => el.scrollHeight))
+  stageMinHeight.value = `${tallest}px`
+}
+
+function next() {
+  if (rolling.value) return
+  const quote = draw()
+  if (!quote) return
+  rolling.value = true
+  current.value = quote
+  drawCount.value++
+  // 浮现由 CSS 动画驱动，这里只按总时长解锁按钮
+  setTimeout(() => (rolling.value = false), REVEAL_MS)
+}
+
+onMounted(() => {
+  current.value = draw()
+  drawCount.value = 1
+  measure()
+  // 字体加载、窗口变宽窄都会改变换行，跟着重量一次
+  document.fonts?.ready.then(measure)
+  window.addEventListener('resize', measure, { passive: true })
+})
+
+onBeforeUnmount(() => window.removeEventListener('resize', measure))
 </script>
 
 <template>
   <div class="quote-layout">
     <!-- quote 卡片 -->
     <BaseCard class="quote-card" :hover="false">
-      <Transition name="quote-swap" mode="out-in">
-        <blockquote v-if="current" :key="drawCount" class="quote-body">
-          <Icon name="lucide:quote" size="26" class="quote-mark" />
-          <p class="quote-text">{{ mainText }}</p>
-          <p v-if="current.text" class="quote-translation">{{ current.translation }}</p>
-          <footer v-if="authorLine || current.source" class="quote-from">
-            —— {{ authorLine }}<template v-if="current.source">·{{ current.source }}</template>
-          </footer>
+      <!-- 量高容器：与正文同宽渲染全部 quote，撑出最高一条的真实高度 -->
+      <div ref="measureBox" class="quote-measure" aria-hidden="true">
+        <blockquote v-for="(quote, i) in quotes" :key="i" class="quote-body">
+          <p v-if="mainOf(quote)" class="quote-text">{{ mainOf(quote) }}</p>
+          <p v-if="quote.text && quote.translation" class="quote-translation">{{ quote.translation }}</p>
+          <footer v-if="fromOf(quote)" class="quote-from">{{ fromOf(quote) }}</footer>
         </blockquote>
-        <p v-else :key="'empty'" class="quote-empty">quotes.json 还没有收录 quote</p>
-      </Transition>
+      </div>
+
+      <div class="quote-stage" :style="{ minHeight: stageMinHeight }">
+        <Transition name="quote-swap" mode="out-in">
+          <blockquote v-if="current" :key="drawCount" class="quote-body">
+            <Icon name="lucide:quote" size="26" class="quote-mark" />
+            <p v-if="mainText" class="quote-text reveal" style="--i: 0">{{ mainText }}</p>
+            <p v-if="current.text && current.translation" class="quote-translation reveal" style="--i: 1">
+              {{ current.translation }}</p>
+            <footer v-if="fromLine" class="quote-from reveal" style="--i: 2">{{ fromLine }}</footer>
+          </blockquote>
+          <p v-else :key="'empty'" class="quote-empty">quotes.json 还没有收录 quote</p>
+        </Transition>
+      </div>
     </BaseCard>
 
     <!-- 右侧抽取区：每个按钮下带一行小字提示 -->
     <div class="quote-rail">
       <div class="quote-actions">
         <div class="quote-action">
-          <button class="quote-roll" type="button" title="抽一条" :disabled="quotes.length === 0" @click="next">
+          <button class="quote-roll" type="button" title="抽一条" :disabled="quotes.length === 0 || rolling" @click="next">
             <Icon name="lucide:dices" size="26" />
           </button>
           <span class="quote-hint">点骰子抽取</span>
@@ -98,11 +144,29 @@ const searchUrl = computed(() => {
   padding: 3.5rem 3rem;
 }
 
+/* 量高容器：贴着卡片内容区绝对定位（inset 对齐 .quote-card 的 padding），
+   不参与布局，visibility 隐藏但保留排版，供 measure() 读取真实高度 */
+.quote-measure {
+  position: absolute;
+  inset: 3.5rem 3rem;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* quote 舞台：最小高度锁住换句时的高度，正文在其中垂直居中 */
+.quote-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .quote-body {
   position: relative;
   margin: 0;
   padding-left: 2.4rem;
-  /* 纵向撑满卡片，正文垂直居中，署名被推到右下角 */
+  /* 纵向撑满舞台，正文垂直居中，署名跟在正文之后右对齐 */
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -121,6 +185,7 @@ const searchUrl = computed(() => {
   font-size: 1.3rem;
   line-height: 1.75;
   color: var(--text);
+  min-height: 1em;
 }
 
 /* 补充译文：跟在主句下面，弱化处理 */
@@ -139,6 +204,32 @@ const searchUrl = computed(() => {
   text-align: right;
   font-size: 0.85rem;
   color: var(--muted);
+}
+
+/* 浮现：每行从左侧轻轻滑入并淡现，行与行按阅读顺序错开，时长与句子长短无关 */
+.reveal {
+  opacity: 0;
+  animation: quote-reveal 0.6s ease-out forwards;
+  animation-delay: calc(var(--i) * 0.18s);
+}
+
+@keyframes quote-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 系统开了"减少动态效果"就直接显示 */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 .quote-empty {
@@ -226,21 +317,12 @@ const searchUrl = computed(() => {
   }
 }
 
-/* 换句动画：旧句下沉淡出，新句从下浮入 */
-.quote-swap-enter-active,
+/* 换句动画：旧句快速淡出，新句按行浮现 */
 .quote-swap-leave-active {
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease;
-}
-
-.quote-swap-enter-from {
-  opacity: 0;
-  transform: translateY(0.6rem);
+  transition: opacity 0.15s ease;
 }
 
 .quote-swap-leave-to {
   opacity: 0;
-  transform: translateY(-0.4rem);
 }
 </style>
