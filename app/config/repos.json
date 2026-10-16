@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T06:56:53.466Z",
+  "generatedAt": "2026-10-16T19:43:06.636Z",
   "user": "Takamiya-reborn",
   "repos": [
     {
@@ -9,8 +9,19 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-15T21:48:10Z",
+      "pushed_at": "2026-10-16T19:40:59Z",
       "language": "Vue",
+      "topics": []
+    },
+    {
+      "name": "ebpf-demo",
+      "description": "基于 [libbpf-bootstrap](https://github.com/libbpf/libbpf-bootstrap) 的 eBPF 学习与性能观测项目。仓库包含上游示例、面向 CPU/磁盘/文件/内存/网络的自定义 eBPF 工具，以及一个可选的 Web 控制台和 Prometheus 监控环境。",
+      "html_url": "https://github.com/Takamiya-reborn/ebpf-demo",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-16T19:16:38Z",
+      "language": "C",
       "topics": []
     },
     {
@@ -37,7 +48,7 @@
     },
     {
       "name": "DrPaper",
-      "description": "论文写作 Agent",
+      "description": "CS论文写作 Agent",
       "html_url": "https://github.com/Takamiya-reborn/DrPaper",
       "homepage": "",
       "fork": false,
@@ -48,9 +59,9 @@
     },
     {
       "name": "Hello-manim",
-      "description": null,
+      "description": "使用manim构造数学世界",
       "html_url": "https://github.com/Takamiya-reborn/Hello-manim",
-      "homepage": null,
+      "homepage": "",
       "fork": false,
       "archived": false,
       "pushed_at": "2026-10-11T13:19:31Z",
@@ -77,17 +88,6 @@
       "archived": false,
       "pushed_at": "2026-10-08T15:42:15Z",
       "language": "Python",
-      "topics": []
-    },
-    {
-      "name": "ebpf-demo",
-      "description": "基于 [libbpf-bootstrap](https://github.com/libbpf/libbpf-bootstrap) 的 eBPF 学习与性能观测项目。仓库包含上游示例、面向 CPU/磁盘/文件/内存/网络的自定义 eBPF 工具，以及一个可选的 Web 控制台和 Prometheus 监控环境。",
-      "html_url": "https://github.com/Takamiya-reborn/ebpf-demo",
-      "homepage": null,
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-04T07:19:28Z",
-      "language": "C",
       "topics": []
     },
     {
