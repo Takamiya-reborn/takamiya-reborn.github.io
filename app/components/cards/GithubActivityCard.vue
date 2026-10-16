@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { GithubCommit, GithubDay, GithubLanguage } from '~/composables/useGithubActivity'
+import type { GithubDay, GithubLanguage, GithubPr } from '~/composables/useGithubActivity'
 
 defineProps<{ githubUser?: string }>()
 
-const { days, total, languages, commits, generatedAt } = useGithubActivity()
+const { days, total, languages, prs, generatedAt } = useGithubActivity()
 
 // 贡献量分档 → 色阶档位（0-4，与主题 accent 同色系）
 function level(count: number): number {
@@ -66,7 +66,7 @@ const fallbackColors = ['#818cf8', '#22d3ee', '#c084fc', '#34d399', '#fbbf24', '
 const langColor = (lang: GithubLanguage, index: number) =>
   langColors[lang.name] ?? fallbackColors[index % fallbackColors.length]!
 
-// ---------- 最新提交 ----------
+// ---------- 最新 PR ----------
 // 相对时间：构建时（SSG）用 generatedAt 做锚点保证水合一致，挂载后再换真实时间
 const now = ref<number | null>(null)
 onMounted(() => (now.value = Date.now()))
@@ -82,14 +82,17 @@ function relTime(date: string): string {
   return `${d.getMonth() + 1}月${d.getDate()}日`
 }
 
-// +/− 行数文案：详情接口失败时 additions 为 null，只显示时间
-const diffLabel = (c: GithubCommit) =>
-  c.additions != null ? `+${c.additions}` : ''
+// +/− 行数文案：接口失败时 additions 为 null，只显示时间
+const diffLabel = (p: GithubPr) =>
+  p.additions != null ? `+${p.additions}` : ''
+
+// PR 状态文案与配色（GitHub 官方语义色：开=绿、合并=紫、关=红）
+const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭' } as const
 </script>
 
 <template>
   <!-- 数据全空时整卡隐藏，不留空壳 -->
-  <BaseCard v-if="columns.length || languages.length || commits.length" class="github-activity" :glass="false">
+  <BaseCard v-if="columns.length || languages.length || prs.length" class="github-activity" :glass="false">
     <div class="gh-head">
       <span class="gh-label">
         <Icon name="lucide:github" size="16" />
@@ -98,15 +101,35 @@ const diffLabel = (c: GithubCommit) =>
       <span class="gh-window">近 30 天</span>
     </div>
 
-    <p class="gh-total">
-      <span class="gh-num">{{ total }}</span>
-      <span class="gh-unit">次贡献</span>
-    </p>
+    <div class="gh-main">
+      <div class="gh-stats">
+        <p class="gh-total">
+          <span class="gh-num">{{ total }}</span>
+          <span class="gh-unit">次贡献</span>
+        </p>
 
-    <div class="gh-grid" role="img" aria-label="GitHub 近 30 天贡献热力图">
-      <div v-for="(col, ci) in columns" :key="ci" class="gh-col">
-        <span v-for="(day, di) in col" :key="di" class="gh-cell" :class="`lv-${day ? level(day.count) : 0}`"
-          :title="day ? dayLabel(day) : undefined" />
+        <div class="gh-grid" role="img" aria-label="GitHub 近 30 天贡献热力图">
+          <div v-for="(col, ci) in columns" :key="ci" class="gh-col">
+            <span v-for="(day, di) in col" :key="di" class="gh-cell" :class="`lv-${day ? level(day.count) : 0}`"
+              :title="day ? dayLabel(day) : undefined" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 语言构成：填进热力图右侧的空白区 -->
+      <div v-if="languages.length" class="gh-langside">
+        <p class="gh-section-title">Languages</p>
+        <div class="gh-langbar" role="img" aria-label="仓库语言构成占比条">
+          <span v-for="(lang, i) in languages" :key="lang.name" class="gh-langseg"
+            :style="{ width: `${lang.pct}%`, background: langColor(lang, i) }" :title="`${lang.name} ${lang.pct}%`" />
+        </div>
+        <ul class="gh-langs">
+          <li v-for="(lang, i) in languages" :key="lang.name">
+            <span class="gh-dot" :style="{ background: langColor(lang, i) }" aria-hidden="true" />
+            <span class="gh-lang-name">{{ lang.name }}</span>
+            <span class="gh-lang-pct">{{ lang.pct }}%</span>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -126,39 +149,25 @@ const diffLabel = (c: GithubCommit) =>
       </a>
     </div>
 
-    <!-- 语言构成 -->
-    <div v-if="languages.length" class="gh-section">
-      <p class="gh-section-title">语言构成</p>
-      <div class="gh-langbar" role="img" aria-label="仓库语言构成占比条">
-        <span v-for="(lang, i) in languages" :key="lang.name" class="gh-langseg"
-          :style="{ width: `${lang.pct}%`, background: langColor(lang, i) }"
-          :title="`${lang.name} ${lang.pct}%`" />
-      </div>
-      <ul class="gh-langs">
-        <li v-for="(lang, i) in languages" :key="lang.name">
-          <span class="gh-dot" :style="{ background: langColor(lang, i) }" aria-hidden="true" />
-          <span class="gh-lang-name">{{ lang.name }}</span>
-          <span class="gh-lang-pct">{{ lang.pct }}%</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- 最新提交 -->
-    <div v-if="commits.length" class="gh-section">
-      <p class="gh-section-title">最新提交</p>
-      <ul class="gh-commits">
-        <li v-for="c in commits" :key="c.sha">
-          <a class="gh-commit" :href="`${c.repoUrl}/commit/${c.sha}`" target="_blank" rel="noopener">
+    <!-- 最新 PR -->
+    <div v-if="prs.length" class="gh-section">
+      <p class="gh-section-title">最新 PR</p>
+      <ul class="gh-prs">
+        <li v-for="p in prs" :key="`${p.repo}#${p.number}`">
+          <a class="gh-commit" :href="p.url" target="_blank" rel="noopener">
             <span class="gh-commit-row">
-              <span class="gh-commit-msg">{{ c.message }}</span>
-              <span v-if="diffLabel(c)" class="gh-diff">
-                <span class="gh-add">+{{ c.additions }}</span>
-                <span class="gh-del">−{{ c.deletions ?? 0 }}</span>
+              <span class="gh-commit-msg">{{ p.title }}</span>
+              <span v-if="diffLabel(p)" class="gh-diff">
+                <span class="gh-add">+{{ p.additions }}</span>
+                <span class="gh-del">−{{ p.deletions ?? 0 }}</span>
               </span>
             </span>
             <span class="gh-commit-meta">
-              <span class="gh-commit-repo">{{ c.repo }}</span>
-              · {{ relTime(c.date) }}
+              <span class="gh-commit-repo">{{ p.repo }}#{{ p.number }}</span>
+              ·
+              <span class="gh-pr-state" :class="`is-${p.state.toLowerCase()}`">{{ stateLabels[p.state] ?? p.state
+              }}</span>
+              · {{ relTime(p.date) }}
             </span>
           </a>
         </li>
@@ -202,6 +211,25 @@ const diffLabel = (c: GithubCommit) =>
   font-size: 0.78rem;
   color: var(--muted);
   opacity: 0.8;
+}
+
+.gh-main {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.gh-stats {
+  flex: none;
+}
+
+.gh-langside {
+  flex: none;
+  width: 7.5rem;
+  min-width: 0;
+  /* 去掉 space-between 后用自动外边距，让区块在热力图右侧的剩余空间内水平居中 */
+  margin-inline: auto;
+  margin-top: 1.5rem;
 }
 
 .gh-total {
@@ -307,7 +335,7 @@ const diffLabel = (c: GithubCommit) =>
   color: var(--accent-2);
 }
 
-/* ---- 下方扩展区块（语言构成 / 最新提交）：细分隔线分区 ---- */
+/* ---- 下方扩展区块（最新 PR）：细分隔线分区 ---- */
 .gh-section {
   margin-top: 0.35rem;
   padding-top: 1.1rem;
@@ -339,10 +367,11 @@ const diffLabel = (c: GithubCommit) =>
   filter: brightness(1.15);
 }
 
+/* 右栏宽度有限，语言图例改单列 */
 .gh-langs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.35rem 1.2rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem;
   margin-top: 0.7rem;
 }
 
@@ -374,8 +403,8 @@ const diffLabel = (c: GithubCommit) =>
   color: var(--muted);
 }
 
-/* 最新提交列表 */
-.gh-commits {
+/* 最新 PR 列表 */
+.gh-prs {
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
@@ -386,7 +415,7 @@ const diffLabel = (c: GithubCommit) =>
   display: block;
 }
 
-/* 首行：提交信息 + 右侧增删行数 */
+/* 首行：PR 标题 + 右侧增删行数 */
 .gh-commit-row {
   display: flex;
   align-items: baseline;
@@ -434,5 +463,18 @@ const diffLabel = (c: GithubCommit) =>
 
 .gh-commit-repo {
   font-family: var(--font-mono);
+}
+
+/* PR 状态：GitHub 语义色 */
+.gh-pr-state.is-open {
+  color: #3fb950;
+}
+
+.gh-pr-state.is-merged {
+  color: #a371f7;
+}
+
+.gh-pr-state.is-closed {
+  color: #f85149;
 }
 </style>

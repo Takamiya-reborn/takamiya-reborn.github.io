@@ -10,10 +10,9 @@ import { readFile, writeFile } from 'node:fs/promises'
 const WINDOW_DAYS = 30
 // 语言条保留前 N 名语言，避免碎片语言挤成一像素
 const TOP_LANGUAGES = 5
-// 最新提交取最近推送的前 N 个仓库
-const RECENT_COMMITS = 3
+// 最新 PR 取最近创建的前 N 个
+const RECENT_PRS = 3
 const API = 'https://api.github.com/graphql'
-const REST = 'https://api.github.com'
 
 const token = process.env.GITHUB_TOKEN
 if (!token) {
@@ -35,7 +34,7 @@ const res = await fetch(API, {
   method: 'POST',
   headers: { ...headers, 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    query: `query($login: String!) {
+    query: `query($login: String!, $prQuery: String!) {
       user(login: $login) {
         contributionsCollection {
           contributionCalendar {
@@ -50,8 +49,22 @@ const res = await fetch(API, {
           }
         }
       }
+      prs: search(query: $prQuery, type: ISSUE, first: 3) {
+        nodes {
+          ... on PullRequest {
+            number
+            title
+            url
+            state
+            createdAt
+            additions
+            deletions
+            repository { nameWithOwner }
+          }
+        }
+      }
     }`,
-    variables: { login },
+    variables: { login, prQuery: `author:${login} is:PR -is:draft archived:false sort:created-desc` },
   }),
 })
 if (!res.ok) throw new Error(`GraphQL → HTTP ${res.status}`)
@@ -86,36 +99,20 @@ const languages = top.map(([name, bytes]) => ({
 // 四舍五入产生的误差补给占比最大的一项
 languages[0].pct += 100 - languages.reduce((sum, l) => sum + l.pct, 0)
 
-// 最新提交：最近推送的前 N 个非 fork 仓库，取各自最新一次提交及增删行数
-const commits = []
-try {
-  const reposRes = await fetch(`${REST}/users/${login}/repos?sort=pushed&per_page=10&type=owner`, { headers })
-  if (reposRes.ok) {
-    const repos = (await reposRes.json())
-      .filter(r => !r.fork && !r.archived)
-      .slice(0, RECENT_COMMITS)
-    for (const repo of repos) {
-      const listRes = await fetch(`${REST}/repos/${login}/${repo.name}/commits?per_page=1`, { headers })
-      if (!listRes.ok) continue
-      const [commit] = await listRes.json()
-      if (!commit) continue
-      // 增删行数在 commit 详情接口里，列表接口没有
-      const detailRes = await fetch(`${REST}/repos/${login}/${repo.name}/commits/${commit.sha}`, { headers })
-      const stats = detailRes.ok ? (await detailRes.json()).stats : null
-      commits.push({
-        repo: repo.name,
-        repoUrl: repo.html_url,
-        sha: commit.sha,
-        message: commit.commit.message.split('\n')[0],
-        date: commit.commit.author.date,
-        additions: stats?.additions ?? null,
-        deletions: stats?.deletions ?? null,
-      })
-    }
-  }
-} catch {
-  // 提交动态属锦上添花，拉取失败不阻塞整体数据生成
-}
+// 最新 PR：search API 按创建时间倒序取最近创建的前 N 个，含仓库、状态与增删行数
+const prs = (payload.data.prs?.nodes ?? [])
+  .filter(Boolean)
+  .slice(0, RECENT_PRS)
+  .map(pr => ({
+    repo: pr.repository.nameWithOwner,
+    url: pr.url,
+    number: pr.number,
+    title: pr.title,
+    state: pr.state,
+    date: pr.createdAt,
+    additions: pr.additions ?? null,
+    deletions: pr.deletions ?? null,
+  }))
 
 const out = {
   generatedAt: new Date().toISOString(),
@@ -123,7 +120,7 @@ const out = {
   total: days.reduce((sum, d) => sum + d.count, 0),
   days,
   languages,
-  commits,
+  prs,
 }
 await writeFile(
   new URL('../app/config/github.json', import.meta.url),
@@ -131,7 +128,7 @@ await writeFile(
 )
 console.log(
   `已写入 app/config/github.json：${from} 起 ${days.length} 天共 ${out.total} 次贡献，` +
-  `${languages.length} 种语言，${commits.length} 条最新提交`,
+  `${languages.length} 种语言，${prs.length} 条最新 PR`,
 )
 
 // 顺便下载最新头像到 public/avatar.png，同源直出，访客无需直连 GitHub CDN

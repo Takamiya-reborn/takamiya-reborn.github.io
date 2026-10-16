@@ -18,12 +18,18 @@ export interface GithubLanguage {
   pct: number
 }
 
-export interface GithubCommit {
+export interface GithubPr {
+  /** 所属仓库，owner/name 全称 */
   repo: string
-  repoUrl: string
-  sha: string
-  message: string
-  /** 提交时间，ISO 8601 */
+  /** PR 页面链接 */
+  url: string
+  /** PR 序号 */
+  number: number
+  /** PR 标题 */
+  title: string
+  /** OPEN / MERGED / CLOSED */
+  state: 'OPEN' | 'MERGED' | 'CLOSED'
+  /** 创建时间，ISO 8601 */
   date: string
   additions: number | null
   deletions: number | null
@@ -36,10 +42,10 @@ interface GithubData {
   total: number
   days: GithubDay[]
   languages?: GithubLanguage[]
-  commits?: GithubCommit[]
+  prs?: GithubPr[]
 }
 
-// 返回贡献逐日数组、合计、语言构成与最新提交；数据缺失时为空数组，调用方据此隐藏对应区块
+// 返回贡献逐日数组、合计、语言构成与最新 PR；数据缺失时为空数组，调用方据此隐藏对应区块
 export function useGithubActivity() {
   const data = JSON.parse(githubRaw) as GithubData
   const days = data.days ?? []
@@ -47,7 +53,7 @@ export function useGithubActivity() {
     days,
     total: data.total ?? days.reduce((sum, d) => sum + d.count, 0),
     languages: data.languages ?? [],
-    commits: data.commits ?? [],
+    prs: data.prs ?? [],
     generatedAt: data.generatedAt,
   }
 }
