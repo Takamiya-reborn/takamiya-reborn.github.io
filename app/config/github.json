@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T19:45:54.466Z",
+  "generatedAt": "2026-10-16T19:51:45.273Z",
   "user": "Takamiya-reborn",
   "total": 140,
   "days": [
@@ -146,24 +146,24 @@
   ],
   "languages": [
     {
-      "name": "C",
-      "pct": 69
-    },
-    {
       "name": "Python",
-      "pct": 17
+      "pct": 53
     },
     {
       "name": "JavaScript",
-      "pct": 10
+      "pct": 31
     },
     {
       "name": "Vue",
-      "pct": 3
+      "pct": 8
+    },
+    {
+      "name": "C",
+      "pct": 6
     },
     {
       "name": "CSS",
-      "pct": 1
+      "pct": 2
     }
   ],
   "prs": [
