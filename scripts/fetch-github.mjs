@@ -24,7 +24,7 @@ const headers = { Authorization: `Bearer ${token}` }
 
 // GitHub 用户名的唯一来源是 site.ts 里的 githubUser 字段
 const siteTs = await readFile(new URL('../app/config/site.ts', import.meta.url), 'utf8')
-const login = siteTs.match(/githubUser:\s*"([^"]+)"/)?.[1]
+const login = siteTs.match(/(?:githubUser:\s*|const githubUser\s*=\s*)"([^"]+)"/)?.[1]
 if (!login) {
   console.error('site.ts 中未找到 githubUser')
   process.exit(1)
