@@ -113,6 +113,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
         <div class="about-grid">
           <div v-reveal class="about-main">
             <AboutCard :paragraphs="site.about" />
+            <MediaCard :items="site.media" />
             <NowPlayingCard :games="site.games" />
           </div>
           <div v-reveal="{ delay: 140 }" class="about-side">

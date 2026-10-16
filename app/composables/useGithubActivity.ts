@@ -11,17 +11,43 @@ export interface GithubDay {
   count: number
 }
 
+export interface GithubLanguage {
+  /** 语言名（GitHub Linguist 口径） */
+  name: string
+  /** 在入选语言中的占比（整数，合计 100） */
+  pct: number
+}
+
+export interface GithubCommit {
+  repo: string
+  repoUrl: string
+  sha: string
+  message: string
+  /** 提交时间，ISO 8601 */
+  date: string
+  additions: number | null
+  deletions: number | null
+}
+
 // Actions 预生成的 app/config/github.json 结构（见 scripts/fetch-github.mjs）
 interface GithubData {
   generatedAt: string
   user: string
   total: number
   days: GithubDay[]
+  languages?: GithubLanguage[]
+  commits?: GithubCommit[]
 }
 
-// 返回逐日贡献数组与合计；数据缺失时为空数组，调用方据此隐藏
+// 返回贡献逐日数组、合计、语言构成与最新提交；数据缺失时为空数组，调用方据此隐藏对应区块
 export function useGithubActivity() {
   const data = JSON.parse(githubRaw) as GithubData
   const days = data.days ?? []
-  return { days, total: data.total ?? days.reduce((sum, d) => sum + d.count, 0) }
+  return {
+    days,
+    total: data.total ?? days.reduce((sum, d) => sum + d.count, 0),
+    languages: data.languages ?? [],
+    commits: data.commits ?? [],
+    generatedAt: data.generatedAt,
+  }
 }

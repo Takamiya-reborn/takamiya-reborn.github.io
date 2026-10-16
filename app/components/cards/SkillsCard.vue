@@ -1,14 +1,57 @@
 <script setup lang="ts">
-import { hierarchy } from 'd3-hierarchy'
-import type { HierarchyPointNode } from 'd3-hierarchy'
 import type { SkillGroup, SkillItem } from '~/config/types'
 
-const props = defineProps<{ groups: SkillGroup[] }>()
+const props = defineProps<{
+  groups: SkillGroup[]
+}>()
 
 /* 分组配色：与站点暗色主题呼应的荧光色 */
 const PALETTE = ['#818cf8', '#22d3ee', '#c084fc', '#fbbf24', '#34d399', '#fb7185'] as const
 
-/* 悬停高亮：按 path 前缀点亮整条祖先/后代链，其余淡出 */
+/* 技能品牌图标：slug 已对照本地 @iconify-json/simple-icons 逐一核实；
+   表外技能按"去符号小写"猜测（Vitest → vitest 这类），猜不中则不渲染图标 */
+const ICONS: Record<string, string> = {
+  Python: 'simple-icons:python',
+  JavaScript: 'simple-icons:javascript',
+  TypeScript: 'simple-icons:typescript',
+  'C++': 'simple-icons:cplusplus',
+  Go: 'simple-icons:go',
+  HTML: 'simple-icons:html5',
+  CSS: 'simple-icons:css',
+  Vue: 'simple-icons:vuedotjs',
+  Nuxt: 'simple-icons:nuxtdotjs',
+  TailwindCSS: 'simple-icons:tailwindcss',
+  'Anime.js': 'simple-icons:animedotjs',
+  Konva: 'simple-icons:konva',
+  Django: 'simple-icons:django',
+  Flask: 'simple-icons:flask',
+  PyQt: 'simple-icons:qt',
+  Streamlit: 'simple-icons:streamlit',
+  'Node.js': 'simple-icons:nodedotjs',
+  Electron: 'simple-icons:electron',
+  '.NET': 'simple-icons:dotnet',
+  PyTorch: 'simple-icons:pytorch',
+  Pandas: 'simple-icons:pandas',
+  Polars: 'simple-icons:polars',
+  Ultralytics: 'simple-icons:ultralytics',
+  PydanticAI: 'simple-icons:pydantic',
+  Docker: 'simple-icons:docker',
+  Vite: 'simple-icons:vite',
+  npm: 'simple-icons:npm',
+  uv: 'simple-icons:uv',
+  Godot: 'simple-icons:godotengine',
+  Unity: 'simple-icons:unity',
+  'Unreal Engine': 'simple-icons:unrealengine',
+  Blender: 'simple-icons:blender',
+}
+
+function iconFor(name: string): string {
+  return ICONS[name] ?? `simple-icons:${name.toLowerCase().replace(/[^a-z0-9]/g, '')}`
+}
+
+/* 悬停高亮：按 path 前缀点亮整条祖先/后代链，其余淡出。
+   鼠标移出胶囊即熄灭；触屏没有 hover，点按胶囊切换高亮链路，
+   点按板面空白处熄灭 */
 const hoveredPath = ref<string | null>(null)
 
 function isOn(path: string): boolean {
@@ -16,325 +59,259 @@ function isOn(path: string): boolean {
   return hoveredPath.value.startsWith(path) || path.startsWith(hoveredPath.value)
 }
 
-interface MindNode {
+function linkOn(l: LinkItem): boolean {
+  return l.paths.some(p => isOn(p))
+}
+
+function linkDim(l: LinkItem): boolean {
+  return hoveredPath.value !== null && !linkOn(l)
+}
+
+/* 触屏没有 hover：点按胶囊切换高亮链路；鼠标交互只认 pointerType === 'mouse'，
+   避免触屏点按触发的模拟 mouse 事件把点按选中的高亮立刻冲掉 */
+function hoverIn(path: string, e: PointerEvent) {
+  if (e.pointerType === 'mouse') hoveredPath.value = path
+}
+
+function hoverOut(e: PointerEvent) {
+  if (e.pointerType === 'mouse') hoveredPath.value = null
+}
+
+function tapSelect(path: string) {
+  if (window.matchMedia('(hover: none)').matches)
+    hoveredPath.value = hoveredPath.value === path ? null : path
+}
+
+/* 点按板面空白处熄灭高亮（胶囊自身的 click 会冒泡上来，用 closest 排除） */
+function boardTap(e: MouseEvent) {
+  if ((e.target as HTMLElement | null)?.closest?.('.skill-pill, .group-pill, .root-pill')) return
+  hoveredPath.value = null
+}
+
+/* 移动端树保持设计宽度横向滑动，初始滚到根芯片居中 */
+const viewport = ref<HTMLElement | null>(null)
+onMounted(() => {
+  const el = viewport.value
+  if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2
+})
+
+/* ---- 电路板走线布局 ----
+   根芯片居中，主干先对齐再散开：根芯片 → 水平线 → 左右两条竖直
+   主汇流排，每路分组从排上以单个 45° 倒角引出。分组芯片外侧是
+   本地分配排，技能像 DIP 元件一样双列交错排布，由分配排并行扇出
+   ——每组一个星型，除两处 45° 倒角外全是短直线，无交叉、无飞线。
+   双列上下各错半格，外列落点才不会穿过内列胶囊；同一对技能按
+   估算宽度分配内外列（宽者靠内），保证最宽胶囊不出板框。
+   所有坐标确定性计算、无随机抖动，SSR 与客户端渲染一致 */
+
+const VB_W = 1220
+const VB_TOP = -400 // viewBox 上缘（y 最小值）
+const VB_H = 800
+const P = 40 // 技能纵向间距：双列各错半格，同列相邻胶囊间隔 2P
+const CH = 13 // 45° 倒角直角边长：全局统一，保证拐角等长
+const TX = 110 // 主汇流排到根芯片的水平距离
+const COL_IN = 235 // 分组列到根芯片的水平距离（倒角后仍留 ~44 直线段）
+const LBUS = 340 // 分组本地分配排到根芯片的水平距离
+const COL_INNER = 432 // 技能内列到根芯片的水平距离
+const COL_OUTER = 545 // 技能外列到根芯片的水平距离
+const BLOCK_GAP = 50 // 同侧相邻分组块之间的空隙
+
+interface TreeNode {
   name: string
   icon?: string
   path: string
-  gid: number
   color: string
-  children?: MindNode[]
+  hub: boolean
+  x: number
+  y: number
+  delay: number
 }
 
-/** 配置项 → 思维导图节点；path 编码层级位置，供悬停链路匹配 */
-function toNode(item: SkillItem, gid: number, path: string): MindNode {
-  const base = { path, gid, color: PALETTE[gid % PALETTE.length] }
-  if (typeof item === 'string') return { name: item, ...base }
-  return {
-    name: item.name,
-    ...base,
-    children: item.children?.map((c, ci) => toNode(c, gid, `${path}.${ci}`)),
-  }
+interface GroupNode {
+  path: string
+  name: string
+  icon: string
+  color: string
+  x: number
+  y: number
+  delay: number
+  nodes: TreeNode[]
 }
 
-const raw: MindNode = {
-  name: '技能树',
-  path: '',
-  gid: 0,
-  color: PALETTE[0],
-  children: props.groups.map((g, gi) => ({
-    name: g.title,
-    icon: g.icon,
-    path: `${gi}`,
-    gid: gi,
-    color: PALETTE[gi % PALETTE.length],
-    children: g.skills.map((s, si) => toNode(s, gi, `${gi}.${si}`)),
-  })),
+/** 技能项按配置顺序摊平成升级链；children 内联跟在父节点后面。
+    path 按层级编号（父 2.4、子 2.4.0），悬停链路靠前缀匹配父子相连 */
+function flatten(items: SkillItem[], base: string, out: { name: string, icon?: string, path: string, hub: boolean }[]) {
+  items.forEach((item, i) => {
+    const path = `${base}.${i}`
+    if (typeof item === 'string') {
+      out.push({ name: item, icon: iconFor(item), path, hub: false })
+    }
+    else {
+      out.push({ name: item.name, icon: iconFor(item.name), path, hub: Boolean(item.children?.length) })
+      if (item.children?.length) flatten(item.children, path, out)
+    }
+  })
 }
 
-/* 电路板布局：根居中，前三组向右、后三组向左，叶子独占一行，
-   走线为 45° 切角的 PCB 折线（同层垂直段共线成"总线"，天然互不遮挡） */
-const GX = 210 // 分组列
-const HX = 330 // 进阶 hub 列（JavaScript/Vue/Node.js）
-const LX = 445 // 叶子列
-const ROW = 36 // 叶子行高
-const CH = 8 // 45° 切角最小尺寸
+const chains = props.groups.map((g, gi) => {
+  const items: { name: string, icon?: string, path: string, hub: boolean }[] = []
+  flatten(g.skills, `${gi}`, items)
+  return { g, gi, items }
+})
 
-/** 切角尺寸随转角距离变化（有长有短），且不超过距离的一半，避免相邻切角重叠 */
-const cham = (ad: number) => Math.min(26, Math.max(CH, ad * 0.45), ad * 0.9)
-const VB_W = 1040
-const VB_H = 600
-const rootNode = hierarchy(raw) as HierarchyPointNode<MindNode>
+/* 贪心分列：每组占 ceil(n/2) 行（双列并排），放进当前较矮的一列，
+   左右两列总行数自然趋近（当前数据左右各 9 行） */
+const columns: (typeof chains)[] = [[], []]
+const colRows: [number, number] = [0, 0]
+for (const c of chains) {
+  const side = colRows[0] <= colRows[1] ? 0 : 1
+  columns[side]!.push(c)
+  colRows[side]! += Math.ceil(c.items.length / 2)
+}
 
-/* 叶子按 DFS 先序收集到所属侧（descendants() 是 BFS，会把 depth-3
-   进阶子技能排到末尾，导致行序错乱），每侧以 y=0 居中 */
-const groupList = rootNode.children ?? []
-const sideLeaves: HierarchyPointNode<MindNode>[][] = [[], []]
-groupList.forEach((g, gi) => {
-  const side = gi < 3 ? 0 : 1
-  g.eachBefore((n) => {
-    if (n.depth >= 2 && !n.children?.length) sideLeaves[side].push(n)
+/* 胶囊全宽估算：mono 字宽 × 字符数 + 图标 + 内边距（0.95rem mono ≈ 9.2/字符） */
+const widthOf = (name: string) => name.length * 9.2 + 42
+
+const groupNodes: GroupNode[] = []
+const skillNodes: TreeNode[] = []
+
+columns.forEach((col, side) => {
+  const s = side === 0 ? -1 : 1 // 左列向 x 负方向展开
+  const totalH = col.reduce((acc, c) => acc + (c.items.length - 1) * P, 0) + (col.length - 1) * BLOCK_GAP
+  let top = -totalH / 2 // 首个分组芯片中心 = 首行技能 y
+  col.forEach((c) => {
+    const color = PALETTE[c.gi % PALETTE.length]!
+    const nodes: TreeNode[] = c.items.map((it, k) => {
+      /* 双列交错：同对两技能上下各错半格、分列内外；较宽者放内列
+         （内列更靠近分配排、外侧空间少），落单的放内列 */
+      const pair = Math.floor(k / 2)
+      const y = top + (2 * pair + (k % 2)) * P
+      let inner: boolean
+      if (k % 2 === 0) {
+        const mate = c.items[k + 1]
+        inner = !mate || widthOf(it.name) >= widthOf(mate.name)
+      }
+      else {
+        const mate = c.items[k - 1]!
+        inner = widthOf(it.name) > widthOf(mate.name)
+      }
+      return {
+        ...it,
+        color,
+        x: s * (inner ? COL_INNER : COL_OUTER),
+        y,
+        delay: 0.35 + c.gi * 0.07 + k * 0.04,
+      }
+    })
+    groupNodes.push({
+      path: `${c.gi}`,
+      name: c.g.title,
+      icon: c.g.icon ?? 'lucide:circle',
+      color,
+      x: s * COL_IN,
+      y: top,
+      delay: 0.15 + c.gi * 0.07,
+      nodes,
+    })
+    skillNodes.push(...nodes)
+    top += (c.items.length - 1) * P + BLOCK_GAP
   })
 })
-const leafY = new Map<HierarchyPointNode<MindNode>, number>()
-for (const leaves of sideLeaves) {
-  leaves.forEach((n, i) => leafY.set(n, (i - (leaves.length - 1) / 2) * ROW))
-}
-
-/* 自底向上定坐标：叶子取行位，hub/分组取子节点均值，根固定在原点 */
-const pos = new Map<HierarchyPointNode<MindNode>, [number, number]>()
-function layout(n: HierarchyPointNode<MindNode>, dir: 1 | -1): number {
-  const y = n.children?.length
-    ? n.children.reduce((s, c) => s + layout(c, dir), 0) / n.children.length
-    : (leafY.get(n) ?? 0)
-  const x = n.depth === 1 ? dir * GX : n.children?.length ? dir * HX : dir * LX
-  pos.set(n, [x, y])
-  return y
-}
-groupList.forEach((g, gi) => layout(g, gi < 3 ? 1 : -1))
-pos.set(rootNode, [0, 0])
-
-/** PCB 走线：水平进 → 45° 切角 → 垂直汇流于 bx → 45° 切角出 → 水平到达 */
-function trace(x1: number, y1: number, x2: number, y2: number, bx: number): string {
-  const dy = y2 - y1
-  if (Math.abs(dy) < 0.5) return `M ${x1} ${y1} H ${x2}`
-  const s = Math.sign(dy)
-  const c = Math.min(CH, Math.abs(dy) / 2)
-  return `M ${x1} ${y1} H ${bx - c} L ${bx} ${y1 + s * c} V ${y2 - s * c} L ${bx + c} ${y2} H ${x2}`
-}
 
 /* 坐标 → 覆盖层百分比定位 */
-const pct = (v: number, total: number) => ((v + total / 2) / total) * 100
+const pctX = (v: number) => ((v + VB_W / 2) / VB_W) * 100
+const pctY = (v: number) => ((v - VB_TOP) / VB_H) * 100
 
-/* 分组胶囊：HTML 覆盖层渲染 */
-const groupNodes = groupList.map((n) => {
-  const [x, y] = pos.get(n)!
-  return {
-    path: n.data.path,
-    gid: n.data.gid,
-    name: n.data.name,
-    icon: n.data.icon ?? 'lucide:circle',
-    color: n.data.color,
-    left: pct(x, VB_W),
-    top: pct(y, VB_H),
-    delay: 0.12 + n.data.gid * 0.09,
-  }
-})
+const rootPos = { left: pctX(0), top: pctY(0) }
 
-/* 技能胶囊（含进阶中间节点）：按最终 y 自上而下排序，入场依次点亮 */
-const skillNodeList = rootNode
-  .descendants()
-  .filter((n) => n.depth >= 2)
-  .sort((a, b) => {
-    const [ax, ay] = pos.get(a)!
-    const [bx, by] = pos.get(b)!
-    return ay - by || ax - bx
-  })
-const delayMap = new Map(skillNodeList.map((n, i) => [n, 0.45 + i * 0.02] as const))
-const skillNodes = skillNodeList.map((n) => {
-  const [x, y] = pos.get(n)!
-  return {
-    path: n.data.path,
-    name: n.data.name,
-    color: n.data.color,
-    hub: Boolean(n.children?.length),
-    left: pct(x, VB_W),
-    top: pct(y, VB_H),
-    delay: delayMap.get(n) ?? 0.5,
-  }
-})
-
-/* 连线：按"电路网"生成——干路与总线只画一次，避免同色走线重合段叠加发亮；
-   转弯处 45° 切角，干路交接处为直角 T 型（PCB 焊盘风格） */
+/* ---- 连线：短直线星型扇出，无交叉 ----
+   主干与本地分配排都按"每条链路一条完整路由"画：根芯片 → 汇流排
+   → 分组、分组 → 分配排 → 技能，各自独立成段并标记所属胶囊。
+   路由间的重合段同色覆盖（stroke 用颜色百分比而非 opacity），
+   静止观感与共用一条汇流排完全一致；悬停时只点亮目标链路本身，
+   汇流排上通向其余分组的部分随之淡出，不再有断头的亮线 */
 interface LinkItem {
   d: string
-  path: string
-  ppath: string
+  paths: string[] // 该段走线连通的胶囊路径：悬停链路命中其一即整段点亮
   color: string
   delay: number
 }
 
 const links: LinkItem[] = []
-function pushLink(d: string, path: string, ppath: string, color: string, delay: number) {
-  links.push({ d, path, ppath, color, delay })
-}
 
-/* 根主干 + 侧总线：横主干从根胶囊引出，垂直总线贯穿该侧各分组的行位；
-   两端以 45° 切角进上/下极端分组，中间分组走直角 T 型（垂直段由总线承担） */
-for (const [start, dir] of [
-  [0, 1],
-  [3, -1],
-] as const) {
-  const side = groupList.slice(start, start + 3)
-  if (!side.length) continue
-  const bx = (dir * GX) / 2
-  const entries = side
-    .map((g) => {
-      const [gx, gy] = pos.get(g)!
-      return { g, gx, gy, c: cham(Math.abs(gy)) }
+for (const s of [-1, 1]) {
+  const gs = groupNodes.filter(g => Math.sign(g.x) === s)
+  /* 根芯片 → 汇流排的水平公共段：该侧任一分组在链路上即点亮 */
+  links.push({ d: `M 0 0 H ${s * TX}`, paths: gs.map(g => g.path), color: 'var(--accent)', delay: 0.05 })
+  for (const g of gs) {
+    const t = Math.sign(g.y)
+    /* 每组一条独立干线：从根芯片高度沿汇流排直引到该组倒角，
+       不再共用一段"无论悬停谁都全程通电"的排线 */
+    links.push({
+      d: `M ${s * TX} 0 V ${g.y - t * CH} L ${s * (TX + CH)} ${g.y} H ${s * COL_IN}`,
+      paths: [g.path],
+      color: 'var(--accent)',
+      delay: g.delay,
     })
-    .sort((a, b) => a.gy - b.gy)
-  const top = entries[0]
-  const bottom = entries[entries.length - 1]
-  const hasSpine = bottom.gy - top.gy > 1
-  /* 总线端点向根行 y=0 收拢，保证与横主干相接 */
-  const spineTop = Math.min(top.gy + top.c, 0)
-  const spineBottom = Math.max(bottom.gy - bottom.c, 0)
-  pushLink(`M 0 0 H ${bx}`, '', '', 'var(--accent)', 0.02)
-  if (hasSpine && spineBottom - spineTop > 1) {
-    pushLink(`M ${bx} ${spineTop} V ${spineBottom}`, '', '', 'var(--accent)', 0.06)
-  }
-  for (const e of entries) {
-    const { g, gx, gy, c } = e
-    const delay = 0.08 + g.data.gid * 0.09
-    if (Math.abs(gy) < 0.5) {
-      pushLink(`M ${bx} ${gy} H ${gx}`, g.data.path, '', g.data.color, delay)
-      continue
-    }
-    const s = Math.sign(gy)
-    if (hasSpine && e !== top && e !== bottom) {
-      pushLink(`M ${bx} ${gy} H ${gx}`, g.data.path, '', g.data.color, delay)
-    } else {
-      const from = hasSpine
-        ? Math.min(Math.max(gy - s * c, spineTop), spineBottom)
-        : 0
-      pushLink(
-        `M ${bx} ${from} V ${gy - s * c} L ${bx + dir * c} ${gy} H ${gx}`,
-        g.data.path,
-        '',
-        g.data.color,
-        delay,
-      )
+    const last = g.nodes[g.nodes.length - 1]
+    if (!last) continue
+    /* 分组芯片 → 本地分配排 → 技能：同样每技能一条完整路由，末端
+       与最后一个技能的衔接做单个 45° 倒角，与主干拐角保持一致 */
+    const chamfer = last.y - g.y >= CH ? CH : 0
+    for (const n of g.nodes) {
+      const c = n === last ? chamfer : 0
+      links.push({
+        d: `M ${g.x} ${g.y} H ${s * LBUS} V ${n.y - c}${c ? ` L ${s * (LBUS + c)} ${n.y}` : ''} H ${n.x}`,
+        paths: [n.path],
+        color: g.color,
+        delay: n.delay,
+      })
     }
   }
-}
-
-/* 分组出线：干路到总线位后，上/下两条 45° 射线扇出，各子项在射线上
-   按行距"剥离"出水平线——斜线方向一致、长短随行距变化，且互不交叉 */
-for (const g of groupList) {
-  const [gx, gy] = pos.get(g)!
-  const dir: 1 | -1 = gx >= 0 ? 1 : -1
-  const bx = (dir * (GX + HX)) / 2
-  const kids = g.children ?? []
-  const stemDelay = 0.12 + g.data.gid * 0.09
-  pushLink(`M ${gx} ${gy} H ${bx}`, g.data.path, '', g.data.color, stemDelay)
-  for (const up of [true, false] as const) {
-    const arr = kids
-      .map((k) => ({ k, kx: pos.get(k)![0], ky: pos.get(k)![1] }))
-      .filter((e) => (up ? e.ky < gy - 0.5 : e.ky > gy + 0.5))
-    if (!arr.length) continue
-    const far = up ? Math.min(...arr.map((e) => e.ky)) : Math.max(...arr.map((e) => e.ky))
-    pushLink(
-      `M ${bx} ${gy} L ${bx + dir * Math.abs(far - gy)} ${far}`,
-      g.data.path,
-      '',
-      g.data.color,
-      stemDelay,
-    )
-    for (const { k, kx, ky } of arr) {
-      pushLink(
-        `M ${bx + dir * Math.abs(ky - gy)} ${ky} H ${kx}`,
-        k.data.path,
-        g.data.path,
-        k.data.color,
-        (delayMap.get(k) ?? 0.5) - 0.03,
-      )
-    }
-  }
-  /* 与分组同行的子项：干路直接延伸 */
-  for (const k of kids) {
-    const [kx, ky] = pos.get(k)!
-    if (Math.abs(ky - gy) < 0.5) {
-      pushLink(
-        `M ${bx} ${ky} H ${kx}`,
-        k.data.path,
-        g.data.path,
-        k.data.color,
-        (delayMap.get(k) ?? 0.5) - 0.03,
-      )
-    }
-  }
-}
-
-/* 进阶链：hub → 子技能（同行，一段水平直线） */
-for (const hub of rootNode.descendants().filter((n) => n.depth === 2 && n.children?.length)) {
-  const [hx, hy] = pos.get(hub)!
-  for (const k of hub.children) {
-    const [kx, ky] = pos.get(k)!
-    pushLink(
-      trace(hx, hy, kx, ky, (hx + kx) / 2),
-      k.data.path,
-      hub.data.path,
-      k.data.color,
-      (delayMap.get(k) ?? 0.5) - 0.03,
-    )
-  }
-}
-
-function skillLabel(skill: SkillItem): string {
-  return typeof skill === 'string' ? skill : skill.name
-}
-
-function skillChildren(skill: SkillItem): string[] | undefined {
-  return typeof skill === 'string' ? undefined : skill.children?.map((c) => skillLabel(c))
 }
 </script>
 
 <template>
   <div class="skills">
-    <!-- 桌面端：电路板思维导图 -->
-    <div v-reveal class="tree" role="img" aria-label="技能树思维导图">
-      <svg class="tree-svg" viewBox="-520 -300 1040 600">
-        <path
-          v-for="(l, i) in links" :key="i"
-          class="link"
-          :class="{ dim: hoveredPath !== null && !isOn(l.path) && !isOn(l.ppath), on: isOn(l.path) }"
-          :d="l.d" pathLength="1" :style="{ '--c': l.color, '--d': `${l.delay}s` }"
-        />
-      </svg>
+    <!-- 全端统一：电路板走线技能树；移动端保持设计宽度，横向滑动查看 -->
+    <div ref="viewport" class="tree-viewport">
+      <div v-reveal class="tree" role="img" aria-label="技能树：电路板走线风格" @pointerleave="hoverOut($event)" @click="boardTap">
+        <svg class="tree-svg" :viewBox="`-610 ${VB_TOP} ${VB_W} ${VB_H}`">
+          <!-- 主干与支线走线 -->
+          <path v-for="(l, i) in links" :key="i" class="link" :class="{ dim: linkDim(l), on: linkOn(l) }" :d="l.d"
+            pathLength="1" :style="{ '--c': l.color, '--d': `${l.delay}s` }" />
 
-      <!-- 根/分组/技能胶囊（HTML 覆盖层） -->
-      <div class="root-pill">
-        <Icon name="lucide:network" size="17" />
-        技能树
-      </div>
-      <div
-        v-for="g in groupNodes" :key="g.gid"
-        class="group-pill"
-        :class="{ dim: hoveredPath !== null && !isOn(g.path) }"
-        :style="{ left: `${g.left}%`, top: `${g.top}%`, '--d': `${g.delay}s`, '--c': g.color }"
-        @mouseenter="hoveredPath = g.path" @mouseleave="hoveredPath = null"
-      >
-        <Icon :name="g.icon" size="15" />
-        {{ g.name }}
-      </div>
-      <div
-        v-for="n in skillNodes" :key="n.path"
-        class="skill-pill" :class="{ hub: n.hub, dim: hoveredPath !== null && !isOn(n.path), on: isOn(n.path) }"
-        :style="{ left: `${n.left}%`, top: `${n.top}%`, '--d': `${n.delay}s`, '--c': n.color }"
-        @mouseenter="hoveredPath = n.path" @mouseleave="hoveredPath = null"
-      >
-        {{ n.name }}
+          <!-- 丝印文字 -->
+          <g class="silk">
+            <text x="-560" y="368" class="silk-text">SKILL-BOARD REV.2026-10 · TAKAMIYA</text>
+            <text x="560" y="368" class="silk-text" text-anchor="end">2-LAYER · FR-4 · RoHS</text>
+          </g>
+        </svg>
+
+        <!-- 根/分组/技能胶囊（HTML 覆盖层） -->
+        <div class="root-pill" :style="{ left: `${rootPos.left}%`, top: `${rootPos.top}%` }">
+          <Icon name="lucide:network" size="19" />
+          技能树
+        </div>
+        <div v-for="g in groupNodes" :key="g.path" class="group-pill"
+          :class="{ dim: hoveredPath !== null && !isOn(g.path) }"
+          :style="{ left: `${pctX(g.x)}%`, top: `${pctY(g.y)}%`, '--d': `${g.delay}s`, '--c': g.color }"
+          @pointerenter="hoverIn(g.path, $event)" @pointerleave="hoverOut($event)" @click="tapSelect(g.path)">
+          <Icon :name="g.icon" size="17" />
+          {{ g.name }}
+        </div>
+        <div v-for="n in skillNodes" :key="n.path" class="skill-pill"
+          :class="{ hub: n.hub, dim: hoveredPath !== null && !isOn(n.path), on: isOn(n.path) }"
+          :style="{ left: `${pctX(n.x)}%`, top: `${pctY(n.y)}%`, '--d': `${n.delay}s`, '--c': n.color }"
+          @pointerenter="hoverIn(n.path, $event)" @pointerleave="hoverOut($event)" @click="tapSelect(n.path)">
+          <span v-if="n.icon" class="pill-icon">
+            <Icon :name="n.icon" size="15" />
+          </span>
+          {{ n.name }}
+        </div>
       </div>
     </div>
-
-    <!-- 移动端：分组标签流 -->
-    <div class="groups">
-      <div v-for="(group, gi) in groups" :key="group.title" v-reveal="{ delay: gi * 90 }" class="group">
-        <h3 class="group-title">
-          <Icon :name="group.icon" size="15" />
-          {{ group.title }}
-        </h3>
-        <ul class="skills-list">
-          <li v-for="(skill, si) in group.skills" :key="skillLabel(skill)" v-reveal="{ delay: gi * 90 + si * 50 }">
-            <TagPill :label="skillLabel(skill)" />
-            <template v-if="skillChildren(skill)">
-              <Icon name="lucide:corner-down-right" size="12" class="sub-arrow" />
-              <TagPill v-for="c in skillChildren(skill)" :key="c" :label="c" class="sub-pill" />
-            </template>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <p class="scroll-hint" aria-hidden="true">← 左右滑动查看完整技能树 →</p>
   </div>
 </template>
 
@@ -343,12 +320,17 @@ function skillChildren(skill: SkillItem): string[] | undefined {
   padding-top: 0.5rem;
 }
 
-/* ---- 径向思维导图 ---- */
+/* ---- 电路板：板框 + 覆铜点阵背景 ---- */
 .tree {
   position: relative;
-  max-width: 58rem;
+  max-width: 71rem;
   margin: 0 auto;
   user-select: none;
+  background:
+    radial-gradient(color-mix(in srgb, var(--muted) 15%, transparent) 1px, transparent 1.4px) center / 26px 26px,
+    var(--bg-soft);
+  border: 1px solid color-mix(in srgb, var(--muted) 22%, transparent);
+  border-radius: 20px;
 }
 
 .tree-svg {
@@ -378,7 +360,22 @@ function skillChildren(skill: SkillItem): string[] | undefined {
   stroke-width: 2.6;
 }
 
-/* ---- 根节点与分组胶囊 ---- */
+/* ---- 丝印文字 ---- */
+.silk {
+  fill: none;
+  stroke: none;
+  pointer-events: none;
+}
+
+.silk-text {
+  fill: color-mix(in srgb, var(--muted) 45%, transparent);
+  stroke: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+/* ---- 根芯片与分组/技能胶囊 ---- */
 .root-pill,
 .group-pill,
 .skill-pill {
@@ -388,32 +385,39 @@ function skillChildren(skill: SkillItem): string[] | undefined {
 }
 
 .root-pill {
-  left: 50%;
-  top: 50%;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.55rem 1.15rem;
   font-family: var(--font-mono);
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #10131f;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  border-radius: 999px;
+  border-radius: 10px;
   box-shadow: 0 0 28px rgba(129, 140, 248, 0.4);
+}
+
+/* 引脚 1 标记：芯片左上角的小圆点 */
+.root-pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(6 7 13 / 0.45);
 }
 
 .group-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.38rem 0.85rem;
-  font-size: 0.95rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text);
-  background: rgba(17, 20, 32, 0.85);
+  background: rgba(17, 20, 32, 0.88);
   border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
-  border-radius: 999px;
+  border-radius: 8px;
   transition:
     opacity 0.25s ease,
     transform 0.3s var(--ease-bouncy);
@@ -431,20 +435,30 @@ function skillChildren(skill: SkillItem): string[] | undefined {
   opacity: 0.3;
 }
 
-/* ---- 技能胶囊：带边框框住文字，进阶中间节点边框更亮 ---- */
+/* ---- 技能芯片：品牌图标 + 文字，进阶中间节点边框更亮 ---- */
 .skill-pill {
-  padding: 0.16rem 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.14rem 0.65rem 0.14rem 0.52rem;
   font-family: var(--font-mono);
-  font-size: 0.84rem;
+  font-size: 0.95rem;
   color: var(--text);
-  background: rgba(15, 18, 30, 0.92);
+  background: rgba(11, 14, 23, 0.94);
   border: 1px solid color-mix(in srgb, var(--c) 38%, transparent);
-  border-radius: 8px;
+  border-radius: 5px;
   transition:
     opacity 0.25s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     transform 0.3s var(--ease-bouncy);
+}
+
+.pill-icon {
+  display: inline-flex;
+  color: var(--c);
+  /* 同色微光：让品牌标在暗底上有一点点"通电"感 */
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 55%, transparent));
 }
 
 .skill-pill.hub {
@@ -461,7 +475,7 @@ function skillChildren(skill: SkillItem): string[] | undefined {
   opacity: 0.25;
 }
 
-/* ---- 入场：连线生长 + 节点依次点亮 ---- */
+/* ---- 入场：走线生长 + 芯片依次点亮 ---- */
 .reveal--visible .link {
   animation: link-draw 0.8s ease var(--d) backwards;
 }
@@ -478,71 +492,54 @@ function skillChildren(skill: SkillItem): string[] | undefined {
   animation: fade-in 0.5s ease var(--d, 0s) backwards;
 }
 
+.reveal--visible .silk {
+  animation: fade-in 0.8s ease 1.1s backwards;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
   }
 }
 
-/* ---- 分组标签流（移动端） ---- */
-.groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1.6rem;
+/* ---- 横向滚动容器：桌面端不产生滚动条，移动端容纳 1220px 设计宽度 ---- */
+.tree-viewport {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
 }
 
-.group-title {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.6rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.group-title svg {
-  color: var(--accent);
-}
-
-.skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.skills-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.sub-arrow {
+.scroll-hint {
+  display: none;
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
   color: var(--muted);
-}
-
-.sub-pill {
-  opacity: 0.85;
+  text-align: center;
 }
 
 /* 响应式切换须放在 display 声明之后，否则会被同优先级规则覆盖 */
-@media (min-width: 900px) {
-  .groups {
-    display: none;
-  }
-}
-
 @media (max-width: 899px) {
+
+  /* 胶囊是固定字号的 HTML 覆盖层，窄屏下按 SVG 等比缩放会互相重叠，
+     因此固定为布局设计宽度，靠横向滑动查看完整树 */
   .tree {
-    display: none;
+    width: 1220px;
+    max-width: none;
+  }
+
+  .scroll-hint {
+    display: block;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .reveal--visible .link,
   .reveal--visible .skill-pill,
   .reveal--visible .group-pill,
-  .reveal--visible .root-pill {
+  .reveal--visible .root-pill,
+  .reveal--visible .silk {
     animation: none;
   }
 }

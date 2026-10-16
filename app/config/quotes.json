@@ -29,5 +29,26 @@
     "translation": "无穷！再也没有其他的问题如此深刻地打动过人类的心灵。",
     "author": "David Hilbert",
     "authorTranslation": "大卫·希尔伯特"
+  },
+  {
+    "text": "A new scientific truth does not triumph by convincing its opponents and making them see the light, but rather because its opponents eventually die, and a new generation grows up that is familiar with it.",
+    "translation": "一项新的科学真理并不是靠说服反对者、让他们见到光明而取胜，而是因为反对者终将死去，而熟悉它的新一代成长了起来。",
+    "author": "Max Planck",
+    "authorTranslation": "马克斯·普朗克",
+    "source": "《科学自传》·1948"
+  },
+  {
+    "text": "It is by logic that we prove, but by intuition that we discover.",
+    "translation": "证明靠的是逻辑，而发现靠的是直觉。",
+    "author": "Henri Poincaré",
+    "authorTranslation": "亨利·庞加莱",
+    "source": "《科学与方法》·1908"
+  },
+  {
+    "text": "We can only see a short distance ahead, but we can see plenty there that needs to be done.",
+    "translation": "我们只能看清前方不远的地方，但就在那里，已有足够多的事等着我们去做。",
+    "author": "Alan Turing",
+    "authorTranslation": "艾伦·图灵",
+    "source": "《计算机器与智能》·1950"
   }
 ]

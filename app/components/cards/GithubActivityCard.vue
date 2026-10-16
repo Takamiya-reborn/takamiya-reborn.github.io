@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { GithubDay } from '~/composables/useGithubActivity'
+import type { GithubCommit, GithubDay, GithubLanguage } from '~/composables/useGithubActivity'
 
 defineProps<{ githubUser?: string }>()
 
-const { days, total } = useGithubActivity()
+const { days, total, languages, commits, generatedAt } = useGithubActivity()
 
 // 贡献量分档 → 色阶档位（0-4，与主题 accent 同色系）
 function level(count: number): number {
@@ -35,11 +35,61 @@ function dayLabel(day: GithubDay): string {
   const [, m, d] = day.date.split('-')
   return `${Number(m)}月${Number(d)}日 · ${day.count} 次贡献`
 }
+
+// ---------- 语言构成 ----------
+// 语言 → 色块颜色（GitHub Linguist 色板，深色背景下微调过几处过暗的）
+const langColors: Record<string, string> = {
+  JavaScript: '#f1e05a',
+  TypeScript: '#3178c6',
+  Vue: '#41b883',
+  Python: '#3572a5',
+  Go: '#00add8',
+  Rust: '#dea584',
+  'C++': '#f34b7d',
+  C: '#8b8b8b',
+  'C#': '#3f9142',
+  Java: '#b07219',
+  HTML: '#e34c26',
+  CSS: '#6699cc',
+  Shell: '#89e051',
+  PowerShell: '#5391fe',
+  Lua: '#51a0cf',
+  Kotlin: '#a97bff',
+  Swift: '#f05138',
+  Dart: '#00b4ab',
+  PHP: '#8993be',
+  'Jupyter Notebook': '#da5b0b',
+}
+
+// 未收录的语言回退到主题色池，按名次轮换
+const fallbackColors = ['#818cf8', '#22d3ee', '#c084fc', '#34d399', '#fbbf24', '#fb7185']
+const langColor = (lang: GithubLanguage, index: number) =>
+  langColors[lang.name] ?? fallbackColors[index % fallbackColors.length]!
+
+// ---------- 最新提交 ----------
+// 相对时间：构建时（SSG）用 generatedAt 做锚点保证水合一致，挂载后再换真实时间
+const now = ref<number | null>(null)
+onMounted(() => (now.value = Date.now()))
+
+function relTime(date: string): string {
+  const diff = ((now.value ?? Date.parse(generatedAt)) - Date.parse(date)) / 1000
+  if (diff < 60) return '刚刚'
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`
+  if (diff < 86400 * 2) return '昨天'
+  if (diff < 86400 * 30) return `${Math.floor(diff / 86400)} 天前`
+  const d = new Date(date)
+  return `${d.getMonth() + 1}月${d.getDate()}日`
+}
+
+// +/− 行数文案：详情接口失败时 additions 为 null，只显示时间
+const diffLabel = (c: GithubCommit) =>
+  c.additions != null ? `+${c.additions}` : ''
 </script>
 
 <template>
-  <!-- 贡献数据为空时整卡隐藏，不留空壳 -->
-  <BaseCard v-if="columns.length" class="github-activity" :glass="false">
+  <!-- 数据全空时整卡隐藏，不留空壳 -->
+  <BaseCard v-if="columns.length || languages.length || commits.length" class="github-activity" :glass="false">
     <div class="gh-head">
       <span class="gh-label">
         <Icon name="lucide:github" size="16" />
@@ -74,6 +124,45 @@ function dayLabel(day: GithubDay): string {
         @{{ githubUser }}
         <Icon name="lucide:arrow-up-right" size="13" />
       </a>
+    </div>
+
+    <!-- 语言构成 -->
+    <div v-if="languages.length" class="gh-section">
+      <p class="gh-section-title">语言构成</p>
+      <div class="gh-langbar" role="img" aria-label="仓库语言构成占比条">
+        <span v-for="(lang, i) in languages" :key="lang.name" class="gh-langseg"
+          :style="{ width: `${lang.pct}%`, background: langColor(lang, i) }"
+          :title="`${lang.name} ${lang.pct}%`" />
+      </div>
+      <ul class="gh-langs">
+        <li v-for="(lang, i) in languages" :key="lang.name">
+          <span class="gh-dot" :style="{ background: langColor(lang, i) }" aria-hidden="true" />
+          <span class="gh-lang-name">{{ lang.name }}</span>
+          <span class="gh-lang-pct">{{ lang.pct }}%</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 最新提交 -->
+    <div v-if="commits.length" class="gh-section">
+      <p class="gh-section-title">最新提交</p>
+      <ul class="gh-commits">
+        <li v-for="c in commits" :key="c.sha">
+          <a class="gh-commit" :href="`${c.repoUrl}/commit/${c.sha}`" target="_blank" rel="noopener">
+            <span class="gh-commit-row">
+              <span class="gh-commit-msg">{{ c.message }}</span>
+              <span v-if="diffLabel(c)" class="gh-diff">
+                <span class="gh-add">+{{ c.additions }}</span>
+                <span class="gh-del">−{{ c.deletions ?? 0 }}</span>
+              </span>
+            </span>
+            <span class="gh-commit-meta">
+              <span class="gh-commit-repo">{{ c.repo }}</span>
+              · {{ relTime(c.date) }}
+            </span>
+          </a>
+        </li>
+      </ul>
     </div>
   </BaseCard>
 </template>
@@ -216,5 +305,134 @@ function dayLabel(day: GithubDay): string {
 
 .gh-link:hover {
   color: var(--accent-2);
+}
+
+/* ---- 下方扩展区块（语言构成 / 最新提交）：细分隔线分区 ---- */
+.gh-section {
+  margin-top: 0.35rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border);
+}
+
+.gh-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+/* 语言占比条：分段紧贴铺满，两端随容器圆角 */
+.gh-langbar {
+  display: flex;
+  height: 8px;
+  margin-top: 0.7rem;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.gh-langbar .gh-langseg {
+  transition: filter 0.2s;
+}
+
+.gh-langbar:hover .gh-langseg {
+  filter: brightness(1.15);
+}
+
+.gh-langs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 1.2rem;
+  margin-top: 0.7rem;
+}
+
+.gh-langs li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+}
+
+.gh-dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.gh-lang-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gh-lang-pct {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* 最新提交列表 */
+.gh-commits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.gh-commit {
+  display: block;
+}
+
+/* 首行：提交信息 + 右侧增删行数 */
+.gh-commit-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.gh-commit-msg {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.84rem;
+  color: var(--text);
+  transition: color 0.2s;
+}
+
+.gh-diff {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/* GitHub 风格的 +绿 −红 */
+.gh-add {
+  color: #3fb950;
+}
+
+.gh-del {
+  margin-left: 0.4rem;
+  color: #f85149;
+}
+
+.gh-commit:hover .gh-commit-msg {
+  color: var(--accent-2);
+}
+
+.gh-commit-meta {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.gh-commit-repo {
+  font-family: var(--font-mono);
 }
 </style>

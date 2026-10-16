@@ -25,8 +25,8 @@ const avatarSrc = computed(() =>
 )
 
 // 鼠标在头像上方或附近时，头像朝鼠标方向的 3D 视角跟随
-const MAX_TILT = 22 // 最大倾斜角度（deg）
-const RANGE_FACTOR = 1.8 // 生效半径 = 头像尺寸 × 该系数，超出即回正
+const MAX_TILT = 32 // 最大倾斜角度（deg）
+const RANGE_FACTOR = 2.4 // 生效半径 = 头像尺寸 × 该系数，超出即回正
 const tiltX = ref(0)
 const tiltY = ref(0)
 const zoneEl = ref<HTMLElement | null>(null)

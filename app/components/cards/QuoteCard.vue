@@ -9,6 +9,8 @@ const current = ref<Quote>()
 const drawCount = ref(0)
 // 浮现期间锁死按钮，整句浮现完再允许下一次抽取
 const rolling = ref(false)
+// 复制反馈：图标切成对勾、提示换成已复制，1.5s 后复原
+const copied = ref(false)
 
 // 浮现总时长：行间错开 0.18s，每行 0.6s，与句子长短无关
 const REVEAL_MS = 1000
@@ -49,6 +51,26 @@ const searchUrl = computed(() => {
   const query = author ? `${mainOf(quote)} ${author}` : mainOf(quote)
   return `https://www.bing.com/search?q=${encodeURIComponent(query)}`
 })
+
+// 连同译文和署名的完整文案，复制出去即可直接分享
+const copyText = computed(() => {
+  const quote = current.value
+  if (!quote) return ''
+  return [mainOf(quote), quote.text ? quote.translation : '', fromOf(quote)]
+    .filter(Boolean)
+    .join('\n')
+})
+
+async function copy() {
+  if (!current.value || copied.value) return
+  try {
+    await navigator.clipboard.writeText(copyText.value)
+    copied.value = true
+    setTimeout(() => (copied.value = false), 1500)
+  } catch {
+    // 剪贴板不可用（非安全上下文等）：静默失败，不给成功反馈
+  }
+}
 
 // 按真实排版量出所有 quote 的最大高度，锁住卡片高度
 function measure() {
@@ -121,6 +143,12 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
             <Icon name="lucide:search" size="24" />
           </a>
           <span class="quote-hint">没听说过？</span>
+        </div>
+        <div v-if="current" class="quote-action">
+          <button class="quote-roll" type="button" title="复制这句话" @click="copy">
+            <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" size="24" />
+          </button>
+          <span class="quote-hint">{{ copied ? '已复制' : '好句子，带走' }}</span>
         </div>
       </div>
     </div>
@@ -218,6 +246,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
     opacity: 0;
     transform: translateX(-14px);
   }
+
   to {
     opacity: 1;
     transform: none;

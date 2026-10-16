@@ -1,6 +1,8 @@
+// 仓库注入数据的解析在 utils/repos.ts（?raw 静态导入，打包时读入，无需运行时请求）
+import { mapRepos, reposData } from "../utils/repos";
 import type {
   GameEntry,
-  Project,
+  MediaSkill,
   SectionMeta,
   SkillGroup,
   SocialLink,
@@ -8,6 +10,9 @@ import type {
 } from "./types";
 
 // 站点内容配置：页面数据的唯一来源，日常更新只改这里
+
+// GitHub 用户名：基本信息与项目回退数据共用
+const githubUser = "Takamiya-reborn";
 
 // ---------- 内容数据 ----------
 
@@ -29,7 +34,7 @@ export const site = {
     // 一句话签名
     bio: "专注于全栈与 AI，构建跑得稳、用得顺的系统。",
     // GitHub 用户名，项目区据此动态拉取仓库
-    githubUser: "Takamiya-reborn",
+    githubUser,
   },
 
   // 社交链接
@@ -102,10 +107,18 @@ export const site = {
     "随时欢迎有意义的技术交流与合作项目。",
   ] as string[],
 
+  // 媒体能力：关于我左卡底部的图标徽章行
+  media: [
+    { name: "Photoshop", icon: "/icon/ps.png", desc: "图像处理" },
+    { name: "Premiere Pro", icon: "/icon/pr.png", desc: "视频剪辑" },
+    { name: "Illustrator", icon: "/icon/ai.png", desc: "矢量插画" },
+    { name: "After Effects", icon: "/icon/ae.png", desc: "动效合成" },
+  ] satisfies MediaSkill[],
+
   // 关于区右列、GitHub 卡片下方的补充段落（与左侧关于我同级的纯文本）
   aboutSide: [
-    "代码之外，游戏之内。这个站点本身就是一个存档点：记录我正在做什么、在玩什么、走到了哪里。",
-    "如果某个项目或想法让你感兴趣，欢迎随时来信。",
+    "保持对未知的探索，对事物的创造，兴趣是第一老师。",
+    "",
   ] as string[],
 
   // 技能分组
@@ -125,9 +138,8 @@ export const site = {
       icon: "lucide:layout",
       skills: [
         "HTML",
-        "CSS",
+        { name: "CSS", children: ["TailwindCSS"] },
         { name: "Vue", children: ["Nuxt"] },
-        "TailwindCSS",
         "Anime.js",
         "Konva",
       ],
@@ -138,8 +150,8 @@ export const site = {
       skills: [
         "Django",
         "Flask",
-        "PyQt",
         "Streamlit",
+        "PyQt",
         { name: "Node.js", children: ["Electron"] },
         ".NET",
       ],
@@ -147,12 +159,17 @@ export const site = {
     {
       title: "AI 与数据",
       icon: "lucide:brain-circuit",
-      skills: ["PyTorch", "Pandas", "Polars", "Ultralytics", "PydanticAI"],
+      skills: [
+        { name: "PyTorch", children: ["Ultralytics"] }, // YOLO 系基于 PyTorch
+        { name: "Pandas", children: ["Polars"] }, // Polars 是 Pandas 的现代化替代
+        "PydanticAI",
+      ],
     },
     {
       title: "工具",
       icon: "lucide:wrench",
-      skills: ["Docker", "Vite", "npm", "uv"],
+      // 路径：JS 工具链（npm → Vite）→ Python 工具链（uv）→ 容器化部署（Docker）
+      skills: [{ name: "npm", children: ["Vite"] }, "uv", "Docker"],
     },
     {
       title: "游戏与 3D",
@@ -161,24 +178,9 @@ export const site = {
     },
   ] satisfies SkillGroup[],
 
-  // 项目（GitHub API 失败时的回退数据）
-  projects: [
-    {
-      title: "Project Alpha",
-      description: "一个示例项目，替换成你自己的项目介绍即可。",
-      tags: ["Nuxt", "TypeScript"],
-      repo: "https://github.com/Takamiya-reborn",
-      icon: "lucide:rocket",
-    },
-    {
-      title: "Project Beta",
-      description: "第二个示例项目，支持配置演示链接与仓库链接。",
-      tags: ["Go", "PostgreSQL"],
-      link: "https://example.com",
-      repo: "https://github.com/Takamiya-reborn",
-      icon: "lucide:flask-conical",
-    },
-  ] satisfies Project[],
+  // 项目（GitHub API 失败时的回退数据）：直接由定时注入的 repos.json 映射而来，
+  // 映射逻辑在 utils/repos.ts，与项目区组件共用，无需单独维护模板
+  projects: mapRepos(reposData.repos ?? [], githubUser, 6),
 
   // 时间线（倒序）
   timeline: [
@@ -197,11 +199,11 @@ export type Site = typeof site;
 // 首条 Intro 指向页面顶部的 #top（英雄区），不渲染章节标题，只供目录与回顶跳转
 export const sections = [
   { id: "top", num: "", title: "Intro" },
-  { id: "quote", num: "00", title: "Quote", subtitle: "随机抽取 · QUOTE" },
-  { id: "about", num: "01", title: "关于我", subtitle: "玩家档案 · PLAYER 1" },
-  { id: "skills", num: "02", title: "技能", subtitle: "已点亮的技能树" },
-  { id: "projects", num: "03", title: "项目", subtitle: "主线成就展示" },
-  { id: "timeline", num: "04", title: "经历", subtitle: "存档记录" },
+  { id: "quote", num: "00", title: "Quote", subtitle: "Random · QUOTE" },
+  { id: "about", num: "01", title: "关于我", subtitle: "SaveData.rpgsave" },
+  { id: "skills", num: "02", title: "技能", subtitle: "板载技能" },
+  { id: "projects", num: "03", title: "活跃仓库", subtitle: "自己捣鼓" },
+  { id: "timeline", num: "04", title: "经历", subtitle: "Checkpoint" },
 ] satisfies SectionMeta[];
 
 // 彩蛋与提示文案

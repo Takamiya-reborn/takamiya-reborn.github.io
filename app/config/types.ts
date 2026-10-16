@@ -23,6 +23,15 @@ export interface SkillGroup {
   skills: SkillItem[];
 }
 
+/** 媒体能力徽章：关于我卡片底部的图标行 */
+export interface MediaSkill {
+  name: string;
+  /** public 下的图标路径，如 /icon/ps.png */
+  icon: string;
+  /** 一句话说明（可选） */
+  desc?: string;
+}
+
 export interface Project {
   title: string;
   /** 简介缺失时整个段落不渲染 */
@@ -77,7 +86,7 @@ export interface Quote {
   author?: string;
   /** 作者译名（必填） */
   authorTranslation: string;
-  /** 出处（可选，如书名 / 游戏） */
+  /** 出处（可选，如书名 / 游戏）；保持简短，统一用《中文名》·年份，英文原名靠搜索按钮查 */
   source?: string;
 }
 
