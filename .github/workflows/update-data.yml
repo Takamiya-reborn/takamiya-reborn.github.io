@@ -4,8 +4,11 @@ name: Update data
 # 注意 GITHUB_TOKEN 的 push 不会触发 deploy.yml，末尾需显式触发重新部署
 on:
   schedule:
-    # UTC 16:37 = 北京时间 0:37，凌晨刷新不占用白天的配额
+    # 一天 3 次（UTC 16:37/00:37/10:37 = 北京 0:37/8:37/18:37），
+    # GitHub schedule 高峰期可能延迟数小时甚至跳过，多次触发缩小最坏间隔
     - cron: "37 16 * * *"
+    - cron: "37 0 * * *"
+    - cron: "37 10 * * *"
   workflow_dispatch:
 
 permissions:
@@ -44,16 +47,24 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Commit if changed
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app/config/steam.json app/config/github.json app/config/repos.json public/avatar.png
-          git diff --cached --quiet || git commit -m "chore: refresh site data"
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore: refresh site data"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
           git pull --rebase origin main
           git push
 
       - name: Trigger deploy
-        # Pages 提供的是构建时快照，新数据文件必须重新部署才会生效
+        if: steps.commit.outputs.changed == 'true'
+        # Pages 提供的是构建时快照，新数据文件必须重新部署才会生效；
+        # 数据没变时跳过，避免一天多次刷新带来的无效部署
         run: gh workflow run "Deploy" --ref main
         env:
           GH_TOKEN: ${{ github.token }}
