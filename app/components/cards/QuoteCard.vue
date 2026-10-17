@@ -4,7 +4,9 @@ import type { Quote } from '~/config/types'
 // quote 抽取器：quote 卡片在左，抽取按钮和提示独立在右侧
 const { quotes, draw } = useQuotes()
 
-const current = ref<Quote>()
+// 初始句子：直接取第一条，SSG/SSR 阶段就渲染出真 quote，慢网络下
+// 不会先闪"还没有收录"占位文案；随机性留给骰子，挂载时不再额外抽取
+const current = ref<Quote | undefined>(quotes[0])
 // 抽取次数：作为 blockquote 的 key 驱动换句，key 变化重新挂载就会重放浮现动画
 const drawCount = ref(0)
 // 浮现期间锁死按钮，整句浮现完再允许下一次抽取
@@ -91,8 +93,6 @@ function next() {
 }
 
 onMounted(() => {
-  current.value = draw()
-  drawCount.value = 1
   measure()
   // 字体加载、窗口变宽窄都会改变换行，跟着重量一次
   document.fonts?.ready.then(measure)
