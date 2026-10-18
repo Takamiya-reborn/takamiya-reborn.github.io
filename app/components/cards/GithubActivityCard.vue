@@ -98,7 +98,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
         <Icon name="lucide:github" size="16" />
         GitHub
       </span>
-      <span class="gh-window">近 30 天</span>
+      <span class="gh-window">近 42 天</span>
     </div>
 
     <div class="gh-main">
@@ -108,7 +108,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
           <span class="gh-unit">次贡献</span>
         </p>
 
-        <div class="gh-grid" role="img" aria-label="GitHub 近 30 天贡献热力图">
+        <div class="gh-grid" role="img" aria-label="GitHub 近 42 天贡献热力图">
           <div v-for="(col, ci) in columns" :key="ci" class="gh-col">
             <span v-for="(day, di) in col" :key="di" class="gh-cell" :class="`lv-${day ? level(day.count) : 0}`"
               :title="day ? dayLabel(day) : undefined" />
@@ -166,7 +166,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
               <span class="gh-commit-repo">{{ p.repo }}#{{ p.number }}</span>
               ·
               <span class="gh-pr-state" :class="`is-${p.state.toLowerCase()}`">{{ stateLabels[p.state] ?? p.state
-              }}</span>
+                }}</span>
               · {{ relTime(p.date) }}
             </span>
           </a>

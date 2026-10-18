@@ -6,8 +6,8 @@
 
 import { readFile, writeFile } from 'node:fs/promises'
 
-// 贡献图展示最近 30 天，起点向左对齐到周日，前端可直接按整周分列渲染
-const WINDOW_DAYS = 30
+// 贡献图展示最近 42 天（6 周），起点向左对齐到周日，前端可直接按整周分列渲染
+const WINDOW_DAYS = 42
 // 语言条保留前 N 名语言，避免碎片语言挤成一像素
 const TOP_LANGUAGES = 5
 // 最新 PR 取最近创建的前 N 个
@@ -76,9 +76,10 @@ const allDays = payload.data.user.contributionsCollection.contributionCalendar.w
   .map(d => ({ date: d.date, count: d.contributionCount }))
   .sort((a, b) => a.date.localeCompare(b.date))
 
-// 截取最近 30 天，并把起点回退到周日凑成整周（最多 35 格）
+// 截取最近 42 天，并把起点回退到周日凑成整周（最多 7 列）
 const start = new Date(`${allDays.at(-1).date}T00:00:00Z`)
-start.setUTCDate(start.getUTCDate() - (WINDOW_DAYS - 1) - start.getUTCDay())
+start.setUTCDate(start.getUTCDate() - (WINDOW_DAYS - 1))
+start.setUTCDate(start.getUTCDate() - start.getUTCDay())
 const from = start.toISOString().slice(0, 10)
 const days = allDays.filter(d => d.date >= from)
 
