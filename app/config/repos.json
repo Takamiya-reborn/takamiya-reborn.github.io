@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T14:08:41.647Z",
+  "generatedAt": "2026-10-18T18:51:32.984Z",
   "user": "Takamiya-reborn",
   "repos": [
     {
@@ -9,7 +9,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-18T06:11:16Z",
+      "pushed_at": "2026-10-18T14:08:45Z",
       "language": "Vue",
       "topics": []
     },
@@ -44,7 +44,10 @@
       "archived": false,
       "pushed_at": "2026-10-15T08:42:27Z",
       "language": "JavaScript",
-      "topics": []
+      "topics": [
+        "konva",
+        "outerwilds"
+      ]
     },
     {
       "name": "L2Dviewer",
@@ -66,7 +69,10 @@
       "archived": false,
       "pushed_at": "2026-10-13T20:51:25Z",
       "language": "Python",
-      "topics": []
+      "topics": [
+        "agent",
+        "arxiv"
+      ]
     },
     {
       "name": "Hello-manim",
