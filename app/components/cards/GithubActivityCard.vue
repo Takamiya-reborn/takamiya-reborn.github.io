@@ -14,12 +14,11 @@ function level(count: number): number {
   return 4
 }
 
-// 按周分列：开头补空位使第一列对齐到周日，末列短周在下方补空
+// 按顺序每 7 天一列，不按周日对齐；末列不足 7 天时在下方补空
 const columns = computed(() => {
   const cols: (GithubDay | null)[][] = []
   let current: (GithubDay | null)[] = []
-  days.forEach((day, i) => {
-    if (i === 0) current = Array.from({ length: new Date(`${day.date}T00:00:00Z`).getUTCDay() }, () => null)
+  days.forEach((day) => {
     current.push(day)
     if (current.length === 7) {
       cols.push(current)
