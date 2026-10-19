@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-10-19T05:09:14.515Z",
+  "generatedAt": "2026-10-19T17:08:48.168Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "L2Dviewer",
+      "description": "碧蓝航线(Azur Lane)皮肤查看器",
+      "html_url": "https://github.com/Takamiya-reborn/L2Dviewer",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-19T11:58:05Z",
+      "language": "JavaScript",
+      "topics": []
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,7 +20,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-18T18:51:34Z",
+      "pushed_at": "2026-10-19T09:04:40Z",
       "language": "Vue",
       "topics": []
     },
@@ -20,7 +31,7 @@
       "homepage": "",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-17T17:21:04Z",
+      "pushed_at": "2026-10-19T08:42:53Z",
       "language": "JavaScript",
       "topics": []
     },
@@ -48,17 +59,6 @@
         "konva",
         "outerwilds"
       ]
-    },
-    {
-      "name": "L2Dviewer",
-      "description": "碧蓝航线(Azur Lane)皮肤查看器",
-      "html_url": "https://github.com/Takamiya-reborn/L2Dviewer",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-14T18:48:18Z",
-      "language": "JavaScript",
-      "topics": []
     },
     {
       "name": "DrPaper",
