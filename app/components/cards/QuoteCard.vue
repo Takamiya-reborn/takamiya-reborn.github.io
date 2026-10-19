@@ -214,6 +214,8 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   line-height: 1.75;
   color: var(--text);
   min-height: 1em;
+  /* 保留 quote 文案里的手动换行（如诗句按联断行），自然换行照旧由浏览器处理 */
+  white-space: pre-line;
 }
 
 /* 补充译文：跟在主句下面，弱化处理 */

@@ -80,7 +80,7 @@ export interface GameEntry {
 export interface Quote {
   /** 译文（必填）；中文原句直接填这里，作为主句展示 */
   translation: string;
-  /** 原文（可选）；有值时作为主句，translation 退居下方补充 */
+  /** 原文（可选）；有值时作为主句，translation 退居下方补充；\n 表示手动换行（如诗句按联断行） */
   text?: string;
   /** 作者原名（可选）；有值时署名以原名为主，译名附在英文括号里 */
   author?: string;
