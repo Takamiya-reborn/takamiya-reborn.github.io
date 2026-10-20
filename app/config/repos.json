@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-10-19T21:13:07.597Z",
+  "generatedAt": "2026-10-20T05:10:11.620Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-19T21:13:08Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "L2Dviewer",
       "description": "碧蓝航线(Azur Lane)皮肤查看器",
@@ -11,17 +22,6 @@
       "archived": false,
       "pushed_at": "2026-10-19T20:50:56Z",
       "language": "JavaScript",
-      "topics": []
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-19T17:08:49Z",
-      "language": "Vue",
       "topics": []
     },
     {
