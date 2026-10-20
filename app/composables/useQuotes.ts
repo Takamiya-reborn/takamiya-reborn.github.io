@@ -7,7 +7,7 @@ export function useQuotes() {
   // JSON 解析失败时按空列表处理，卡片展示占位文案而不是白屏
   let quotes: Quote[] = []
   try {
-    quotes = (JSON.parse(quotesRaw) as Quote[]).filter((q) => q.translation)
+    quotes = (JSON.parse(quotesRaw) as Quote[]).filter((q) => q.translation || q.text)
   } catch {
     // quotes.json 语法错误：回退到空列表
   }

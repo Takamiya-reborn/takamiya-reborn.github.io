@@ -78,14 +78,14 @@ export interface GameEntry {
 
 // quote 条目：手动维护在 quotes.json，QuoteCard 随机抽取展示
 export interface Quote {
-  /** 译文（必填）；中文原句直接填这里，作为主句展示 */
-  translation: string;
+  /** 译文；中文原句直接填这里作为主句，纯中文诗词条目可省略（text 即主句） */
+  translation?: string;
   /** 原文（可选）；有值时作为主句，translation 退居下方补充；\n 表示手动换行（如诗句按联断行） */
   text?: string;
   /** 作者原名（可选）；有值时署名以原名为主，译名附在英文括号里 */
   author?: string;
-  /** 作者译名（必填） */
-  authorTranslation: string;
+  /** 作者译名；有 author 时署名以原名为主，可省略 */
+  authorTranslation?: string;
   /** 出处（可选，如书名 / 游戏）；保持简短，统一用《中文名》·年份，英文原名靠搜索按钮查 */
   source?: string;
 }
