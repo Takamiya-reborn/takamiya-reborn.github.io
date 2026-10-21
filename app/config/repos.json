@@ -1,7 +1,21 @@
 {
-  "generatedAt": "2026-10-20T05:10:11.620Z",
+  "generatedAt": "2026-10-21T15:34:46.463Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "DrPaper",
+      "description": "CS论文写作 Agent",
+      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-21T13:12:44Z",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "arxiv"
+      ]
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,7 +23,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-19T21:13:08Z",
+      "pushed_at": "2026-10-21T05:11:47Z",
       "language": "Vue",
       "topics": []
     },
@@ -20,9 +34,12 @@
       "homepage": "",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-19T20:50:56Z",
+      "pushed_at": "2026-10-20T14:01:19Z",
       "language": "JavaScript",
-      "topics": []
+      "topics": [
+        "cubism",
+        "l2d"
+      ]
     },
     {
       "name": "Wolffia",
@@ -33,18 +50,25 @@
       "archived": false,
       "pushed_at": "2026-10-19T08:42:53Z",
       "language": "JavaScript",
-      "topics": []
+      "topics": [
+        "vanilla",
+        "webview"
+      ]
     },
     {
       "name": "ebpf-demo",
-      "description": "基于 [libbpf-bootstrap](https://github.com/libbpf/libbpf-bootstrap) 的 eBPF 学习与性能观测项目。仓库包含上游示例、面向 CPU/磁盘/文件/内存/网络的自定义 eBPF 工具，以及一个可选的 Web 控制台和 Prometheus 监控环境。",
+      "description": "基于libbpf-bootstrap的 eBPF 学习与性能观测项目。仓库包含上游示例、面向 CPU/磁盘/文件/内存/网络的自定义 eBPF 工具，以及一个Python的 Web 控制台和 Prometheus 可视化监控环境。",
       "html_url": "https://github.com/Takamiya-reborn/ebpf-demo",
-      "homepage": null,
+      "homepage": "",
       "fork": false,
       "archived": false,
       "pushed_at": "2026-10-16T19:50:50Z",
       "language": "C",
-      "topics": []
+      "topics": [
+        "ebpf",
+        "fastapi",
+        "prometheus"
+      ]
     },
     {
       "name": "OuterWildsShipLog",
@@ -61,20 +85,6 @@
       ]
     },
     {
-      "name": "DrPaper",
-      "description": "CS论文写作 Agent",
-      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-13T20:51:25Z",
-      "language": "Python",
-      "topics": [
-        "agent",
-        "arxiv"
-      ]
-    },
-    {
       "name": "Hello-manim",
       "description": "使用manim构造数学世界",
       "html_url": "https://github.com/Takamiya-reborn/Hello-manim",
@@ -83,7 +93,12 @@
       "archived": false,
       "pushed_at": "2026-10-11T13:19:31Z",
       "language": "Python",
-      "topics": []
+      "topics": [
+        "calculus",
+        "linalg",
+        "manim",
+        "math"
+      ]
     },
     {
       "name": "Auto-Chaldea",
@@ -94,18 +109,25 @@
       "archived": false,
       "pushed_at": "2026-10-09T19:27:49Z",
       "language": "Python",
-      "topics": []
+      "topics": [
+        "autotask",
+        "game-scripts",
+        "opencv"
+      ]
     },
     {
       "name": "Hello-LoRA",
       "description": null,
       "html_url": "https://github.com/Takamiya-reborn/Hello-LoRA",
-      "homepage": null,
+      "homepage": "",
       "fork": false,
       "archived": false,
       "pushed_at": "2026-10-08T15:42:15Z",
       "language": "Python",
-      "topics": []
+      "topics": [
+        "lora-training",
+        "sd-scripts"
+      ]
     },
     {
       "name": "Offibot",
@@ -133,12 +155,15 @@
       "name": "Hello-YOLO",
       "description": null,
       "html_url": "https://github.com/Takamiya-reborn/Hello-YOLO",
-      "homepage": null,
+      "homepage": "",
       "fork": false,
       "archived": false,
       "pushed_at": "2026-09-24T16:51:09Z",
       "language": "Python",
-      "topics": []
+      "topics": [
+        "training",
+        "yolo"
+      ]
     },
     {
       "name": "Uxplorer",
@@ -149,7 +174,10 @@
       "archived": false,
       "pushed_at": "2026-09-22T15:22:40Z",
       "language": "Python",
-      "topics": []
+      "topics": [
+        "file-management",
+        "windows"
+      ]
     }
   ]
 }
