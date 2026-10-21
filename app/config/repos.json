@@ -1,7 +1,21 @@
 {
-  "generatedAt": "2026-10-21T05:11:46.053Z",
+  "generatedAt": "2026-10-21T15:34:46.463Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "DrPaper",
+      "description": "CS论文写作 Agent",
+      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-21T13:12:44Z",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "arxiv"
+      ]
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,7 +23,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-20T20:06:33Z",
+      "pushed_at": "2026-10-21T05:11:47Z",
       "language": "Vue",
       "topics": []
     },
@@ -68,20 +82,6 @@
       "topics": [
         "konva",
         "outerwilds"
-      ]
-    },
-    {
-      "name": "DrPaper",
-      "description": "CS论文写作 Agent",
-      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-13T20:51:25Z",
-      "language": "Python",
-      "topics": [
-        "agent",
-        "arxiv"
       ]
     },
     {
