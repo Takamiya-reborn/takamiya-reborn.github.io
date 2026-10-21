@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-10-21T15:34:46.463Z",
+  "generatedAt": "2026-10-21T20:20:12.567Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-21T17:51:34Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "DrPaper",
       "description": "CS论文写作 Agent",
@@ -15,17 +26,6 @@
         "agent",
         "arxiv"
       ]
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-21T05:11:47Z",
-      "language": "Vue",
-      "topics": []
     },
     {
       "name": "L2Dviewer",
