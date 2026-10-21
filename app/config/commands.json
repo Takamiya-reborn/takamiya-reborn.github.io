@@ -1,0 +1,22 @@
+[
+  { "name": "help", "desc": "显示本帮助", "action": "help" },
+  { "name": "clear", "desc": "清屏", "action": "clear" },
+  { "name": "refresh", "desc": "刷新", "action": "refresh" },
+  {
+    "name": "rm -rf /",
+    "desc": "危险操作，后果自负",
+    "action": "rmrf"
+  },
+  {
+    "name": "rm -rf / --no-preserve-root",
+    "desc": "真删，不给反悔机会",
+    "action": "rmrf-force",
+    "hidden": true
+  },
+  { "name": "/about", "desc": "跳转到「关于我」", "target": "about" },
+  {
+    "name": "/github",
+    "desc": "打开 GitHub 主页",
+    "url": "https://github.com/Takamiya-reborn"
+  }
+]

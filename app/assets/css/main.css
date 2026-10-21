@@ -31,6 +31,8 @@
   /* purple-400 */
   --accent-soft: rgba(129, 140, 248, 0.14);
   --gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
+  /* 流动渐变文字的柔端：accent 掺入背景压暗，避免接近纯白太扎眼 */
+  --gradient-soft: color-mix(in srgb, var(--accent) 38%, var(--bg));
 
   /* 发光与阴影 */
   --glow: 0 0 2.5rem rgba(129, 140, 248, 0.22);
@@ -296,5 +298,27 @@ ol {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- rm -rf 彩蛋：整页淡出，只剩终端漂浮在虚空里 ---- */
+/* .page/.container/.term 等类名来自 index.vue / ProfileCard.vue，此处全局选择器特异性更高 */
+/* 元素只是视觉隐藏、布局占位还在，直接锁滚动收掉滚动条（终端 fixed 居中，无需页面滚动） */
+html.page-nuked,
+html.page-nuked body {
+  overflow: hidden;
+}
+
+html.page-nuked .page > *:not(.container),
+html.page-nuked .container > *:not(:first-child),
+html.page-nuked .hero-art {
+  animation: rmrf-vanish 0.6s ease forwards;
+}
+
+@keyframes rmrf-vanish {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 }

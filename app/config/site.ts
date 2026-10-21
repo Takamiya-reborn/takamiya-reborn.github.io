@@ -23,13 +23,6 @@ export const site = {
     // 头像图片地址；public/avatar.png 由定时任务从 GitHub 拉取，留空则显示首字母渐变占位头像
     avatar: "/avatar.png",
     tagline: "Full-Stack Developer",
-    // 打字机轮播的身份标签（首位为静态回退文案）
-    roles: [
-      "Full-Stack Developer",
-      "AI & ML 探索者",
-      "Game / 3D Dev 爱好者",
-      "Game Enthusiast 🎮",
-    ],
     location: "木炉星",
     // 一句话签名
     bio: "专注于全栈与 AI，构建跑得稳、用得顺的系统。",
@@ -203,7 +196,7 @@ export const sections = [
   { id: "about", num: "01", title: "关于我", subtitle: "SaveData.rpgsave" },
   { id: "skills", num: "02", title: "技能", subtitle: "板载技能" },
   { id: "projects", num: "03", title: "活跃仓库", subtitle: "自己捣鼓" },
-  { id: "timeline", num: "04", title: "经历", subtitle: "Checkpoint" },
+  { id: "timeline", num: "04", title: "经历", subtitle: "commits" },
 ] satisfies SectionMeta[];
 
 // 彩蛋与提示文案

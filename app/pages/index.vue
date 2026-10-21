@@ -54,6 +54,9 @@ function celebrate() {
 
 useKonami(celebrate, easterEgg.keys)
 
+// rm -rf 彩蛋：nuked 后整页元素真卸载，只剩 Teleport 到 body 的终端
+const { nuked } = useNuke()
+
 // ---------- 进站成就（Xbox 风格弹窗） ----------
 const achievement = ref(false)
 let achievementTimers: ReturnType<typeof setTimeout>[] = []
@@ -70,10 +73,10 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
 
 <template>
   <div id="top" class="page" :class="{ 'page--party': partyMode }">
-    <SiteHeader :socials="site.socials" />
+    <SiteHeader v-if="!nuked" :socials="site.socials" />
 
     <!-- 氛围背景 -->
-    <div class="backdrop" aria-hidden="true">
+    <div v-if="!nuked" class="backdrop" aria-hidden="true">
       <span class="blob blob--indigo" />
       <span class="blob blob--cyan" />
       <span class="blob blob--violet" />
@@ -96,11 +99,12 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
     </div>
 
     <main class="container">
-      <!-- 英雄区 -->
+      <!-- 英雄区（内含终端，rm -rf 时整卡保留、终端 Teleport 走） -->
       <ProfileCard :profile="site.profile" />
 
-      <!-- quote 抽取器 -->
-      <section id="quote" class="section">
+      <template v-if="!nuked">
+        <!-- quote 抽取器 -->
+        <section id="quote" class="section">
         <SectionTitle :index="meta('quote').num" :title="meta('quote').title" :subtitle="meta('quote').subtitle" />
         <div v-reveal>
           <QuoteCard />
@@ -144,10 +148,11 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
           <TimelineCard :items="site.timeline" />
         </div>
       </section>
+      </template>
 
-      <footer class="footer">
+      <footer v-if="!nuked" class="footer">
         <p>
-          © {{ new Date().getFullYear() }} {{ site.profile.name }} · Built with
+          © {{ new Date().getFullYear() }} · Built with
           <a href="https://nuxt.com" target="_blank" rel="noopener">Nuxt</a>
         </p>
         <p class="footer-hint">{{ easterEgg.hint }}</p>
@@ -155,7 +160,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
     </main>
 
     <!-- 右侧目录：md 文档站风格，宽屏才显示 -->
-    <SideToc />
+    <SideToc v-if="!nuked" />
 
     <!-- 彩蛋：五彩纸屑 + toast -->
     <div class="confetti-layer" aria-hidden="true">

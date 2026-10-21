@@ -13,8 +13,8 @@ const headerSocials = computed(() =>
   <header class="header">
     <nav class="inner" aria-label="站内导航">
       <a href="#top" class="logo">
-        Takamiya
-        <span class="logo-dot" aria-hidden="true" />
+        <Icon name="lucide:sparkle" size="16" class="logo-icon" aria-hidden="true" />
+        <span class="logo-text">Takamiya</span>
       </a>
 
       <div class="socials">
@@ -49,7 +49,7 @@ const headerSocials = computed(() =>
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 700;
@@ -57,12 +57,36 @@ const headerSocials = computed(() =>
   letter-spacing: 0.02em;
 }
 
-.logo-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: #34d399;
-  animation: pulse-dot 2.2s ease-out infinite;
+/* 名字前的 sparkle 图标：SVG 吃不到 background-clip: text，
+   改用同节奏的 color 关键帧跟着渐变一起变色 */
+.logo-icon {
+  color: var(--accent-2);
+  animation: sparkle-pan 7s ease-in-out infinite;
+}
+
+@keyframes sparkle-pan {
+  0%,
+  100% {
+    color: var(--accent-2);
+  }
+
+  50% {
+    color: var(--accent);
+  }
+}
+
+/* 昵称与内容区大标题同款：流动渐变文字，keyframes 复用 main.css 的 gradient-pan */
+.logo-text {
+  background: linear-gradient(100deg,
+      var(--gradient-soft) 20%,
+      var(--accent) 45%,
+      var(--accent-2) 60%,
+      var(--gradient-soft) 85%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 7s ease-in-out infinite;
 }
 
 .socials {
@@ -83,12 +107,14 @@ const headerSocials = computed(() =>
   transition:
     color 0.2s,
     border-color 0.2s,
+    box-shadow 0.2s,
     transform 0.3s var(--ease-bouncy);
 }
 
 .icon-btn:hover {
   color: var(--text);
   border-color: var(--accent);
+  box-shadow: 0 4px 16px var(--accent-soft);
   transform: translateY(-3px);
 }
 </style>
