@@ -454,10 +454,10 @@ onUnmounted(() => {
 .t-name {
   font-weight: 600;
   background: linear-gradient(100deg,
-      var(--gradient-soft) 20%,
+      var(--gradient-soft) 10%,
       var(--accent) 45%,
       var(--accent-2) 60%,
-      var(--gradient-soft) 85%);
+      var(--gradient-soft) 92.5%);
   background-size: 220% auto;
   -webkit-background-clip: text;
   background-clip: text;
