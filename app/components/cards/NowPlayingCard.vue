@@ -80,37 +80,6 @@ const displayGames = computed(() =>
   transform: rotate(0deg) translateY(7.7rem);
 }
 
-.np-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.np-label {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  color: var(--muted);
-}
-
-.np-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: #34d399;
-}
-
-.dot {
-  width: 0.42rem;
-  height: 0.42rem;
-  border-radius: 50%;
-  background: #34d399;
-  animation: pulse-dot 2.2s ease-out infinite;
-}
-
 .np-list {
   display: grid;
   gap: 0.9rem;
@@ -181,11 +150,5 @@ const displayGames = computed(() =>
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--muted);
-}
-
-.np-foot {
-  font-size: 0.8rem;
-  color: var(--muted);
-  opacity: 0.8;
 }
 </style>

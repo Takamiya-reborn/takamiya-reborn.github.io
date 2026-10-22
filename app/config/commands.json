@@ -13,10 +13,25 @@
     "action": "rmrf-force",
     "hidden": true
   },
-  { "name": "/about", "desc": "跳转到「关于我」", "target": "about" },
+  { "name": "chat", "desc": "和LLM对话", "action": "chat" },
   {
-    "name": "/github",
-    "desc": "打开 GitHub 主页",
-    "url": "https://github.com/Takamiya-reborn"
+    "name": "docker",
+    "desc": "查看容器状态",
+    "action": "docker",
+    "args": true
+  },
+  { "name": "whoami", "desc": "我是谁", "action": "whoami", "group": "Info" },
+  {
+    "name": "whereami",
+    "desc": "我在哪",
+    "action": "whereami",
+    "group": "Info"
+  },
+  {
+    "name": "/weather",
+    "desc": "更改天气（clear/rain/thunder）",
+    "action": "weather",
+    "args": true,
+    "group": "Minecraft"
   }
 ]

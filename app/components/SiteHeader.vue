@@ -75,7 +75,7 @@ const headerSocials = computed(() =>
   }
 }
 
-/* 昵称与内容区大标题同款：流动渐变文字，keyframes 复用 main.css 的 gradient-pan */
+/* 昵称与内容区大标题同款：流动渐变文字 */
 .logo-text {
   background: linear-gradient(100deg,
       var(--gradient-soft) 10%,
@@ -87,6 +87,20 @@ const headerSocials = computed(() =>
   background-clip: text;
   color: transparent;
   animation: gradient-pan 7s ease-in-out infinite;
+}
+
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .socials {

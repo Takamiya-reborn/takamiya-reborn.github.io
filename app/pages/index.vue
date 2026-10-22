@@ -98,6 +98,9 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
       </span>
     </div>
 
+    <!-- /weather 天气特效：阳光在背景层，雨压内容层，闪电盖全屏（nuked 后世界没了，天气随之消失） -->
+    <WeatherFx v-if="!nuked" />
+
     <main class="container">
       <!-- 英雄区（内含终端，rm -rf 时整卡保留、终端 Teleport 走） -->
       <ProfileCard :profile="site.profile" />
@@ -443,5 +446,46 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
 .achv-leave-to {
   opacity: 0;
   transform: translateX(120%);
+}
+
+/* ---- 本组件专属关键帧 ---- */
+@keyframes hue-spin {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(4rem, -2.5rem, 0) scale(1.12);
+  }
+
+  100% {
+    transform: translate3d(-3rem, 2rem, 0) scale(0.95);
+  }
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  100% {
+    transform: translateY(-1.1rem) rotate(5deg);
+  }
+}
+
+@keyframes drop {
+  from {
+    transform: translateY(-6vh) rotate(0deg);
+  }
+
+  to {
+    transform: translateY(112vh) rotate(720deg);
+  }
 }
 </style>

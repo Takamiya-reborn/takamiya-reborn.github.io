@@ -158,7 +158,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
 <style scoped>
 .quote-layout {
   display: grid;
-  /* quote 卡约 70%，右侧留给抽取区，间距收紧让两者靠近 */
+  /* quote 卡约 70%，右侧留给抽取区；列参数与 ProfileCard 的 .hero 同参，终端与 quote 卡严格等宽 */
   grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
   gap: clamp(1.5rem, 3vw, 2.5rem);
   align-items: stretch;

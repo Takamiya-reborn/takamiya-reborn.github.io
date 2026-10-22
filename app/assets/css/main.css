@@ -201,93 +201,7 @@ ol {
   will-change: auto;
 }
 
-/* ---- 关键帧 ---- */
-
-@keyframes drift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(4rem, -2.5rem, 0) scale(1.12);
-  }
-
-  100% {
-    transform: translate3d(-3rem, 2rem, 0) scale(0.95);
-  }
-}
-
-@keyframes spin-slow {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes gradient-pan {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes pulse-dot {
-  0% {
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
-  }
-
-  70% {
-    box-shadow: 0 0 0 0.45rem rgba(52, 211, 153, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
-  }
-}
-
-@keyframes blink {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes bob {
-  0% {
-    transform: translateY(0) rotate(-4deg);
-  }
-
-  100% {
-    transform: translateY(-1.1rem) rotate(5deg);
-  }
-}
-
-@keyframes drop {
-  from {
-    transform: translateY(-6vh) rotate(0deg);
-  }
-
-  to {
-    transform: translateY(112vh) rotate(720deg);
-  }
-}
-
-@keyframes hue-spin {
-  to {
-    filter: hue-rotate(360deg);
-  }
-}
+/* 组件专属关键帧已随组件放进各自的 <style scoped>（Vue 会按组件重命名互不冲突） */
 
 /* 减少动效偏好 */
 @media (prefers-reduced-motion: reduce) {
@@ -302,15 +216,15 @@ ol {
 }
 
 /* ---- rm -rf 彩蛋：整页淡出，只剩终端漂浮在虚空里 ---- */
-/* .page/.container/.term 等类名来自 index.vue / ProfileCard.vue，此处全局选择器特异性更高 */
+/* .page/.container 等类名来自 index.vue，.term 来自 Terminal.vue，此处全局选择器特异性更高 */
 /* 元素只是视觉隐藏、布局占位还在，直接锁滚动收掉滚动条（终端 fixed 居中，无需页面滚动） */
 html.page-nuked,
 html.page-nuked body {
   overflow: hidden;
 }
 
-html.page-nuked .page > *:not(.container),
-html.page-nuked .container > *:not(:first-child),
+html.page-nuked .page>*:not(.container),
+html.page-nuked .container>*:not(:first-child),
 html.page-nuked .hero-art {
   animation: rmrf-vanish 0.6s ease forwards;
 }

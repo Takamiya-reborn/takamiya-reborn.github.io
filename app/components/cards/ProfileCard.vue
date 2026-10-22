@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { type SlashCommand, slashCommands } from '~/utils/commands'
-
 const props = defineProps<{
   profile: {
     name: string
@@ -62,205 +60,8 @@ const tiltStyle = computed(() => ({
   '--tilt-y': `${tiltY.value}deg`,
 }))
 
-/* ---- 交互终端：输出区可滚动，↑/↓ 翻历史，只认 / 斜杠指令 ---- */
-type TermLine = { text: string, cls?: string }
-
-const history = ref<TermLine[]>([])
-const draft = ref('')
-const bodyEl = ref<HTMLElement | null>(null)
-const inputEl = ref<HTMLInputElement | null>(null)
-
-// 已执行命令记录，↑/↓ 依次翻找
-const cmdLog = ref<string[]>([])
-const cmdCursor = ref(-1) // -1 表示不在历史中
-
-// rm -rf 彩蛋共享状态：nuking=淡出动画中，nuked=真删（index.vue 据此卸载页面元素）
-const { nuking, nuked } = useNuke()
-let nukeTimers: ReturnType<typeof setTimeout>[] = []
-
-function push(text: string, cls?: string) {
-  history.value.push({ text, cls })
-}
-
-// 初始画面：保留原有的 whoami/whereami 自报家门
-const INIT_LINES: TermLine[] = [
-  { text: '✻ takamiya shell 9.318.054 (x86_64-the-eye)', cls: 't-dim' },
-  { text: '输入 help 查看可用指令。', cls: 't-dim' },
-  { text: '$ whoami', cls: 't-cmd' },
-  { text: props.profile.name, cls: 't-name' },
-  { text: '$ whereami', cls: 't-cmd' },
-  { text: props.profile.location, cls: 't-accent' },
-]
-
-// 重置终端：所有状态归零，重放与首次加载相同的初始画面
-function reset() {
-  nukeTimers.forEach(clearTimeout)
-  nukeTimers = []
-  nuking.value = false
-  nuked.value = false
-  document.documentElement.classList.remove('page-nuked')
-  history.value = [...INIT_LINES]
-  draft.value = ''
-  cmdLog.value = []
-  cmdCursor.value = -1
-}
-
-// 输出变化后滚到底部，模拟终端始终盯着最新一行
-watch(history, async () => {
-  await nextTick()
-  bodyEl.value?.scrollTo({ top: bodyEl.value.scrollHeight })
-}, { deep: true })
-
-function focusInput() {
-  inputEl.value?.focus()
-}
-
-function navHistory(dir: 1 | -1) {
-  const log = cmdLog.value
-  if (dir === 1) {
-    if (log.length === 0) return
-    cmdCursor.value = cmdCursor.value === -1 ? log.length - 1 : Math.max(0, cmdCursor.value - 1)
-    draft.value = log[cmdCursor.value] ?? ''
-  }
-  else {
-    if (cmdCursor.value === -1) return
-    cmdCursor.value += 1
-    if (cmdCursor.value >= log.length) {
-      cmdCursor.value = -1
-      draft.value = ''
-    }
-    else {
-      draft.value = log[cmdCursor.value] ?? ''
-    }
-  }
-}
-
-// 右键直贴：拦截浏览器菜单，模拟真终端的右键粘贴；未授权读取剪贴板时给出终端风提示
-async function pasteFromClipboard() {
-  focusInput()
-  try {
-    const text = await navigator.clipboard.readText()
-    if (!text) return
-    const el = inputEl.value
-    const start = el?.selectionStart ?? draft.value.length
-    const end = el?.selectionEnd ?? start
-    draft.value = draft.value.slice(0, start) + text + draft.value.slice(end)
-    if (el) {
-      const pos = start + text.length
-      nextTick(() => el.setSelectionRange(pos, pos))
-    }
-  }
-  catch {
-    push('paste: 浏览器未授权读取剪贴板', 't-err')
-  }
-}
-
-function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'Enter') {
-    run(draft.value)
-    draft.value = ''
-    return
-  }
-  if (e.key === 'ArrowUp') {
-    e.preventDefault()
-    navHistory(1)
-  }
-  else if (e.key === 'ArrowDown') {
-    e.preventDefault()
-    navHistory(-1)
-  }
-}
-
-// 帮助输出：只列 commands.json 的非隐藏指令表（彩蛋靠猜）
-function printHelp() {
-  push('可用指令：', 't-out')
-  slashCommands.filter(c => !c.hidden).forEach(c => push(`  ${c.name.padEnd(11)} ${c.desc}`, 't-out'))
-}
-
-// 执行指令：action 执行内置动作，target 滚动跳转章节，url 新窗口打开外链
-function execCommand(sc: SlashCommand) {
-  if (sc.action === 'help') {
-    printHelp()
-    return
-  }
-  if (sc.action === 'clear') {
-    history.value = []
-    return
-  }
-  if (sc.action === 'refresh') {
-    reset()
-    focusInput()
-    return
-  }
-  if (sc.action === 'rmrf') {
-    refuseRoot()
-    return
-  }
-  if (sc.action === 'rmrf-force') {
-    nuke()
-    return
-  }
-  push(`→ ${sc.desc}`, 't-accent')
-  if (sc.target) {
-    // 平滑滚动交给全局 scroll-behavior，scroll-margin 由各 section 自带
-    document.getElementById(sc.target)?.scrollIntoView()
-  }
-  else if (sc.url) {
-    window.open(sc.url, '_blank', 'noopener')
-  }
-}
-
-// 命令入口：只认 commands.json 登记的指令（带 / 为斜杠指令，不带 / 为系统命令），其余一律 not found
-function run(raw: string) {
-  const input = raw.trim()
-  if (!input) return
-  push(`$ ${input}`, 't-cmd')
-  cmdLog.value.push(input)
-  cmdCursor.value = -1
-
-  const sc = slashCommands.find(c => c.name === input.toLowerCase())
-  if (sc) {
-    execCommand(sc)
-  }
-  else {
-    push(`zsh: command not found: ${input.split(/\s+/)[0]}`, 't-err')
-  }
-}
-
-// rm -rf /：真实复刻 GNU rm 的保 root 保险丝，拒绝执行
-function refuseRoot() {
-  push("rm: it is dangerous to operate recursively on '/'", 't-err')
-  push('rm: use --no-preserve-root to override the failsafe', 't-err')
-}
-
-// rm -rf / --no-preserve-root：仿 rm -v 逐行 removed（"文件"取自指令表里无 action 的条目），播完整页只剩终端漂浮
-function nuke() {
-  const victims = slashCommands.filter(c => !c.action).map(c => c.name)
-  const lines: TermLine[] = [
-    ...victims.map(name => ({ text: `removed '${name}'`, cls: 't-out' })),
-    { text: "removed '/assets'", cls: 't-out' },
-    { text: "removed '/sections'", cls: 't-out' },
-    { text: '（输入 refresh 刷新终端恢复）', cls: 't-dim' },
-  ]
-  lines.forEach((line, i) => {
-    nukeTimers.push(setTimeout(() => {
-      push(line.text, line.cls)
-      if (i === lines.length - 1) {
-        nuking.value = true
-        document.documentElement.classList.add('page-nuked')
-        // 淡出播完后真正卸载页面元素（index.vue 的 v-if），终端靠 Teleport 留在屏上
-        nukeTimers.push(setTimeout(() => (nuked.value = true), 700))
-      }
-    }, 130 * (i + 1)))
-  })
-}
-
-onMounted(reset)
-
-onUnmounted(() => {
-  nukeTimers.forEach(clearTimeout)
-  document.documentElement.classList.remove('page-nuked')
-})
+// rm -rf 彩蛋共享状态：nuked=真删（index.vue 据此卸载页面元素，终端自行 Teleport 悬浮）
+const { nuked } = useNuke()
 </script>
 
 <template>
@@ -269,24 +70,8 @@ onUnmounted(() => {
       <!-- 大标题已撤下视觉位置，保留 h1 供屏幕阅读器/搜索引擎识别 -->
       <h1 class="sr-only">{{ profile.name }}</h1>
 
-      <!-- 交互终端：输出可滚动，底部是真输入行，输入 refresh 可刷新；rm -rf 后传送到 body 悬浮 -->
-      <Teleport to="body" :disabled="!nuking">
-        <div class="term" :class="{ 'term--floating': nuking }" @click="focusInput"
-          @contextmenu.prevent="pasteFromClipboard">
-          <div class="term-bar">
-            <span class="term-dots" aria-hidden="true"><i /><i /><i /></span>
-            <span class="term-title">✻ takamiya — zsh</span>
-          </div>
-          <div ref="bodyEl" class="term-body" aria-live="polite">
-            <p v-for="(line, i) in history" :key="i" class="term-line" :class="line.cls">{{ line.text }}</p>
-            <div class="term-input">
-              <span class="prompt">$</span>
-              <input ref="inputEl" v-model="draft" placeholder="输入 help 查看可用命令" spellcheck="false" autocomplete="off"
-                aria-label="终端命令输入" @keydown="onKeydown">
-            </div>
-          </div>
-        </div>
-      </Teleport>
+      <!-- 交互终端组件：输出可滚动、可敲命令；rm -rf 后自行 Teleport 到 body 悬浮 -->
+      <Terminal :name="profile.name" :location="profile.location" />
     </div>
 
     <div v-if="!nuked" v-reveal="{ delay: 150 }" class="hero-art">
@@ -317,9 +102,10 @@ onUnmounted(() => {
 <style scoped>
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+  /* 与 QuoteCard 的 .quote-layout 同参：7fr/3fr + 同款列间距，终端列与 quote 卡严格等宽 */
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
   align-items: center;
-  gap: clamp(2rem, 6vw, 4rem);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
   padding-block: clamp(4rem, 10vh, 6.5rem) clamp(2.5rem, 7vh, 4.5rem);
 }
 
@@ -334,175 +120,6 @@ onUnmounted(() => {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
-}
-
-/* ---- 终端窗口：像素风方点 + 扫描线，真输入行可敲命令 ---- */
-.term {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 39rem;
-  height: clamp(15.5rem, 24.7vw, 19.5rem);
-  margin-top: 0.9rem;
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-
-/* rm -rf 后：脱离文档流居中悬浮，像末日后的孤岛（Teleport 到 body 时挂上） */
-.term--floating {
-  position: fixed;
-  inset: 0;
-  margin: auto;
-  width: min(39rem, 92vw);
-  height: min(19.5rem, 60vh);
-  z-index: 50;
-}
-
-.term-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 0.8rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid var(--border);
-  cursor: default;
-}
-
-.term-dots {
-  display: flex;
-  gap: 0.35rem;
-}
-
-/* 像素风：方形窗口点，不圆角 */
-.term-dots i {
-  width: 0.55rem;
-  height: 0.55rem;
-  background: var(--border-strong);
-}
-
-.term-dots i:nth-child(1) {
-  background: #f87171;
-}
-
-.term-dots i:nth-child(2) {
-  background: #fbbf24;
-}
-
-.term-dots i:nth-child(3) {
-  background: #34d399;
-}
-
-.term-title {
-  font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-}
-
-.term-body {
-  position: relative;
-  flex: 1;
-  padding: 0.7rem 0.9rem 0.8rem;
-  /* 真终端观感：小字号 + 紧行距，一屏塞下更多行 */
-  font-size: clamp(0.74rem, 1.15vw, 0.85rem);
-  line-height: 1.55;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) transparent;
-  /* 只有正文区是待输入状态，标题栏保持默认箭头 */
-  cursor: text;
-}
-
-.term-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.term-body::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-}
-
-/* 扫描线：隔行铺一层极淡的横纹，CRT 质感 */
-.term-body::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(0deg,
-      transparent 0 2px,
-      rgba(255, 255, 255, 0.02) 2px 4px);
-}
-
-.term-line {
-  color: var(--muted);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.prompt {
-  margin-right: 0.5rem;
-  color: var(--accent);
-}
-
-/* 命令回显行：$ 开头的输入原样保留在输出流里 */
-.t-cmd {
-  color: var(--muted);
-}
-
-/* whoami 的输出：当年大标题的流动渐变在此小字号复刻 */
-.t-name {
-  font-weight: 600;
-  background: linear-gradient(100deg,
-      var(--gradient-soft) 10%,
-      var(--accent) 45%,
-      var(--accent-2) 60%,
-      var(--gradient-soft) 92.5%);
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: gradient-pan 7s ease-in-out infinite;
-}
-
-.t-out {
-  color: var(--text);
-}
-
-.t-dim {
-  color: var(--muted);
-}
-
-.t-accent {
-  color: var(--accent-2);
-}
-
-.t-err {
-  color: #f87171;
-}
-
-/* 底部真输入行：placeholder 轮播打字机身份标签 */
-.term-input {
-  display: flex;
-  align-items: center;
-  min-height: 1.7em;
-}
-
-.term-input input {
-  flex: 1;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--text);
-  font: inherit;
-  caret-color: var(--accent-2);
-}
-
-.term-input input::placeholder {
-  color: var(--muted);
-  opacity: 0.7;
 }
 
 /* ---- 右侧头像区 ---- */
@@ -615,6 +232,23 @@ onUnmounted(() => {
 
   .avatar-zone {
     margin-left: 0.5rem;
+  }
+}
+
+/* ---- 本组件专属关键帧 ---- */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  100% {
+    transform: translateY(-1.1rem) rotate(5deg);
   }
 }
 </style>
