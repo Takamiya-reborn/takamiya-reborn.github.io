@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-10-23T15:25:32.599Z",
+  "generatedAt": "2026-10-23T20:03:24.313Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-23T15:25:34Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "OuterWildsShipLog",
       "description": "OuterWilds 航行日志",
@@ -15,17 +26,6 @@
         "konva",
         "outerwilds"
       ]
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-23T08:00:28Z",
-      "language": "Vue",
-      "topics": []
     },
     {
       "name": "DrPaper",
