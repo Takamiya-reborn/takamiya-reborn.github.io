@@ -1,7 +1,21 @@
 {
-  "generatedAt": "2026-10-23T05:14:13.746Z",
+  "generatedAt": "2026-10-23T15:25:32.599Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "OuterWildsShipLog",
+      "description": "OuterWilds 航行日志",
+      "html_url": "https://github.com/Takamiya-reborn/OuterWildsShipLog",
+      "homepage": "https://takamiya-reborn.github.io/OuterWildsShipLog/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-23T08:49:34Z",
+      "language": "JavaScript",
+      "topics": [
+        "konva",
+        "outerwilds"
+      ]
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,7 +23,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-22T20:16:15Z",
+      "pushed_at": "2026-10-23T08:00:28Z",
       "language": "Vue",
       "topics": []
     },
@@ -68,20 +82,6 @@
         "ebpf",
         "fastapi",
         "prometheus"
-      ]
-    },
-    {
-      "name": "OuterWildsShipLog",
-      "description": "OuterWilds 航行日志",
-      "html_url": "https://github.com/Takamiya-reborn/OuterWildsShipLog",
-      "homepage": "https://takamiya-reborn.github.io/OuterWildsShipLog/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-15T08:42:27Z",
-      "language": "JavaScript",
-      "topics": [
-        "konva",
-        "outerwilds"
       ]
     },
     {
