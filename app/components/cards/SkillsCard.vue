@@ -175,12 +175,21 @@ const widthOf = (name: string) => name.length * 9.2 + 42
 const groupNodes: GroupNode[] = []
 const skillNodes: TreeNode[] = []
 
+/* 分组芯片默认与该组首行技能齐平；个别组按行数下移，与指定技能对齐 */
+const GROUP_Y_OFFSET: Record<string, number> = {
+  编程语言: 2 * P, // 与 Python（换位后第 2 行）齐平
+  后端与桌面: 3 * P, // 与 PyQt（第 4 项）齐平
+  'AI 与数据': 2 * P, // 与 Pandas（第 3 项）齐平
+  前端与图形: 3 * P, // 与 Vue（第 4 项）齐平
+}
+
 columns.forEach((col, side) => {
   const s = side === 0 ? -1 : 1 // 左列向 x 负方向展开
   const totalH = col.reduce((acc, c) => acc + (c.items.length - 1) * P, 0) + (col.length - 1) * BLOCK_GAP
   let top = -totalH / 2 // 首个分组芯片中心 = 首行技能 y
   col.forEach((c) => {
     const color = PALETTE[c.gi % PALETTE.length]!
+    const groupY = top + (GROUP_Y_OFFSET[c.g.title] ?? 0)
     const nodes: TreeNode[] = c.items.map((it, k) => {
       /* 双列交错：同对两技能上下各错半格、分列内外；较宽者放内列
          （内列更靠近分配排、外侧空间少），落单的放内列 */
@@ -209,7 +218,7 @@ columns.forEach((col, side) => {
       icon: c.g.icon ?? 'lucide:circle',
       color,
       x: s * COL_IN,
-      y: top,
+      y: groupY,
       delay: 0.15 + c.gi * 0.07,
       nodes,
     })
@@ -217,6 +226,31 @@ columns.forEach((col, side) => {
     top += (c.items.length - 1) * P + BLOCK_GAP
   })
 })
+
+/* 指定技能两两互换显示坐标：摊平顺序与父子链路不动（TS 逻辑上仍挂
+   在 JS 下），仅布局层面对调位置 */
+const NODE_POS_SWAP: [string, string][] = [
+  ['Python', 'TypeScript'],
+]
+
+for (const [a, b] of NODE_POS_SWAP) {
+  const na = skillNodes.find(n => n.name === a)
+  const nb = skillNodes.find(n => n.name === b)
+  if (na && nb) {
+    ;[na.x, nb.x] = [nb.x, na.x]
+      ;[na.y, nb.y] = [nb.y, na.y]
+  }
+}
+
+/* 个别技能收短走线：胶囊自所在列向分配排方向挪近指定距离 */
+const NODE_X_PULL: Record<string, number> = {
+  TypeScript: 60, // 自外列向内收 60，走线 205 → 145
+}
+
+for (const [name, pull] of Object.entries(NODE_X_PULL)) {
+  const n = skillNodes.find(p => p.name === name)
+  if (n && n.x) n.x -= Math.sign(n.x) * pull
+}
 
 /* 坐标 → 覆盖层百分比定位 */
 const pctX = (v: number) => ((v + VB_W / 2) / VB_W) * 100
@@ -245,23 +279,33 @@ for (const s of [-1, 1]) {
   links.push({ d: `M 0 0 H ${s * TX}`, paths: gs.map(g => g.path), color: 'var(--accent)', delay: 0.05 })
   for (const g of gs) {
     const t = Math.sign(g.y)
-    /* 每组一条独立干线：从根芯片高度沿汇流排直引到该组倒角，
-       不再共用一段"无论悬停谁都全程通电"的排线 */
+    /* 每组一条独立干线：从根芯片高度沿汇流排直引到该组，
+       不再共用一段"无论悬停谁都全程通电"的排线。
+       45° 倒角只留给汇流排尽头（行进方向上没有更远的分组），
+       半途 T 接引出的分组保持直角——排还在向下游延伸，不能斜切 */
+    const tEnd = !gs.some(o => o !== g && (o.y - g.y) * t > 0)
+    const c = tEnd ? CH : 0
     links.push({
-      d: `M ${s * TX} 0 V ${g.y - t * CH} L ${s * (TX + CH)} ${g.y} H ${s * COL_IN}`,
+      d: `M ${s * TX} 0 V ${g.y - t * c}${c ? ` L ${s * (TX + CH)} ${g.y}` : ''} H ${s * COL_IN}`,
       paths: [g.path],
       color: 'var(--accent)',
       delay: g.delay,
     })
-    const last = g.nodes[g.nodes.length - 1]
-    if (!last) continue
-    /* 分组芯片 → 本地分配排 → 技能：同样每技能一条完整路由，末端
-       与最后一个技能的衔接做单个 45° 倒角，与主干拐角保持一致 */
-    const chamfer = last.y - g.y >= CH ? CH : 0
+    if (!g.nodes.length) continue
+    /* 分组芯片 → 本地分配排 → 技能：同样每技能一条完整路由。分配排
+       两端的终点各做单个 45° 倒角——终点按 y 极值取（技能换位、芯片
+       下移后，列表顺序不再等于行序）；中途分支保持 T 接 */
+    const topNode = g.nodes.reduce((a, b) => (b.y < a.y ? b : a))
+    const bottomNode = g.nodes.reduce((a, b) => (b.y > a.y ? b : a))
+    const chamferDown = bottomNode.y - g.y >= CH ? CH : 0
+    const chamferUp = g.y - topNode.y >= CH ? CH : 0
     for (const n of g.nodes) {
-      const c = n === last ? chamfer : 0
+      /* 终点倒角方向随行进方向翻转：自下而上抵达时先停在 n.y + c 再斜切 */
+      const below = n.y > g.y
+      const c = n === (below ? bottomNode : topNode) ? (below ? chamferDown : chamferUp) : 0
+      const vy = below ? n.y - c : n.y + c
       links.push({
-        d: `M ${g.x} ${g.y} H ${s * LBUS} V ${n.y - c}${c ? ` L ${s * (LBUS + c)} ${n.y}` : ''} H ${n.x}`,
+        d: `M ${g.x} ${g.y} H ${s * LBUS} V ${vy}${c ? ` L ${s * (LBUS + c)} ${n.y}` : ''} H ${n.x}`,
         paths: [n.path],
         color: g.color,
         delay: n.delay,
@@ -505,6 +549,9 @@ for (const s of [-1, 1]) {
 /* ---- 横向滚动容器：桌面端不产生滚动条，移动端容纳 1220px 设计宽度 ---- */
 .tree-viewport {
   overflow-x: auto;
+  /* 显式锁死纵轴：单轴 auto 会把另一轴的 visible 强算成 auto，
+     入场浮现的 translateY(1.6rem) 便会撑出瞬时纵向滚动条 */
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--muted) transparent;
