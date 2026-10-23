@@ -139,15 +139,20 @@ export const commandHandlers: Record<string, CommandHandler> = {
     );
   },
 
-  // /music：终端点唱机——曲库在 config/music.json，音频文件自备放 public/audio/。
-  // 子命令 ls / play <name> / stop；裸 play 续播上次曲目
+  // music：终端点唱机——曲库在 config/music.json，音频文件自备放 public/audio/。
+  // 子命令 list / play <name> / stop；裸 play 续播上次曲目
   music: async (sc, ctx) => {
     const { current, playing, play, pause } = useAudio();
     const sub = sc.argv?.[0]?.toLowerCase();
     const arg = sc.argv?.[1];
 
-    // 裸 music / music list：列曲库，正在播的行用强调色；曲库为空时指路登记方式
-    if (!sub || sub === "list") {
+    // 裸 music：只打用法；music list：列曲库，正在播的行用强调色，曲库为空时指路登记方式
+    if (!sub) {
+      ctx.push("用法：music <list|play <name>|stop>", "t-dim");
+      return;
+    }
+
+    if (sub === "list") {
       if (musicTracks.length === 0) {
         ctx.push(`懒惰的${site.profile.name}还没上传音乐`, "t-dim");
         return;
@@ -169,7 +174,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
           else ctx.push(`正在播放：${current.value.title}`, "t-accent");
           return;
         }
-        ctx.push("用法：/music play <name>（先 /music list 看看有什么）", "t-dim");
+        ctx.push("用法：music play <name>（先 music list 看看有什么）", "t-dim");
         return;
       }
       const track = musicTracks.find((t) => t.id === arg.toLowerCase());
@@ -185,11 +190,11 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
     if (sub === "stop") {
       pause();
-      ctx.push("已暂停背景音乐（/music play 续播）", "t-accent");
+      ctx.push("已暂停背景音乐（music play 续播）", "t-accent");
       return;
     }
 
     ctx.push(`music: 未知的子命令 "${sub}"`, "t-err");
-    ctx.push("用法：/music <list|play <name>|stop>", "t-dim");
+    ctx.push("用法：music <list|play <name>|stop>", "t-dim");
   },
 };

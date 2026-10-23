@@ -1,10 +1,10 @@
-// /music 彩蛋共享状态：commands.ts 的 handler 调用；Audio 元素是模块级单例（仅客户端），
+// music 命令彩蛋共享状态：commands.ts 的 handler 调用；Audio 元素是模块级单例（仅客户端），
 // 反复点唱只换 src 不叠声。曲库来自 config/music.json（?raw 打包时读入，与 commands.json 同套路），
 // 音频文件由站长自备放 public/audio/，文件缺失时靠 error 事件兜底报错
 import tracksRaw from "../config/music.json?raw";
 
 export interface MusicTrack {
-  /** 曲目代号，/music play <id> 用 */
+  /** 曲目代号，music play <id> 用 */
   id: string;
   /** 展示名 */
   title: string;
