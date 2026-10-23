@@ -34,6 +34,10 @@ jobs:
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
 
+      # 公开资料无需鉴权
+      - name: Fetch LeetCode data
+        run: node scripts/fetch-leetcode.mjs
+
       # 内置 GITHUB_TOKEN 即可读取公开贡献数据，无需额外 Secret
       - name: Fetch GitHub data
         run: node scripts/fetch-github.mjs
@@ -51,7 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app/config/steam.json app/config/github.json app/config/repos.json public/avatar.png
+          git add app/config/steam.json app/config/leetcode.json app/config/github.json app/config/repos.json public/avatar.png
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else

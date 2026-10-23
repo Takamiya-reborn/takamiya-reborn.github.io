@@ -69,15 +69,16 @@ const displayGames = computed(() =>
 </template>
 
 <style scoped>
-/* 故意倾斜 + 下沉，打破对齐感。
+/* 故意轻倾斜，打破对齐感。
+   关于区棋盘网格：卡在左行向左倾（-），本卡与 LeetCode 卡同在左列行，同为反向。
    卡片和字号整体放大一档：倾斜重采样时小字号笔画只有一两个像素宽，最容易糊 */
 .now-playing {
   max-width: 30rem;
-  transform: rotate(-1.2deg) translateY(8rem);
+  transform: rotate(-1.2deg) translateY(0.3rem);
 }
 
 .now-playing.now-playing:hover {
-  transform: rotate(0deg) translateY(7.7rem);
+  transform: rotate(0deg) translateY(0.15rem);
 }
 
 .np-list {

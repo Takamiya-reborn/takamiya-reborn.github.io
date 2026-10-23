@@ -95,6 +95,8 @@ const { nuked } = useNuke()
           <Icon name="lucide:swords" size="18" />
         </span>
       </div>
+
+      <p class="avatar-bio">{{ profile.bio }}</p>
     </div>
   </section>
 </template>
@@ -126,6 +128,16 @@ const { nuked } = useNuke()
 .hero-art {
   display: grid;
   place-items: center;
+}
+
+/* 头像下方的个人简介（原 hero 左列文案，终端上位置后迁到此处） */
+.avatar-bio {
+  max-width: 17rem;
+  margin-top: 4rem;
+  font-size: 0.88rem;
+  line-height: 1.85;
+  text-align: center;
+  color: var(--muted);
 }
 
 .avatar-zone {

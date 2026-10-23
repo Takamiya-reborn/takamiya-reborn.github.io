@@ -318,7 +318,7 @@ onUnmounted(() => {
   flex-direction: column;
   /* 填满 hero 的 7fr 列，与 quote 卡（同为 7fr 列）严格等宽 */
   width: 100%;
-  height: clamp(15.5rem, 24.7vw, 19.5rem);
+  height: clamp(18.5rem, 31vw, 26rem);
   margin-top: 0.9rem;
   font-family: var(--font-mono);
   background: rgba(255, 255, 255, 0.03);
@@ -333,7 +333,7 @@ onUnmounted(() => {
   inset: 0;
   margin: auto;
   width: min(39rem, 92vw);
-  height: min(19.5rem, 60vh);
+  height: min(26rem, 70vh);
   z-index: 50;
 }
 
@@ -372,7 +372,7 @@ onUnmounted(() => {
 }
 
 .term-title {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   letter-spacing: 0.05em;
   color: var(--muted);
 }
@@ -382,7 +382,7 @@ onUnmounted(() => {
   flex: 1;
   padding: 0.7rem 0.9rem 0.8rem;
   /* 真终端观感：小字号 + 紧行距，一屏塞下更多行 */
-  font-size: clamp(0.74rem, 1.15vw, 0.85rem);
+  font-size: clamp(0.82rem, 1.3vw, 0.95rem);
   line-height: 1.55;
   overflow-y: auto;
   scrollbar-width: thin;

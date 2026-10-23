@@ -108,49 +108,78 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
       <template v-if="!nuked">
         <!-- quote 抽取器 -->
         <section id="quote" class="section">
-        <SectionTitle :index="meta('quote').num" :title="meta('quote').title" :subtitle="meta('quote').subtitle" />
-        <div v-reveal>
-          <QuoteCard />
-        </div>
-      </section>
-
-      <!-- 关于 -->
-      <section id="about" class="section">
-        <SectionTitle :index="meta('about').num" :title="meta('about').title" :subtitle="meta('about').subtitle" />
-        <div class="about-grid">
-          <div v-reveal class="about-main">
-            <AboutCard :paragraphs="site.about" />
-            <MediaCard :items="site.media" />
-            <NowPlayingCard :games="site.games" />
+          <SectionTitle :index="meta('quote').num" :title="meta('quote').title" :subtitle="meta('quote').subtitle" />
+          <div v-reveal>
+            <QuoteCard />
           </div>
-          <div v-reveal="{ delay: 140 }" class="about-side">
-            <GithubActivityCard :github-user="site.profile.githubUser" />
-            <AboutCard :paragraphs="site.aboutSide" />
+        </section>
+
+        <!-- 关于：四行棋盘式卡片+文字，DOM 统一文字在前，桌面端用 grid 定位翻转卡片朝向 -->
+        <section id="about" class="section">
+          <SectionTitle :index="meta('about').num" :title="meta('about').title" :subtitle="meta('about').subtitle" />
+          <div class="about-rows">
+            <div v-reveal class="about-row">
+              <div class="about-text">
+                <AboutCard :paragraphs="site.about" />
+              </div>
+              <div class="about-card">
+                <GithubActivityCard :github-user="site.profile.githubUser" />
+              </div>
+            </div>
+
+            <div v-reveal class="about-row about-row--flip">
+              <div class="about-text">
+                <p class="about-label">⌈ 不开longlong见祖宗 ⌋</p>
+                <AboutCard :paragraphs="site.aboutCode" />
+              </div>
+              <div class="about-card">
+                <LeetCodeCard />
+              </div>
+            </div>
+
+            <div v-reveal class="about-row">
+              <div class="about-text">
+                <p class="about-label">⌈ 这里是不是差几个像素 ⌋</p>
+                <AboutCard :paragraphs="site.aboutMedia" />
+              </div>
+              <div class="about-card">
+                <MediaCard :items="site.media" />
+              </div>
+            </div>
+
+            <div v-reveal class="about-row about-row--flip">
+              <div class="about-text">
+                <p class="about-label">⌈ 向着星辰...再见 ⌋</p>
+                <AboutCard :paragraphs="site.aboutGames" />
+              </div>
+              <div class="about-card">
+                <NowPlayingCard :games="site.games" />
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 技能 -->
-      <section id="skills" class="section">
-        <SectionTitle :index="meta('skills').num" :title="meta('skills').title" :subtitle="meta('skills').subtitle" />
-        <SkillsCard :groups="site.skillGroups" />
-      </section>
+        <!-- 技能 -->
+        <section id="skills" class="section">
+          <SectionTitle :index="meta('skills').num" :title="meta('skills').title" :subtitle="meta('skills').subtitle" />
+          <SkillsCard :groups="site.skillGroups" />
+        </section>
 
-      <!-- 项目 -->
-      <section id="projects" class="section">
-        <SectionTitle :index="meta('projects').num" :title="meta('projects').title"
-          :subtitle="meta('projects').subtitle" />
-        <ProjectsCard :projects="site.projects" />
-      </section>
+        <!-- 项目 -->
+        <section id="projects" class="section">
+          <SectionTitle :index="meta('projects').num" :title="meta('projects').title"
+            :subtitle="meta('projects').subtitle" />
+          <ProjectsCard :projects="site.projects" />
+        </section>
 
-      <!-- 经历 -->
-      <section id="timeline" class="section">
-        <SectionTitle :index="meta('timeline').num" :title="meta('timeline').title"
-          :subtitle="meta('timeline').subtitle" />
-        <div class="timeline-wrap">
-          <TimelineCard :items="site.timeline" />
-        </div>
-      </section>
+        <!-- 经历 -->
+        <section id="timeline" class="section">
+          <SectionTitle :index="meta('timeline').num" :title="meta('timeline').title"
+            :subtitle="meta('timeline').subtitle" />
+          <div class="timeline-wrap">
+            <TimelineCard :items="site.timeline" />
+          </div>
+        </section>
       </template>
 
       <footer v-if="!nuked" class="footer">
@@ -288,36 +317,51 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   scroll-margin-top: 4.5rem;
 }
 
-/* 关于区：左文右卡，右卡下沉错位 */
-.about-grid {
+/* 关于区：四行棋盘式「文字+卡片」，拉长战线、降低密度 */
+.about-rows {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 8vh, 5rem);
+}
+
+/* 每行文字与卡片左右并排、垂直居中；行2/行4 用 --flip 把卡片翻到左边 */
+.about-row {
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  gap: clamp(2.5rem, 6vw, 5rem);
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
 }
 
-/* 左列：文字 + 游戏卡片纵排；下边距补偿游戏卡片下沉的 8rem */
-.about-main {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  margin-bottom: 9rem;
+/* DOM 统一文字在前，桌面端仅调换网格位置，不影响移动端堆叠顺序 */
+.about-row--flip .about-text {
+  grid-column: 2;
+  grid-row: 1;
 }
 
-/* 右列：GitHub 卡片 + 补充文本纵排 */
-.about-side {
-  display: flex;
-  flex-direction: column;
-  gap: 2.25rem;
+.about-row--flip .about-card {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* 配文小标签：与各卡片头部的 mono 标签同款 */
+.about-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 0.9rem;
 }
 
 @media (max-width: 56rem) {
-  .about-grid {
+  .about-row {
     grid-template-columns: 1fr;
+    align-items: start;
   }
 
-  .about-side {
-    margin-bottom: 0;
+  .about-row--flip .about-text,
+  .about-row--flip .about-card {
+    grid-column: auto;
+    grid-row: auto;
   }
 }
 

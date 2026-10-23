@@ -30,11 +30,11 @@ defineProps<{ items: MediaSkill[] }>()
 </template>
 
 <style scoped>
-/* 与「正在游玩」（-1.2deg 下沉）/「GitHub 活动」（+0.8deg 上浮）同族的轻倾斜，
-   角度与位移都取更小一档，避免和上方正文、下方游戏卡抢戏 */
+/* 关于区棋盘网格：卡在右行的卡向右倾（+），左行向左倾（-）。
+   本卡与 GitHub 卡同在右列行，同为正向；角度与位移取更小一档，避免抢戏 */
 .media-card {
   max-width: 30rem;
-  transform: rotate(-0.7deg) translateY(0.5rem);
+  transform: rotate(0.7deg) translateY(0.5rem);
 }
 
 .media-card.media-card:hover {

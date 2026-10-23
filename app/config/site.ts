@@ -20,13 +20,10 @@ export const site = {
   // 基本信息
   profile: {
     name: "Takamiya",
-    // 头像图片地址；public/avatar.png 由定时任务从 GitHub 拉取，留空则显示首字母渐变占位头像
     avatar: "/avatar.png",
     tagline: "Full-Stack Developer",
     location: "木炉星",
-    // 一句话签名
-    bio: "专注于全栈与 AI，构建跑得稳、用得顺的系统。",
-    // GitHub 用户名，项目区据此动态拉取仓库
+    bio: "编程也是一种艺术，只要倾注了自己的创意，哪怕不够高效、让人哭笑不得，也是乐趣所在。",
     githubUser,
   },
 
@@ -100,19 +97,24 @@ export const site = {
     "随时欢迎有意义的技术交流与合作项目。",
   ] as string[],
 
-  // 媒体能力：关于我左卡底部的图标徽章行
+  aboutCode: [
+    "--这题一看就是要DP，看我操作...",
+    "--我看暴力也不失为一个办法",
+  ] as string[],
+
+  aboutMedia: [
+    "--调好每一个像素，拉好每一个曲线，做好每一帧过渡...",
+    "--差不多得了，又不是造飞机火箭",
+  ] as string[],
+
+  aboutGames: ["--就乐意摇点轮椅...", "--原来强的一直是我"] as string[],
+
   media: [
     { name: "Photoshop", icon: "/icon/ps.png", desc: "图像处理" },
     { name: "Premiere Pro", icon: "/icon/pr.png", desc: "视频剪辑" },
     { name: "Illustrator", icon: "/icon/ai.png", desc: "矢量插画" },
     { name: "After Effects", icon: "/icon/ae.png", desc: "动效合成" },
   ] satisfies MediaSkill[],
-
-  // 关于区右列、GitHub 卡片下方的补充段落（与左侧关于我同级的纯文本）
-  aboutSide: [
-    "保持对未知的探索，对事物的创造，兴趣是第一老师。",
-    "",
-  ] as string[],
 
   // 技能分组
   skillGroups: [
