@@ -5,6 +5,7 @@
 import commandsRaw from "../config/commands.json?raw";
 import { site } from "~/config/site";
 import { useWeather, type WeatherMode } from "~/composables/useWeather";
+import { useAudio, musicTracks, type MusicTrack } from "~/composables/useAudio";
 
 // ---- 数据：指令表契约 ----
 
@@ -136,5 +137,59 @@ export const commandHandlers: Record<string, CommandHandler> = {
       }[sub],
       "t-accent",
     );
+  },
+
+  // /music：终端点唱机——曲库在 config/music.json，音频文件自备放 public/audio/。
+  // 子命令 ls / play <name> / stop；裸 play 续播上次曲目
+  music: async (sc, ctx) => {
+    const { current, playing, play, pause } = useAudio();
+    const sub = sc.argv?.[0]?.toLowerCase();
+    const arg = sc.argv?.[1];
+
+    // 裸 music / music list：列曲库，正在播的行用强调色；曲库为空时指路登记方式
+    if (!sub || sub === "list") {
+      if (musicTracks.length === 0) {
+        ctx.push(`懒惰的${site.profile.name}还没上传音乐`, "t-dim");
+        return;
+      }
+      ctx.push("曲库：", "t-out");
+      musicTracks.forEach((t: MusicTrack) => {
+        const now = current.value?.id === t.id && playing.value ? "  ◀ 正在播放" : "";
+        ctx.push(`  ${t.id.padEnd(11)} ${t.title}${now}`, now ? "t-accent" : "t-out");
+      });
+      return;
+    }
+
+    if (sub === "play") {
+      // 裸 play：有历史曲目就续播，没有则指路 ls
+      if (!arg) {
+        if (current.value) {
+          const err = await play(current.value);
+          if (err) ctx.push(err, "t-err");
+          else ctx.push(`正在播放：${current.value.title}`, "t-accent");
+          return;
+        }
+        ctx.push("用法：/music play <name>（先 /music list 看看有什么）", "t-dim");
+        return;
+      }
+      const track = musicTracks.find((t) => t.id === arg.toLowerCase());
+      if (!track) {
+        ctx.push(`music: 曲库里没有 "${arg}"`, "t-err");
+        return;
+      }
+      const err = await play(track);
+      if (err) ctx.push(err, "t-err");
+      else ctx.push(`正在播放：${track.title}`, "t-accent");
+      return;
+    }
+
+    if (sub === "stop") {
+      pause();
+      ctx.push("已暂停背景音乐（/music play 续播）", "t-accent");
+      return;
+    }
+
+    ctx.push(`music: 未知的子命令 "${sub}"`, "t-err");
+    ctx.push("用法：/music <list|play <name>|stop>", "t-dim");
   },
 };

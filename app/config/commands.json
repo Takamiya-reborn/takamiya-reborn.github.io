@@ -28,6 +28,13 @@
     "group": "Info"
   },
   {
+    "name": "music",
+    "desc": "点播背景音乐（list/play/stop）",
+    "action": "music",
+    "args": true,
+    "group": "Media"
+  },
+  {
     "name": "/weather",
     "desc": "更改天气（clear/rain/thunder）",
     "action": "weather",
