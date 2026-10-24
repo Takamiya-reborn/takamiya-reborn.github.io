@@ -1,21 +1,21 @@
 {
-  "generatedAt": "2026-10-24T14:06:41.850Z",
+  "generatedAt": "2026-10-24T18:57:29.793Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 220,
-    "medium": 322,
+    "medium": 323,
     "hard": 79
   },
   "attempting": 3,
   "total": {
-    "easy": 1092,
-    "medium": 2329,
-    "hard": 1054
+    "easy": 1093,
+    "medium": 2331,
+    "hard": 1055
   },
   "streak": 1,
   "submittedToday": true,
   "daily": {
-    "slug": "count-days-spent-together",
-    "title": "统计共同度过的日子数"
+    "slug": "number-of-closed-islands",
+    "title": "统计封闭岛屿的数目"
   }
 }
