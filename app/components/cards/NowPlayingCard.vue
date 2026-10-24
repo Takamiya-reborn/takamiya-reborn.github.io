@@ -1,13 +1,24 @@
 <script setup lang="ts">
 import type { GameEntry, GamePlatform } from '~/config/types'
 
-const props = defineProps<{ games: GameEntry[] }>()
+const props = defineProps<{ games: GameEntry[]; steamUrl: string }>()
 
-// 平台 → 图标与品牌色
-const PLATFORMS: Record<GamePlatform, { icon: string; color: string; label: string }> = {
-  steam: { icon: 'simple-icons:steam', color: '#66c0f4', label: 'Steam' },
-  xbox: { icon: 'simple-icons:xbox', color: '#3fd16f', label: 'Xbox' },
-  ns: { icon: 'simple-icons:nintendoswitch', color: '#ff5f58', label: 'Switch' },
+
+// 平台 → 图标、品牌色与主页链接；label 兼作悬停 title
+const PLATFORMS: Record<GamePlatform, { icon: string; color: string; label: string; url: string }> = {
+  steam: { icon: 'simple-icons:steam', color: '#66c0f4', label: 'Steam', url: props.steamUrl },
+  xbox: {
+    icon: 'simple-icons:xbox',
+    color: '#3fd16f',
+    label: 'Xbox',
+    url: 'https://www.xbox.com/zh-CN/play/user/Takamiya2005',
+  },
+  ns: {
+    icon: 'simple-icons:nintendoswitch',
+    color: '#ff5f58',
+    label: 'Nintendo Switch',
+    url: 'https://www.nintendo.com/',
+  },
 }
 
 const { games: steamStats } = useSteamData()
@@ -42,27 +53,53 @@ const displayGames = computed(() =>
       : { ...game, note, progress }
   }),
 )
+
+// 按相邻平台分组：每组的标题行放平台名与主页链接，组间由样式画分割线
+const platformGroups = computed(() => {
+  const groups: { platform: GamePlatform; games: GameEntry[] }[] = []
+  for (const game of displayGames.value) {
+    const last = groups[groups.length - 1]
+    if (last && last.platform === game.platform) last.games.push(game)
+    else groups.push({ platform: game.platform, games: [game] })
+  }
+  return groups
+})
 </script>
 
 <template>
   <!-- 倾斜卡片必须关毛玻璃，否则整卡进合成层、文字旋转后发糊 -->
   <BaseCard class="now-playing" :glass="false">
     <ul class="np-list">
-      <li v-for="game in displayGames" :key="game.title" class="np-item">
-        <span class="np-platform" :title="PLATFORMS[game.platform].label"
-          :style="{ color: PLATFORMS[game.platform].color }">
-          <Icon :name="PLATFORMS[game.platform].icon" size="17" />
-        </span>
-        <div class="np-info">
-          <p class="np-title">{{ game.title }}</p>
-          <p v-if="game.note" class="np-note">{{ game.note }}</p>
-          <div v-if="game.progress" class="np-progress">
-            <div class="np-bar">
-              <div class="np-fill" :style="{ width: `${game.progress}%` }" />
-            </div>
-            <span class="np-pct">{{ game.progress }}%</span>
-          </div>
+      <li v-for="(group, gi) in platformGroups" :key="`${group.platform}-${gi}`" class="np-group">
+        <div class="np-group-head">
+          <span class="np-group-name" :style="{ color: PLATFORMS[group.platform].color }">
+            {{ PLATFORMS[group.platform].label }}
+          </span>
+          <a class="np-group-link" :href="PLATFORMS[group.platform].url" target="_blank" rel="noopener"
+            :title="`${PLATFORMS[group.platform].label} 主页`"
+            :aria-label="`${PLATFORMS[group.platform].label} 主页`"
+            :style="{ '--p-color': PLATFORMS[group.platform].color }">
+            <Icon :name="PLATFORMS[group.platform].icon" size="14" />
+          </a>
         </div>
+        <ul class="np-games">
+          <li v-for="game in group.games" :key="game.title" class="np-item">
+            <span class="np-platform" :title="PLATFORMS[game.platform].label"
+              :style="{ color: PLATFORMS[game.platform].color }">
+              <Icon :name="PLATFORMS[game.platform].icon" size="17" />
+            </span>
+            <div class="np-info">
+              <p class="np-title">{{ game.title }}</p>
+              <p v-if="game.note" class="np-note">{{ game.note }}</p>
+              <div v-if="game.progress" class="np-progress">
+                <div class="np-bar">
+                  <div class="np-fill" :style="{ width: `${game.progress}%` }" />
+                </div>
+                <span class="np-pct">{{ game.progress }}%</span>
+              </div>
+            </div>
+          </li>
+        </ul>
       </li>
     </ul>
   </BaseCard>
@@ -82,6 +119,50 @@ const displayGames = computed(() =>
 }
 
 .np-list {
+  display: grid;
+}
+
+/* 平台组：组间分割线与平台图标块同用 var(--border) */
+.np-group + .np-group {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+/* 组标题行：品牌色平台名在左，主页链接小卡在右 */
+.np-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.np-group-name {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+}
+
+.np-group-link {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--p-color);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.np-group-link:hover {
+  border-color: var(--p-color);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--p-color) 35%, transparent);
+}
+
+.np-games {
   display: grid;
   gap: 0.9rem;
 }

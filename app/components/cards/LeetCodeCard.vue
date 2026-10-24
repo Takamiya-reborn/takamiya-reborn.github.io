@@ -53,10 +53,14 @@ const parts = computed(() => {
 <template>
   <!-- 倾斜卡片必须关毛玻璃，否则整卡进合成层、文字旋转后发糊 -->
   <BaseCard class="leetcode" :glass="false">
+    <!-- 背景水印 logo：垫在正文之下，贴右上角 -->
+    <span class="lc-watermark" aria-hidden="true">
+      <Icon name="simple-icons:leetcode" size="6rem" class="lc-watermark-icon" />
+    </span>
+
     <div class="lc-head">
       <div class="lc-head-left">
         <span class="lc-label">
-          <Icon name="simple-icons:leetcode" size="16" style="color: #ffa116" />
           LeetCode
         </span>
         <span class="lc-divider" aria-hidden="true" />
@@ -179,11 +183,44 @@ const parts = computed(() => {
 .lc-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   color: var(--muted);
+}
+
+/* 背景水印：品牌橙低透明度，与 GitHub 卡同款出血裁切 + 缓浮（结构见 GithubActivityCard） */
+.lc-watermark {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  /* 不出血：贴右上角，垫在文字后面（上移用图标负 margin，padding 不吃负值） */
+  padding: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  color: #ffa116;
+  opacity: 0.09;
+  pointer-events: none;
+}
+
+/* Icon 是 CSS mask 模式渲染的 span（无 svg 子元素），尺寸用 size 属性给 */
+.lc-watermark-icon {
+  margin-top: -0.5rem;
+  animation: lc-float 9s ease-in-out infinite;
+}
+
+@keyframes lc-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -0.4rem;
+  }
 }
 
 .lc-link {

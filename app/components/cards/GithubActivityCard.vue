@@ -92,9 +92,13 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
 <template>
   <!-- 数据全空时整卡隐藏，不留空壳 -->
   <BaseCard v-if="columns.length || languages.length || prs.length" class="github-activity" :glass="false">
+    <!-- 背景水印 logo：垫在正文之下，贴右上角 -->
+    <span class="gh-watermark" aria-hidden="true">
+      <Icon name="lucide:github" size="6rem" class="gh-watermark-icon" />
+    </span>
+
     <div class="gh-head">
       <span class="gh-label">
-        <Icon name="lucide:github" size="16" />
         GitHub
       </span>
       <span class="gh-window">近 42 天</span>
@@ -198,11 +202,45 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
 .gh-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   color: var(--muted);
+}
+
+/* 背景水印：与 .card-bg 同在 z-index -1（DOM 靠后所以盖在底色上），
+   主体用 overflow + 圆角裁掉出血部分，动画走 translate 属性不干扰裁切位移 */
+.gh-watermark {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  /* 不出血：贴右上角，垫在文字后面（上移用图标负 margin，padding 不吃负值） */
+  padding: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  color: var(--accent);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+/* Icon 是 CSS mask 模式渲染的 span（无 svg 子元素），尺寸用 size 属性给 */
+.gh-watermark-icon {
+  margin-top: -0.5rem;
+  animation: gh-float 9s ease-in-out infinite;
+}
+
+@keyframes gh-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -0.4rem;
+  }
 }
 
 .gh-window {

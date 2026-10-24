@@ -12,7 +12,6 @@ defineProps<{ items: MediaSkill[] }>()
         <Icon name="lucide:clapperboard" size="16" />
         Media
       </span>
-      <span class="md-sub">MEDIA</span>
     </div>
 
     <ul class="md-list">
@@ -45,7 +44,6 @@ defineProps<{ items: MediaSkill[] }>()
 .md-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.75rem;
 }
 
@@ -57,13 +55,6 @@ defineProps<{ items: MediaSkill[] }>()
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   color: var(--muted);
-}
-
-.md-sub {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--muted);
-  opacity: 0.8;
 }
 
 /* 两列网格对齐：flex-wrap 按内容宽排布，条目长短不一时行首会错位 */

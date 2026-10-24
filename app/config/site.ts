@@ -14,6 +14,10 @@ import type {
 // GitHub 用户名：基本信息与项目回退数据共用
 const githubUser = "Takamiya-reborn";
 
+// Steam 主页链接：不占顶栏社交位，由游戏卡片（NowPlayingCard）展示
+export const steamProfileUrl =
+  "https://steamcommunity.com/profiles/76561199163260767/";
+
 // ---------- 内容数据 ----------
 
 export const site = {
@@ -40,11 +44,6 @@ export const site = {
       url: "https://space.bilibili.com/1573097602",
     },
     {
-      label: "Steam",
-      icon: "simple-icons:steam",
-      url: "https://steamcommunity.com/profiles/76561199163260767/",
-    },
-    {
       label: "Pixiv",
       icon: "simple-icons:pixiv",
       url: "https://www.pixiv.net/users/97966543",
@@ -66,6 +65,11 @@ export const site = {
       title: "Minecraft",
       platform: "xbox",
       note: "这几百个模组加上，不得牛逼炸了",
+    },
+    {
+      title: "Forza: Horizon 6",
+      platform: "xbox",
+      note: "你甚至可以在里面开车",
     },
     {
       title: "Terraria",

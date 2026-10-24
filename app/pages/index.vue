@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { easterEgg, sections, site } from '~/config/site'
+import { easterEgg, sections, site, steamProfileUrl } from '~/config/site'
 
 useHead({
   title: site.profile.name,
@@ -153,7 +153,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
                 <AboutCard :paragraphs="site.aboutGames" />
               </div>
               <div class="about-card">
-                <NowPlayingCard :games="site.games" />
+                <NowPlayingCard :games="site.games" :steam-url="steamProfileUrl" />
               </div>
             </div>
           </div>
