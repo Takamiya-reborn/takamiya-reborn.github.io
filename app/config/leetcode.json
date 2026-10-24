@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-23T18:41:49.852Z",
+  "generatedAt": "2026-10-24T07:47:24.218Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 220,
@@ -11,5 +11,11 @@
     "easy": 1092,
     "medium": 2329,
     "hard": 1054
+  },
+  "streak": 1,
+  "submittedToday": true,
+  "daily": {
+    "slug": "count-days-spent-together",
+    "title": "统计共同度过的日子数"
   }
 }

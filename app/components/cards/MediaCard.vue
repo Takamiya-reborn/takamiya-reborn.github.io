@@ -10,7 +10,7 @@ defineProps<{ items: MediaSkill[] }>()
     <div class="md-head">
       <span class="md-label">
         <Icon name="lucide:clapperboard" size="16" />
-        媒体
+        Media
       </span>
       <span class="md-sub">MEDIA</span>
     </div>
