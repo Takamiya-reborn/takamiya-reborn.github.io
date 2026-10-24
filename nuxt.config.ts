@@ -46,11 +46,10 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        // 主字体预加载（中文汉仪文黑 + 英文/数字 Consolas）
-        { rel: 'preload', as: 'font', type: 'font/woff2', href: '/fonts/HYWenHei-85W.woff2', crossorigin: '' },
+        // 字体分片按 unicode-range 按需加载，没有单一入口文件可 preload
       ],
     },
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/fonts/hyw/result.css', '~/assets/css/main.css'],
 })

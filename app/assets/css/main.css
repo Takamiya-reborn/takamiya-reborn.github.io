@@ -1,13 +1,7 @@
 /* 设计令牌 + 全局基础样式，改主题只需调整 :root 变量 */
 
-/* 汉仪文黑 H85W：中文主字体（单字重，注册为全权重避免伪加粗） */
-@font-face {
-  font-family: 'HYWenHei-85W';
-  src: url('/fonts/HYWenHei-85W.woff2') format('woff2');
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* 汉仪文黑 H85W 的分片 @font-face 由 scripts/split-font.mjs 生成，
+   在 nuxt.config 的 css 数组里随 main.css 一起打包 */
 
 :root {
   color-scheme: dark;
