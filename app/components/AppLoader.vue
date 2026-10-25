@@ -126,9 +126,9 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   background-image: linear-gradient(-45deg,
-      rgba(255, 255, 255, 0.2) 25%,
+      var(--loader-stripe) 25%,
       transparent 25% 50%,
-      rgba(255, 255, 255, 0.2) 50% 75%,
+      var(--loader-stripe) 50% 75%,
       transparent 75%);
   /* 位移量必须等于 background-size 的边长，斜纹才能无缝循环 */
   background-size: 40px 40px;

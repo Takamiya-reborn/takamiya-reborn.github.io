@@ -79,11 +79,11 @@ onUnmounted(() => boltTimers.forEach(clearTimeout))
 }
 
 .mood--rain {
-  background: rgba(10, 14, 26, 0.12);
+  background: var(--veil-rain);
 }
 
 .mood--thunder {
-  background: rgba(8, 10, 20, 0.22);
+  background: var(--veil-thunder);
 }
 
 /* 换天淡入淡出：拉长到 1s，让基调变化平滑可感知 */
@@ -111,7 +111,7 @@ onUnmounted(() => boltTimers.forEach(clearTimeout))
   top: -12vh;
   width: 1px;
   border-radius: 1px;
-  background: linear-gradient(to bottom, transparent, rgba(165, 180, 252, 0.55));
+  background: linear-gradient(to bottom, transparent, var(--fx-drop));
   animation: fall linear infinite;
 }
 
@@ -123,7 +123,7 @@ onUnmounted(() => boltTimers.forEach(clearTimeout))
 
 /* 闪电：白光快速双闪（亮—暗—亮—灭），纯 CSS 关键帧演出 */
 .bolt {
-  background: rgba(226, 236, 255, 0.9);
+  background: var(--fx-bolt);
   animation: lightning 0.35s ease-out forwards;
 }
 

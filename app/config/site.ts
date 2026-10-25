@@ -206,16 +206,16 @@ export const sections = [
 ] satisfies SectionMeta[];
 
 // 彩蛋与提示文案
-// 秘技按键序列：页脚提示与 useKonami 的监听都从这里取，只改这一处
+// 按键序列：页脚提示与 useKonami 的监听都从这里取，只改这一处
 const konamiKeys = ["↑", "↑", "↓", "↓", "←", "→", "←", "→", "B", "A"] as const;
 
 export const easterEgg = {
-  // 秘技按键序列，传给 useKonami
+  // 按键序列，传给 useKonami
   keys: konamiKeys,
   // 页脚的彩蛋提示
   hint: `隐藏彩蛋：${konamiKeys.join(" ")}`,
-  // 秘技触发后的 toast
-  toast: "🎮 秘技发动！你发现了彩蛋",
+  // 触发后的 toast
+  toast: "🎮 发动！你发现了彩蛋",
   // 进站成就弹窗
   achievement: {
     title: "成就已解锁",

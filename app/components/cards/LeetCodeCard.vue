@@ -167,7 +167,7 @@ const parts = computed(() => {
 
 /* hover 同官方：出现一块圆角灰底，颜色不变 */
 .lc-streak:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-hover);
 }
 
 /* 空心态：描边火焰 + 数字一起褪灰 */
@@ -329,7 +329,7 @@ const parts = computed(() => {
   flex-direction: column;
   gap: 0.2rem;
   padding: 0.7rem 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 0.6rem;
   transition: border-color 0.2s;

@@ -15,7 +15,7 @@ defineProps<{ label: string }>()
   font-size: 0.78rem;
   font-family: var(--font-mono);
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 999px;
   white-space: nowrap;
@@ -29,7 +29,7 @@ defineProps<{ label: string }>()
 .tag:hover {
   color: var(--text);
   background: var(--accent-soft);
-  border-color: rgba(129, 140, 248, 0.45);
+  border-color: var(--accent-border);
   transform: translateY(-2px) scale(1.07);
 }
 </style>

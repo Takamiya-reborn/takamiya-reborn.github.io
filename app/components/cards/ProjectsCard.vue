@@ -85,7 +85,7 @@ const { projects } = useGitHubProjects(
 }
 
 .project:hover {
-  border-color: rgba(129, 140, 248, 0.45);
+  border-color: var(--accent-border);
   transform: translateY(-4px) rotate(-0.5deg);
   box-shadow: var(--glow);
 }
@@ -101,8 +101,8 @@ const { projects } = useGitHubProjects(
   width: 2.6rem;
   height: 2.6rem;
   color: var(--accent);
-  background: linear-gradient(135deg, var(--accent-soft), rgba(34, 211, 238, 0.1));
-  border: 1px solid rgba(129, 140, 248, 0.2);
+  background: linear-gradient(135deg, var(--accent-soft), color-mix(in srgb, var(--accent-2) 10%, transparent));
+  border: 1px solid var(--accent-border-faint);
   border-radius: var(--radius-sm);
   transition: transform 0.35s var(--ease-bouncy);
 }
@@ -154,7 +154,7 @@ const { projects } = useGitHubProjects(
 .link:hover {
   color: var(--accent-2);
   background: var(--accent-soft);
-  border-color: rgba(34, 211, 238, 0.4);
+  border-color: var(--accent-border-2);
   transform: translateY(-2px);
 }
 

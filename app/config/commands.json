@@ -20,6 +20,12 @@
     "action": "docker",
     "args": true
   },
+  {
+    "name": "theme",
+    "desc": "切换主题(dark(default)/light)",
+    "action": "theme",
+    "args": true
+  },
   { "name": "whoami", "desc": "我是谁", "action": "whoami", "group": "Info" },
   {
     "name": "whereami",

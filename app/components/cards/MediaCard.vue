@@ -77,7 +77,7 @@ defineProps<{ items: MediaSkill[] }>()
   place-items: center;
   width: 2.4rem;
   height: 2.4rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 0.6rem;
   transition: border-color 0.2s ease;

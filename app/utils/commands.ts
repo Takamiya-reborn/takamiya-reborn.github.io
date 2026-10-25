@@ -5,6 +5,7 @@
 import commandsRaw from "../config/commands.json?raw";
 import { site } from "~/config/site";
 import { useWeather, type WeatherMode } from "~/composables/useWeather";
+import { useTheme, type ThemeMode } from "~/composables/useTheme";
 import { useAudio, musicTracks, type MusicTrack } from "~/composables/useAudio";
 
 // ---- 数据：指令表契约 ----
@@ -135,6 +136,24 @@ export const commandHandlers: Record<string, CommandHandler> = {
         rain: "已将天气更改为雨天",
         thunder: "已将天气更改为雷暴",
       }[sub],
+      "t-accent",
+    );
+  },
+
+  // theme：切换深浅主题，default 是 dark 的别名（两者等价）；状态落到 useTheme，
+  // app.vue 的 useHead 把它变成 <html data-theme>，配色由 main.css 的浅色覆盖块接管
+  theme: (sc, ctx) => {
+    const modes: ThemeMode[] = ["dark", "light"];
+    const raw = sc.argv?.[0]?.toLowerCase();
+    const sub = raw === "default" ? ("dark" as const) : modes.find((m) => m === raw); // find 帮 TS 收窄到 ThemeMode
+    if (!raw || !sub) {
+      if (raw) ctx.push(`theme: 未知的主题 "${raw}"`, "t-err");
+      ctx.push("用法：theme <dark(default)|light>", "t-dim");
+      return;
+    }
+    useTheme().set(sub);
+    ctx.push(
+      sub === "light" ? "已切换到浅色主题" : "已切换到深色主题",
       "t-accent",
     );
   },

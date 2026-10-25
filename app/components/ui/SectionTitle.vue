@@ -47,7 +47,7 @@ defineProps<{
   flex-grow: 1;
   height: 1px;
   margin-left: 0.5rem;
-  background: linear-gradient(90deg, rgba(129, 140, 248, 0.5), transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 50%, transparent), transparent);
 }
 
 .subtitle {

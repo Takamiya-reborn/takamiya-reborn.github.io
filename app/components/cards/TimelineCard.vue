@@ -61,7 +61,7 @@ defineProps<{ items: TimelineItem[] }>()
 
 .item:hover .node {
   transform: scale(1.3);
-  box-shadow: 0 0 0.75rem rgba(129, 140, 248, 0.55);
+  box-shadow: 0 0 0.75rem color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .content {

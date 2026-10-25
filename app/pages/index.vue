@@ -12,7 +12,7 @@ const meta = (id: string) => {
   return section
 }
 
-// ---------- 科乐美秘技彩蛋 ----------
+// ---------- 科乐美彩蛋 ----------
 interface ConfettiPiece {
   id: number
   left: number
@@ -30,7 +30,8 @@ let toastTimer: ReturnType<typeof setTimeout> | undefined
 let partyTimer: ReturnType<typeof setTimeout> | undefined
 
 function celebrate() {
-  const colors = ['#818cf8', '#22d3ee', '#c084fc', '#fbbf24', '#34d399', '#fb7185']
+  // 色值引用 main.css 的六色主题池变量，浅色主题切换时自动跟随
+  const colors = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)', 'var(--accent-4)', 'var(--accent-5)', 'var(--accent-6)']
   confetti.value = Array.from({ length: 100 }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
@@ -82,18 +83,18 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
       <span class="blob blob--violet" />
       <span class="grid-overlay" />
       <span class="noise" />
-      <span class="float-icon" style="top: 18%; left: 5%; animation-delay: -1s; color: #818cf8">
+      <span class="float-icon" style="top: 18%; left: 5%; animation-delay: -1s; color: var(--accent)">
         <Icon name="lucide:gamepad-2" size="34" />
       </span>
       <span class="float-icon"
-        style="top: 30%; right: 7%; animation-delay: -3.2s; animation-duration: 7.5s; color: #fbbf24">
+        style="top: 30%; right: 7%; animation-delay: -3.2s; animation-duration: 7.5s; color: var(--accent-4)">
         <Icon name="lucide:star" size="28" />
       </span>
       <span class="float-icon"
-        style="bottom: 22%; left: 9%; animation-delay: -5s; animation-duration: 8s; color: #22d3ee">
+        style="bottom: 22%; left: 9%; animation-delay: -5s; animation-duration: 8s; color: var(--accent-2)">
         <Icon name="lucide:ghost" size="30" />
       </span>
-      <span class="float-icon" style="bottom: 40%; right: 14%; animation-delay: -2.4s; color: #fb7185">
+      <span class="float-icon" style="bottom: 40%; right: 14%; animation-delay: -2.4s; color: var(--accent-6)">
         <Icon name="lucide:heart" size="24" />
       </span>
     </div>
@@ -256,7 +257,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   height: 38rem;
   top: -14rem;
   left: -8rem;
-  background: rgba(99, 102, 241, 0.2);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
   animation: drift 26s ease-in-out infinite alternate;
 }
 
@@ -265,7 +266,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   height: 32rem;
   top: -10rem;
   right: -6rem;
-  background: rgba(34, 211, 238, 0.13);
+  background: color-mix(in srgb, var(--accent-2) 13%, transparent);
   animation: drift 34s ease-in-out infinite alternate-reverse;
 }
 
@@ -274,7 +275,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   height: 30rem;
   bottom: -14rem;
   left: 32%;
-  background: rgba(192, 132, 252, 0.11);
+  background: color-mix(in srgb, var(--accent-3) 11%, transparent);
   animation: drift 40s ease-in-out infinite alternate;
 }
 
@@ -283,8 +284,8 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 44px 44px;
   -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 25%, transparent 75%);
   mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 25%, transparent 75%);
@@ -419,7 +420,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   font-size: 0.9rem;
   color: var(--text);
   background: var(--bg-soft);
-  border: 1px solid rgba(129, 140, 248, 0.45);
+  border: 1px solid var(--accent-border);
   border-radius: 999px;
   box-shadow: var(--glow);
 }
@@ -450,7 +451,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   background: var(--bg-soft);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1rem 2.5rem var(--shadow-deep);
 }
 
 .achv-icon {

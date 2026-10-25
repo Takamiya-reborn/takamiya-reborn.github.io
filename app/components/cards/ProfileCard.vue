@@ -151,7 +151,7 @@ const { nuked } = useNuke()
 .avatar-glow {
   position: absolute;
   inset: -3rem;
-  background: radial-gradient(closest-side, rgba(129, 140, 248, 0.28), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent);
   filter: blur(30px);
   pointer-events: none;
 }
@@ -203,7 +203,7 @@ const { nuked } = useNuke()
   width: 2.6rem;
   height: 2.6rem;
   color: var(--accent-2);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: 0.9rem;
   backdrop-filter: blur(8px);
@@ -213,14 +213,14 @@ const { nuked } = useNuke()
 .orbit-1 {
   top: -0.6rem;
   right: -1.6rem;
-  color: #fbbf24;
+  color: var(--accent-4);
   animation-delay: -1s;
 }
 
 .orbit-2 {
   bottom: 1.4rem;
   right: -2.4rem;
-  color: #c084fc;
+  color: var(--accent-3);
   animation-delay: -2.6s;
   animation-duration: 6.2s;
 }
@@ -228,7 +228,7 @@ const { nuked } = useNuke()
 .orbit-3 {
   bottom: -0.9rem;
   left: -1.2rem;
-  color: #34d399;
+  color: var(--accent-5);
   animation-delay: -4s;
 }
 

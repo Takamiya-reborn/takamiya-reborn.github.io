@@ -149,7 +149,7 @@ const platformGroups = computed(() => {
   width: 1.6rem;
   height: 1.6rem;
   color: var(--p-color);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 0.4rem;
   transition:
@@ -179,7 +179,7 @@ const platformGroups = computed(() => {
   width: 2rem;
   height: 2rem;
   margin-top: 0.1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
 }
@@ -206,7 +206,7 @@ const platformGroups = computed(() => {
   flex-grow: 1;
   max-width: 10rem;
   height: 0.35rem;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-hover);
   border-radius: 999px;
   overflow: hidden;
 }

@@ -13,6 +13,10 @@
   --surface-hover: rgba(255, 255, 255, 0.07);
   /* 倾斜卡片的底色：不能开 backdrop-filter，稍微加浓补偿玻璃感 */
   --surface-strong: rgba(255, 255, 255, 0.05);
+  --surface-faint: rgba(255, 255, 255, 0.03);
+  /* 终端底、扫描线这类最浅的玻璃层 */
+  --surface-raised: rgba(255, 255, 255, 0.06);
+  /* 热力格、语言条、轨道底座这类要浮出一点的层 */
   --border: rgba(255, 255, 255, 0.09);
   --border-strong: rgba(255, 255, 255, 0.16);
   --text: #e8ecf4;
@@ -23,14 +27,49 @@
   /* cyan-400 */
   --accent-3: #c084fc;
   /* purple-400 */
-  --accent-soft: rgba(129, 140, 248, 0.14);
+  --accent-4: #fbbf24;
+  /* amber-400 */
+  --accent-5: #34d399;
+  /* emerald-400 */
+  --accent-6: #fb7185;
+  /* rose-400，六色主题池到此补齐 */
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
   --gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
   /* 流动渐变文字的柔端：accent 掺入背景压暗，避免接近纯白太扎眼 */
   --gradient-soft: color-mix(in srgb, var(--accent) 38%, var(--bg));
 
-  /* 发光与阴影 */
-  --glow: 0 0 2.5rem rgba(129, 140, 248, 0.22);
+  /* 强调边框：accent 系 rgba 的三档透明度收拢 */
+  --accent-border: color-mix(in srgb, var(--accent) 45%, transparent);
+  --accent-border-faint: color-mix(in srgb, var(--accent) 20%, transparent);
+  --accent-border-2: color-mix(in srgb, var(--accent-2) 40%, transparent);
+
+  /* 压在 accent 渐变上的深色文字 */
+  --on-accent: #0b1020;
+
+  /* 语义色：GitHub 深色值，浅色主题将来在覆盖块里调整 */
+  --c-error: #f87171;
+  --git-green: #3fb950;
+  --git-red: #f85149;
+  --git-purple: #a371f7;
+
+  /* 发光与阴影：glow 挂在 accent 上，换主题时自动跟随 */
+  --glow: 0 0 2.5rem color-mix(in srgb, var(--accent) 22%, transparent);
   --shadow-card: 0 1.5rem 3rem -1rem rgba(0, 0, 0, 0.5);
+  --shadow-deep: rgba(0, 0, 0, 0.5);
+
+  /* 滚动条渐变（上蓝下红装饰，主题无关） */
+  --scrollbar-a: #3b82f6;
+  --scrollbar-b: #ef4444;
+  --scrollbar-a-hi: #60a5fa;
+  --scrollbar-b-hi: #f87171;
+
+  /* 装饰杂项 */
+  --grid-line: rgba(255, 255, 255, 0.035);
+  --loader-stripe: rgba(255, 255, 255, 0.2);
+  --veil-rain: rgba(10, 14, 26, 0.12);
+  --veil-thunder: rgba(8, 10, 20, 0.22);
+  --fx-drop: rgba(165, 180, 252, 0.55);
+  --fx-bolt: rgba(226, 236, 255, 0.9);
 
   /* 字体：英文/数字走 Consolas（逐字符回退），中文走汉仪文黑 H85W
      平台回退：Win → Consolas，macOS → MF Mono，Linux → DejaVu Sans Mono */
@@ -52,6 +91,48 @@
   /* 缓动曲线：快出慢停 + 弹簧过冲 */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 浅色主题：Terminal 的 theme light 指令往 <html> 挂 data-theme，在此覆盖同名变量。
+   派生令牌（--accent-border/--glow/--gradient-soft 等 color-mix 系列）引用 accent，
+   改上面的基色即可，无需重复定义 */
+html[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f4f6fb;
+  --bg-soft: #ffffff;
+  /* 玻璃拟态反转：浅底上用深色玻璃才浮得出来 */
+  --surface: rgba(13, 18, 38, 0.04);
+  --surface-hover: rgba(13, 18, 38, 0.07);
+  --surface-strong: rgba(13, 18, 38, 0.05);
+  --surface-faint: rgba(13, 18, 38, 0.03);
+  --surface-raised: rgba(13, 18, 38, 0.06);
+  --border: rgba(13, 18, 38, 0.1);
+  --border-strong: rgba(13, 18, 38, 0.18);
+  --text: #1d2433;
+  --muted: #5f6b80;
+  /* 强调色压深一档（500/600 系）：400 系在浅底上发飘 */
+  --accent: #6366f1;
+  --accent-2: #0891b2;
+  --accent-3: #9333ea;
+  --accent-4: #d97706;
+  --accent-5: #059669;
+  --accent-6: #e11d48;
+
+  /* 语义色换 GitHub 浅色版 */
+  --c-error: #dc2626;
+  --git-green: #1a7f37;
+  --git-red: #cf222e;
+  --git-purple: #8250df;
+
+  --shadow-card: 0 1.5rem 3rem -1rem rgba(15, 23, 42, 0.18);
+  --shadow-deep: rgba(15, 23, 42, 0.2);
+  --grid-line: rgba(13, 18, 38, 0.05);
+  --veil-rain: rgba(30, 41, 59, 0.1);
+  --veil-thunder: rgba(30, 41, 59, 0.18);
+  --fx-drop: rgba(99, 102, 241, 0.5);
+  /* 白闪电在浅底上看不见，换成黄闪 */
+  --fx-bolt: #fde047;
 }
 
 *,
@@ -94,19 +175,19 @@ ol {
 
 ::selection {
   color: var(--text);
-  background: rgba(129, 140, 248, 0.35);
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 /* 滚动条：Firefox 走标准属性兜底，@supports 隔离避免 Chrome 覆盖伪元素样式 */
 @supports not selector(::-webkit-scrollbar) {
   html {
     scrollbar-width: thin;
-    scrollbar-color: #60a5fa transparent;
+    scrollbar-color: var(--scrollbar-a-hi) transparent;
   }
 }
 
 ::-webkit-scrollbar {
-  width: 0.95rem;
+  width: 0.55rem;
 }
 
 ::-webkit-scrollbar-track {
@@ -115,20 +196,20 @@ ol {
 
 ::-webkit-scrollbar-thumb {
   /* 上蓝下红平滑渐变 */
-  background-image: linear-gradient(180deg, #3b82f6, #ef4444);
+  background-image: linear-gradient(180deg, var(--scrollbar-a), var(--scrollbar-b));
   border-radius: 999px;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   background-clip: padding-box;
 }
 
 /* 用长写属性换色，避免简写重置 background-clip */
 ::-webkit-scrollbar-thumb:hover {
-  background-image: linear-gradient(180deg, #60a5fa, #f87171);
+  background-image: linear-gradient(180deg, var(--scrollbar-a-hi), var(--scrollbar-b-hi));
 }
 
 ::-webkit-scrollbar-thumb:active {
   /* 按下与 hover 同色，避免拖动时变色 */
-  background-image: linear-gradient(180deg, #60a5fa, #f87171);
+  background-image: linear-gradient(180deg, var(--scrollbar-a-hi), var(--scrollbar-b-hi));
 }
 
 /* 键盘可达性 */
@@ -136,6 +217,34 @@ ol {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/* ---- 主题切换过渡 ---- */
+/* 换肤瞬间由 useTheme 挂 theme-switching 类，窗口期内给常用着色属性统一加过渡；
+   只覆盖纯色属性（渐变背景无法过渡，会瞬切，属可接受的降级）。
+   窗口期后移除，避免常驻过渡拖累悬停发光等微交互 */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    fill 0.35s ease,
+    stroke 0.35s ease !important;
+}
+
+/* 减少动效偏好同样适用于换肤过渡（上面的选择器特异性更高，需单独压制） */
+@media (prefers-reduced-motion: reduce) {
+
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
+  }
 }
 
 /* ---- 全局按钮 ---- */
@@ -147,7 +256,7 @@ ol {
   padding: 0.65rem 1.35rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #0b1020;
+  color: var(--on-accent);
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   border: none;
   border-radius: 999px;
@@ -162,12 +271,12 @@ ol {
 
 .btn:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 0 3rem rgba(129, 140, 248, 0.4);
+  box-shadow: 0 0 3rem color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .btn--ghost {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border-strong);
   box-shadow: none;
 }

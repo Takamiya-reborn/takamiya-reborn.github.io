@@ -6,7 +6,7 @@ const KEY_BY_SYMBOL: Record<string, string> = {
   '→': 'ArrowRight',
 }
 
-// 科乐美秘技彩蛋：依次按下 keys（↑↓←→ 或字母）后触发回调
+// 科乐美彩蛋：依次按下 keys（↑↓←→ 或字母）后触发回调
 export function useKonami(callback: () => void, keys: readonly string[]) {
   const sequence = keys.map((k) => KEY_BY_SYMBOL[k] ?? k.toLowerCase())
   let progress = 0

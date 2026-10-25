@@ -60,8 +60,8 @@ const langColors: Record<string, string> = {
   'Jupyter Notebook': '#da5b0b',
 }
 
-// 未收录的语言回退到主题色池，按名次轮换
-const fallbackColors = ['#818cf8', '#22d3ee', '#c084fc', '#34d399', '#fbbf24', '#fb7185']
+// 未收录的语言回退到主题色池（引用 main.css 六色主题池变量），按名次轮换
+const fallbackColors = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)', 'var(--accent-5)', 'var(--accent-4)', 'var(--accent-6)']
 const langColor = (lang: GithubLanguage, index: number) =>
   langColors[lang.name] ?? fallbackColors[index % fallbackColors.length]!
 
@@ -307,7 +307,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
   width: 14px;
   height: 14px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-raised);
 }
 
 .gh-grid .gh-cell {
@@ -393,7 +393,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
   margin-top: 0.7rem;
   border-radius: 4px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-raised);
 }
 
 .gh-langbar .gh-langseg {
@@ -479,12 +479,12 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
 
 /* GitHub 风格的 +绿 −红 */
 .gh-add {
-  color: #3fb950;
+  color: var(--git-green);
 }
 
 .gh-del {
   margin-left: 0.4rem;
-  color: #f85149;
+  color: var(--git-red);
 }
 
 .gh-commit:hover .gh-commit-msg {
@@ -504,14 +504,14 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
 
 /* PR 状态：GitHub 语义色 */
 .gh-pr-state.is-open {
-  color: #3fb950;
+  color: var(--git-green);
 }
 
 .gh-pr-state.is-merged {
-  color: #a371f7;
+  color: var(--git-purple);
 }
 
 .gh-pr-state.is-closed {
-  color: #f85149;
+  color: var(--git-red);
 }
 </style>

@@ -32,7 +32,7 @@ const headerSocials = computed(() =>
   position: fixed;
   inset: 0 0 auto;
   z-index: 50;
-  background: rgba(6, 7, 13, 0.65);
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -115,7 +115,7 @@ const headerSocials = computed(() =>
   width: 2.25rem;
   height: 2.25rem;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   transition:

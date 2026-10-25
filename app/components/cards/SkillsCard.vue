@@ -5,8 +5,8 @@ const props = defineProps<{
   groups: SkillGroup[]
 }>()
 
-/* 分组配色：与站点暗色主题呼应的荧光色 */
-const PALETTE = ['#818cf8', '#22d3ee', '#c084fc', '#fbbf24', '#34d399', '#fb7185'] as const
+/* 分组配色：引用 main.css 的六色主题池变量，浅色主题切换时自动跟随 */
+const PALETTE = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)', 'var(--accent-4)', 'var(--accent-5)', 'var(--accent-6)'] as const
 
 /* 技能品牌图标：slug 已对照本地 @iconify-json/simple-icons 逐一核实；
    表外技能按"去符号小写"猜测（Vitest → vitest 这类），猜不中则不渲染图标 */
@@ -436,10 +436,10 @@ for (const s of [-1, 1]) {
   font-family: var(--font-mono);
   font-size: 1.15rem;
   font-weight: 700;
-  color: #10131f;
+  color: var(--on-accent);
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   border-radius: 10px;
-  box-shadow: 0 0 28px rgba(129, 140, 248, 0.4);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 /* 引脚 1 标记：芯片左上角的小圆点 */
@@ -448,7 +448,7 @@ for (const s of [-1, 1]) {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgb(6 7 13 / 0.45);
+  background: color-mix(in srgb, var(--bg) 45%, transparent);
 }
 
 .group-pill {
@@ -459,7 +459,7 @@ for (const s of [-1, 1]) {
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text);
-  background: rgba(17, 20, 32, 0.88);
+  background: color-mix(in srgb, var(--bg-soft) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
   border-radius: 8px;
   transition:
@@ -488,7 +488,7 @@ for (const s of [-1, 1]) {
   font-family: var(--font-mono);
   font-size: 0.95rem;
   color: var(--text);
-  background: rgba(11, 14, 23, 0.94);
+  background: color-mix(in srgb, var(--bg-soft) 94%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 38%, transparent);
   border-radius: 5px;
   transition:

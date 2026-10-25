@@ -72,7 +72,7 @@ function onPointerMove(event: PointerEvent) {
   inset: 0;
   border-radius: inherit;
   background: radial-gradient(18rem circle at var(--mx, 50%) var(--my, 50%),
-      rgba(129, 140, 248, 0.1),
+      color-mix(in srgb, var(--accent) 10%, transparent),
       transparent 55%);
   opacity: 0;
   transition: opacity 0.35s ease;
@@ -91,9 +91,9 @@ function onPointerMove(event: PointerEvent) {
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(135deg,
-      rgba(129, 140, 248, 0.55),
-      rgba(192, 132, 252, 0.35) 40%,
-      rgba(34, 211, 238, 0.4) 75%);
+      color-mix(in srgb, var(--accent) 55%, transparent),
+      color-mix(in srgb, var(--accent-3) 35%, transparent) 40%,
+      color-mix(in srgb, var(--accent-2) 40%, transparent) 75%);
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);

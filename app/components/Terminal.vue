@@ -321,7 +321,7 @@ onUnmounted(() => {
   height: clamp(18.5rem, 31vw, 26rem);
   margin-top: 0.9rem;
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-faint);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -342,7 +342,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.6rem;
   padding: 0.5rem 0.8rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-faint);
   border-bottom: 1px solid var(--border);
   cursor: default;
 }
@@ -359,6 +359,7 @@ onUnmounted(() => {
   background: var(--border-strong);
 }
 
+/* mac 红绿灯装饰色，与主题无关，保持硬编码 */
 .term-dots i:nth-child(1) {
   background: #f87171;
 }
@@ -407,7 +408,7 @@ onUnmounted(() => {
   pointer-events: none;
   background: repeating-linear-gradient(0deg,
       transparent 0 2px,
-      rgba(255, 255, 255, 0.02) 2px 4px);
+      var(--surface-faint) 2px 4px);
 }
 
 .term-line {
@@ -483,7 +484,7 @@ onUnmounted(() => {
 }
 
 .t-err {
-  color: #f87171;
+  color: var(--c-error);
 }
 
 /* 底部真输入行：placeholder 轮播打字机身份标签 */
