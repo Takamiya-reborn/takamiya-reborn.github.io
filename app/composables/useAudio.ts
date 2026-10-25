@@ -48,7 +48,8 @@ export function useAudio() {
         el.play().catch(() => settle(true));
       });
       playing.value = !failed;
-      if (failed) return `music: 播放 "${track.title}" 失败，检查 ${track.file} 是否存在`;
+      if (failed)
+        return `music: 播放 "${track.title}" 失败，检查 ${track.file} 是否存在`;
       return null;
     }
     try {

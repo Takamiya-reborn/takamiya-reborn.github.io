@@ -169,7 +169,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
               <span class="gh-commit-repo">{{ p.repo }}#{{ p.number }}</span>
               ·
               <span class="gh-pr-state" :class="`is-${p.state.toLowerCase()}`">{{ stateLabels[p.state] ?? p.state
-                }}</span>
+              }}</span>
               · {{ relTime(p.date) }}
             </span>
           </a>
@@ -233,6 +233,7 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
 }
 
 @keyframes gh-float {
+
   0%,
   100% {
     translate: 0 0;

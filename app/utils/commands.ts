@@ -59,7 +59,10 @@ function fakeModelId(name: string): string {
   };
   const a = fnv(0x811c9dc5);
   const b = fnv(0x811c9dc5 ^ name.length);
-  return a.toString(16).padStart(8, "0") + b.toString(16).padStart(8, "0").slice(0, 4);
+  return (
+    a.toString(16).padStart(8, "0") +
+    b.toString(16).padStart(8, "0").slice(0, 4)
+  );
 }
 
 export const ollamaModels = JSON.parse(modelsRaw) as OllamaModel[];
@@ -123,9 +126,13 @@ const ollamaSubcommands: Record<string, CommandHandler> = {
       a.name.localeCompare(b.name),
     );
     const cols = ["NAME", "ID", "SIZE"] as const;
-    const widths = [
+    // 元组标注：列数固定，避免 number[] 索引访问在 noUncheckedIndexedAccess 下变成 number | undefined
+    const widths: [number, number, number] = [
       Math.max(cols[0].length, ...models.map((m) => m.name.length)),
-      Math.max(cols[1].length, ...models.map((m) => (m.id ?? fakeModelId(m.name)).length)),
+      Math.max(
+        cols[1].length,
+        ...models.map((m) => (m.id ?? fakeModelId(m.name)).length),
+      ),
       Math.max(cols[2].length, ...models.map((m) => m.size?.length ?? 0)),
     ];
     ctx.push(
@@ -158,7 +165,7 @@ const ollamaSubcommands: Record<string, CommandHandler> = {
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
     const cols = ["NAME", "ID", "SIZE", "PROCESSOR"] as const;
-    const widths = [
+    const widths: [number, number, number, number] = [
       Math.max(cols[0].length, ...rows.map((r) => r.name.length)),
       Math.max(cols[1].length, ...rows.map((r) => r.id.length)),
       Math.max(cols[2].length, ...rows.map((r) => r.size.length)),
@@ -186,7 +193,10 @@ const ollamaSubcommands: Record<string, CommandHandler> = {
     }
     const name = raw.includes(":") ? raw : `${raw}:latest`;
     if (!ollamaModels.some((m) => m.name.toLowerCase() === name)) {
-      ctx.push(`ollama: 模型库里没有 "${raw}"（ollama list 看看有什么）`, "t-err");
+      ctx.push(
+        `ollama: 模型库里没有 "${raw}"（ollama list 看看有什么）`,
+        "t-err",
+      );
       return;
     }
     await ctx.think(1400 + Math.random() * 1600);
@@ -305,7 +315,8 @@ export const commandHandlers: Record<string, CommandHandler> = {
   theme: (sc, ctx) => {
     const modes: ThemeMode[] = ["dark", "light"];
     const raw = sc.argv?.[0]?.toLowerCase();
-    const sub = raw === "default" ? ("dark" as const) : modes.find((m) => m === raw); // find 帮 TS 收窄到 ThemeMode
+    const sub =
+      raw === "default" ? ("dark" as const) : modes.find((m) => m === raw); // find 帮 TS 收窄到 ThemeMode
     if (!raw || !sub) {
       if (raw) ctx.push(`theme: 未知的主题 "${raw}"`, "t-err");
       ctx.push("用法：theme <dark(default)|light>", "t-dim");
@@ -338,8 +349,12 @@ export const commandHandlers: Record<string, CommandHandler> = {
       }
       ctx.push("曲库：", "t-out");
       musicTracks.forEach((t: MusicTrack) => {
-        const now = current.value?.id === t.id && playing.value ? "  ◀ 正在播放" : "";
-        ctx.push(`  ${t.id.padEnd(11)} ${t.title}${now}`, now ? "t-accent" : "t-out");
+        const now =
+          current.value?.id === t.id && playing.value ? "  ◀ 正在播放" : "";
+        ctx.push(
+          `  ${t.id.padEnd(11)} ${t.title}${now}`,
+          now ? "t-accent" : "t-out",
+        );
       });
       return;
     }
@@ -353,7 +368,10 @@ export const commandHandlers: Record<string, CommandHandler> = {
           else ctx.push(`正在播放：${current.value.title}`, "t-accent");
           return;
         }
-        ctx.push("用法：music play <name>（先 music list 看看有什么）", "t-dim");
+        ctx.push(
+          "用法：music play <name>（先 music list 看看有什么）",
+          "t-dim",
+        );
         return;
       }
       const track = musicTracks.find((t) => t.id === arg.toLowerCase());

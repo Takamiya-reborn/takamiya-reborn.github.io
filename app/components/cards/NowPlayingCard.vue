@@ -76,8 +76,7 @@ const platformGroups = computed(() => {
             {{ PLATFORMS[group.platform].label }}
           </span>
           <a class="np-group-link" :href="PLATFORMS[group.platform].url" target="_blank" rel="noopener"
-            :title="`${PLATFORMS[group.platform].label} 主页`"
-            :aria-label="`${PLATFORMS[group.platform].label} 主页`"
+            :title="`${PLATFORMS[group.platform].label} 主页`" :aria-label="`${PLATFORMS[group.platform].label} 主页`"
             :style="{ '--p-color': PLATFORMS[group.platform].color }">
             <Icon :name="PLATFORMS[group.platform].icon" size="14" />
           </a>
@@ -123,7 +122,7 @@ const platformGroups = computed(() => {
 }
 
 /* 平台组：组间分割线与平台图标块同用 var(--border) */
-.np-group + .np-group {
+.np-group+.np-group {
   margin-top: 0.9rem;
   padding-top: 0.9rem;
   border-top: 1px solid var(--border);
@@ -215,17 +214,15 @@ const platformGroups = computed(() => {
 .np-fill {
   height: 100%;
   /* 一道从红到紫的彩虹渐变，色值取自暗色背景下的 tailwind 400 系，避免刺眼 */
-  background: linear-gradient(
-    90deg,
-    #f87171,
-    #fb923c,
-    #facc15,
-    #a3e635,
-    #34d399,
-    #22d3ee,
-    #818cf8,
-    #e879f9
-  );
+  background: linear-gradient(90deg,
+      #f87171,
+      #fb923c,
+      #facc15,
+      #a3e635,
+      #34d399,
+      #22d3ee,
+      #818cf8,
+      #e879f9);
   border-radius: inherit;
 }
 

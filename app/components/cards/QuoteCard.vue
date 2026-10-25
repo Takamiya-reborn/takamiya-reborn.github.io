@@ -96,59 +96,59 @@ onMounted(() => {
   <div ref="viewport" class="switch-viewport">
     <!-- 游戏机：外壳架构在 Switch，这里注入屏幕内容和真实按键 -->
     <Switch>
-    <template #screen>
-      <!-- 屏幕：quote 卡片，16:9 锁定比例，高度随 48rem 设计宽自然定死 -->
-      <BaseCard class="quote-card screen" :hover="false" :spotlight="false">
-        <!-- 屏幕背景：登记在 screen-bgs.json 的图 + 压暗层，Y 位键切换；
+      <template #screen>
+        <!-- 屏幕：quote 卡片，16:9 锁定比例，高度随 48rem 设计宽自然定死 -->
+        <BaseCard class="quote-card screen" :hover="false" :spotlight="false">
+          <!-- 屏幕背景：登记在 screen-bgs.json 的图 + 压暗层，Y 位键切换；
             垫在内容之下（z -1 与液晶底色同层，靠 DOM 顺序盖住它） -->
-        <div v-if="screenBg" class="screen-bg" aria-hidden="true"
-          :style="{ backgroundImage: `url(${screenBg.src})`, '--bg-dim': screenBg.dim ?? 0.45 }" />
-        <!-- 屏幕玻璃：斜向反光 + 扫描线，浮在文字上但不挡交互 -->
-        <span class="screen-glass" aria-hidden="true" />
+          <div v-if="screenBg" class="screen-bg" aria-hidden="true"
+            :style="{ backgroundImage: `url(${screenBg.src})`, '--bg-dim': screenBg.dim ?? 0.45 }" />
+          <!-- 屏幕玻璃：斜向反光 + 扫描线，浮在文字上但不挡交互 -->
+          <span class="screen-glass" aria-hidden="true" />
 
-        <div class="quote-stage">
-          <Transition name="quote-swap" mode="out-in">
-            <blockquote v-if="current" :key="drawCount" class="quote-body">
-              <Icon name="lucide:quote" size="26" class="quote-mark" />
-              <p v-if="mainText" class="quote-text reveal" style="--i: 0">{{ mainText }}</p>
-              <p v-if="current.text && current.translation" class="quote-translation reveal" style="--i: 1">
-                {{ current.translation }}</p>
-              <footer v-if="fromLine" class="quote-from reveal" style="--i: 2">{{ fromLine }}</footer>
-            </blockquote>
-            <p v-else :key="'empty'" class="quote-empty">quotes.json 还没有收录 quote</p>
-          </Transition>
-        </div>
-      </BaseCard>
-    </template>
+          <div class="quote-stage">
+            <Transition name="quote-swap" mode="out-in">
+              <blockquote v-if="current" :key="drawCount" class="quote-body">
+                <Icon name="lucide:quote" size="26" class="quote-mark" />
+                <p v-if="mainText" class="quote-text reveal" style="--i: 0">{{ mainText }}</p>
+                <p v-if="current.text && current.translation" class="quote-translation reveal" style="--i: 1">
+                  {{ current.translation }}</p>
+                <footer v-if="fromLine" class="quote-from reveal" style="--i: 2">{{ fromLine }}</footer>
+              </blockquote>
+              <p v-else :key="'empty'" class="quote-empty">quotes.json 还没有收录 quote</p>
+            </Transition>
+          </div>
+        </BaseCard>
+      </template>
 
-    <template #controls>
-      <!-- 真实按键：照真机右 Joy-Con 的 YXAB 菱形排布（X 上 / Y 左 / A 右 / B 下），
+      <template #controls>
+        <!-- 真实按键：照真机右 Joy-Con 的 YXAB 菱形排布（X 上 / Y 左 / A 右 / B 下），
           骰子=X、搜索=A、复制=B，Y 位留一枚空键撑住菱形；提示走原生 title -->
-      <div class="quote-actions">
-        <!-- Y 位：切换屏幕背景，循环含"默认黑屏" -->
-        <button class="quote-roll quote-roll--ghost" type="button"
-          :title="screenBg ? `背景 · ${screenBg.name}` : '切换屏幕背景'"
-          :disabled="screenBgs.length === 0" @click="nextScreenBg">
-          <Icon name="lucide:image" size="20" />
-        </button>
-        <div class="quote-action quote-action--x">
-          <button class="quote-roll" type="button" title="点骰子抽取"
-            :disabled="quotes.length === 0 || rolling" @click="next">
-            <Icon name="lucide:dices" size="22" />
+        <div class="quote-actions">
+          <!-- Y 位：切换屏幕背景，循环含"默认黑屏" -->
+          <button class="quote-roll quote-roll--ghost" type="button"
+            :title="screenBg ? `背景 · ${screenBg.name}` : '切换屏幕背景'" :disabled="screenBgs.length === 0"
+            @click="nextScreenBg">
+            <Icon name="lucide:image" size="20" />
           </button>
+          <div class="quote-action quote-action--x">
+            <button class="quote-roll" type="button" title="点骰子抽取" :disabled="quotes.length === 0 || rolling"
+              @click="next">
+              <Icon name="lucide:dices" size="22" />
+            </button>
+          </div>
+          <div v-if="searchUrl" class="quote-action quote-action--a">
+            <a class="quote-roll" :href="searchUrl" target="_blank" rel="noopener" title="没听说过？">
+              <Icon name="lucide:search" size="20" />
+            </a>
+          </div>
+          <div v-if="current" class="quote-action quote-action--b">
+            <button class="quote-roll" type="button" :title="copied ? '已复制' : '好句子，带走'" @click="copy">
+              <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" size="20" />
+            </button>
+          </div>
         </div>
-        <div v-if="searchUrl" class="quote-action quote-action--a">
-          <a class="quote-roll" :href="searchUrl" target="_blank" rel="noopener" title="没听说过？">
-            <Icon name="lucide:search" size="20" />
-          </a>
-        </div>
-        <div v-if="current" class="quote-action quote-action--b">
-          <button class="quote-roll" type="button" :title="copied ? '已复制' : '好句子，带走'" @click="copy">
-            <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" size="20" />
-          </button>
-        </div>
-      </div>
-    </template>
+      </template>
     </Switch>
   </div>
   <!-- 与技能板同款滑动提示：只在容器装不下整机时出现 -->
@@ -217,11 +217,9 @@ onMounted(() => {
   pointer-events: none;
   background:
     linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 45%),
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       rgba(255, 255, 255, 0.03) 0 1px,
-      transparent 1px 4px
-    );
+      transparent 1px 4px);
 }
 
 /* quote 舞台：撑满屏幕，长短句都在屏幕里垂直居中 */
@@ -364,9 +362,17 @@ onMounted(() => {
   place-items: center;
 }
 
-.quote-action--x { grid-area: 1 / 2; }
-.quote-action--a { grid-area: 2 / 3; }
-.quote-action--b { grid-area: 3 / 2; }
+.quote-action--x {
+  grid-area: 1 / 2;
+}
+
+.quote-action--a {
+  grid-area: 2 / 3;
+}
+
+.quote-action--b {
+  grid-area: 3 / 2;
+}
 
 /* Y 位键：占位（之后接切换屏幕背景），样式与实体键一致 */
 .quote-roll--ghost {

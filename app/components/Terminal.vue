@@ -344,8 +344,8 @@ onUnmounted(() => {
       <svg class="term-dino" :class="{ 'term-dino--jump': dinoJumping }" viewBox="0 0 44 47"
         shape-rendering="crispEdges" role="img" aria-label="Chrome 断网小恐龙（点击跳跃）" title="chrome://dino"
         @click.stop="dinoJump" @animationend="dinoJumping = false">
-        <path :d="DINO_FRAMES[dinoFrame].dark" fill="currentColor" />
-        <path :d="DINO_FRAMES[dinoFrame].light" fill="currentColor" fill-opacity="0.35" />
+        <path :d="DINO_FRAMES[dinoFrame]!.dark" fill="currentColor" />
+        <path :d="DINO_FRAMES[dinoFrame]!.light" fill="currentColor" fill-opacity="0.35" />
       </svg>
       <!-- 顶边右侧的仙人掌（一大一小）与天上的云：同一张官方 sprite 抠出来的，纯装饰 -->
       <!-- 大仙人掌 viewBox 裁到 47：sprite 后 3 行是落地灰尘点缀（35% 透明度几乎不可见），
@@ -522,6 +522,7 @@ onUnmounted(() => {
 }
 
 @keyframes dino-jump {
+
   0%,
   100% {
     transform: translateY(0);

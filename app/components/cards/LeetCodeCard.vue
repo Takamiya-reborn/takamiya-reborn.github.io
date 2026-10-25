@@ -65,8 +65,8 @@ const parts = computed(() => {
         </span>
         <span class="lc-divider" aria-hidden="true" />
         <!-- 连胜火焰：今天有提交为实心，否则空心（同官方逻辑）；点击直达今日每日一题 -->
-        <a class="lc-streak" :class="{ 'lc-streak--empty': !submittedToday }" :href="STREAK_HREF"
-          target="_blank" rel="noopener" title="连续打卡天数">
+        <a class="lc-streak" :class="{ 'lc-streak--empty': !submittedToday }" :href="STREAK_HREF" target="_blank"
+          rel="noopener" title="连续打卡天数">
           <svg class="lc-flame" viewBox="0 0 18 18" aria-hidden="true">
             <defs>
               <linearGradient id="lc-flame-grad" x1="0" y1="0" x2="0.6" y2="1">
@@ -213,6 +213,7 @@ const parts = computed(() => {
 }
 
 @keyframes lc-float {
+
   0%,
   100% {
     translate: 0 0;
