@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-25T05:09:07.305Z",
+  "generatedAt": "2026-10-25T14:33:11.268Z",
   "user": "Takamiya-reborn",
-  "total": 187,
+  "total": 189,
   "days": [
     {
       "date": "2026-09-14",
@@ -169,13 +169,13 @@
     },
     {
       "date": "2026-10-25",
-      "count": 1
+      "count": 3
     }
   ],
   "languages": [
     {
       "name": "Python",
-      "pct": 51
+      "pct": 50
     },
     {
       "name": "JavaScript",
@@ -183,15 +183,15 @@
     },
     {
       "name": "Vue",
-      "pct": 11
+      "pct": 12
     },
     {
       "name": "C",
-      "pct": 6
+      "pct": 5
     },
     {
-      "name": "CSS",
-      "pct": 2
+      "name": "TypeScript",
+      "pct": 3
     }
   ],
   "prs": [
