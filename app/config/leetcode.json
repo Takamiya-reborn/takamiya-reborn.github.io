@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T14:33:09.619Z",
+  "generatedAt": "2026-10-25T16:23:11.495Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 220,
@@ -15,7 +15,7 @@
   "streak": 2,
   "submittedToday": true,
   "daily": {
-    "slug": "number-of-closed-islands",
-    "title": "统计封闭岛屿的数目"
+    "slug": "count-islands-with-total-value-divisible-by-k",
+    "title": "总价值可以被 K 整除的岛屿数目"
   }
 }
