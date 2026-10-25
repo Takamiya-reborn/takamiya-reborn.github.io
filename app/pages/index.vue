@@ -317,7 +317,7 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   /* 上大下小：板块间距 = 本节 bottom + 下节 top，对称 padding 会让空白
      全堆在内容下方、显得没居中；标题锚在节首，底部收窄让内容落回中点 */
   padding-block: clamp(2.5rem, 7vh, 4rem) clamp(1.25rem, 3vh, 2rem);
-  scroll-margin-top: 4.5rem;
+  scroll-margin-top: 1rem;
 }
 
 /* 关于区：四行棋盘式「文字+卡片」，拉长战线、降低密度 */

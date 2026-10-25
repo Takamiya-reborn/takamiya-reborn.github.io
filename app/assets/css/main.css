@@ -127,6 +127,10 @@ html[data-theme='light'] {
 
   --shadow-card: 0 1.5rem 3rem -1rem rgba(15, 23, 42, 0.18);
   --shadow-deep: rgba(15, 23, 42, 0.2);
+  /* Switch 机壳投在页面上的外投影：浅底换蓝灰淡影（机身本体配色仍固定）；
+     尺寸受 .switch-viewport 的裁切约束（纵向 ≤ 2.75rem、水平 ≤ 1rem） */
+  --jc-drop-1: 0 0.8rem 1.6rem -0.7rem rgba(15, 23, 42, 0.22);
+  --jc-drop-2: 0 1.2rem 2rem -0.8rem rgba(15, 23, 42, 0.16);
   --grid-line: rgba(13, 18, 38, 0.05);
   --veil-rain: rgba(30, 41, 59, 0.1);
   --veil-thunder: rgba(30, 41, 59, 0.18);

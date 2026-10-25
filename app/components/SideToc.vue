@@ -4,6 +4,11 @@ import { sections } from '~/config/site'
 // 右侧目录：仿 md 文档站的 scroll-spy，滚动时高亮当前章节
 const activeId = ref(sections[0]?.id ?? '')
 
+// 点击跳转：直接滚动到目标，不改 URL
+function go(id: string) {
+  document.getElementById(id)?.scrollIntoView()
+}
+
 function update() {
   // 视口上 1/3 处落在哪个 section 内，就高亮谁；最后一个兜底
   const line = window.innerHeight * 0.35
@@ -66,10 +71,11 @@ onUnmounted(() => {
 
 <template>
   <nav ref="navEl" class="toc" aria-label="页面目录">
-    <a v-for="s in sections" :key="s.id" :href="`#${s.id}`" class="toc-item" :class="{ active: s.id === activeId }">
+    <button v-for="s in sections" :key="s.id" type="button" class="toc-item" :class="{ active: s.id === activeId }"
+      @click="go(s.id)">
       <span v-if="s.num" class="toc-num">{{ s.num }}</span>
       <span class="toc-text">{{ s.title }}</span>
-    </a>
+    </button>
     <!-- 滑动指示条：绝对定位覆盖在条目左边线上，切换时平滑移动 -->
     <span v-show="indicator.ready" class="toc-indicator"
       :style="{ transform: `translateY(${indicator.top}px)`, height: `${indicator.height}px` }" />
@@ -93,6 +99,13 @@ onUnmounted(() => {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
+  /* button 默认样式重置，视觉与原 a 标签一致 */
+  background: none;
+  border: none;
+  border-left: 2px solid var(--border);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
   padding: 0.4rem 0 0.4rem 0.9rem;
   border-left: 2px solid var(--border);
   font-family: var(--font-mono);

@@ -104,6 +104,8 @@ const { nuked } = useNuke()
 <style scoped>
 .hero {
   display: grid;
+  /* 首屏占满一整屏，intro 独占 100vh（dvh 兼容移动端地址栏） */
+  min-height: 100dvh;
   /* 与 QuoteCard 的 .quote-layout 同参：7fr/3fr + 同款列间距，终端列与 quote 卡严格等宽 */
   grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
   align-items: center;

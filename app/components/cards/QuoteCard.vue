@@ -383,8 +383,11 @@ onMounted(() => {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--muted) transparent;
-  padding-block: 0.5rem 2.75rem;
-  margin-block: -0.5rem -2.75rem;
+  /* padding 全部用负 margin 抵消：既给机壳投影留出不被 overflow 裁掉的余量
+     （机身撑满容器，投影左右贴着裁切边会被切成方形硬边），又不占布局间距。
+     水平 1rem 与容器 padding-block 下限持平，窄屏也不会把页面推出横向滚动 */
+  padding: 0.5rem 1rem 2.75rem;
+  margin: -0.5rem -1rem -2.75rem;
 }
 
 .scroll-hint {

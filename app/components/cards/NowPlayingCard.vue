@@ -139,7 +139,8 @@ const platformGroups = computed(() => {
 
 .np-group-name {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.95rem;
+  font-weight: 700;
   letter-spacing: 0.12em;
 }
 

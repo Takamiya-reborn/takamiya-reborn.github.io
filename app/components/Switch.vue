@@ -51,6 +51,12 @@
   --jc-muted: #94a0b8;
   /* 机壳 padding 抽成变量：侧板用负 margin 反向吃掉它，直接顶到机身边缘 */
   --shell-pad: clamp(0.6rem, 1.5vw, 1rem);
+  /* 外投影颜色走主题变量：机身配色固定不随主题，但投在页面上的影子
+     得跟页面背景走——纯黑影在浅色模式的近白底上会变成一块灰色方板。
+     尺寸同时受外层滑动容器的裁切约束：纵向伸入 ≤ 2.75rem、水平 ≤ 1rem
+     （即 .switch-viewport 的 padding），超出会被 overflow 切出方形硬边 */
+  --jc-drop-1: 0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.45);
+  --jc-drop-2: 0 1.5rem 2rem -1rem rgba(0, 0, 0, 0.4);
   padding: var(--shell-pad);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: calc(var(--radius) + 3rem);
@@ -61,8 +67,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.09),
     inset 0 -1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -0.8rem 1.5rem rgba(0, 0, 0, 0.35),
-    0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.45),
-    0 1.8rem 3rem -1rem rgba(0, 0, 0, 0.4);
+    var(--jc-drop-1),
+    var(--jc-drop-2);
 }
 
 /* 边缘受光：1.5px 渐变描边环，左上角最亮、右下角弱回光，
