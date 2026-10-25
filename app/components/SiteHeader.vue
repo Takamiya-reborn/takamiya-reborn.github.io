@@ -65,6 +65,7 @@ const headerSocials = computed(() =>
 }
 
 @keyframes sparkle-pan {
+
   0%,
   100% {
     color: var(--accent-2);

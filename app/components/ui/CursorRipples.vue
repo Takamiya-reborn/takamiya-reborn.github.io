@@ -26,7 +26,7 @@ function makeSparks(): Spark[] {
     dist: 18 + Math.random() * 18,
     size: 2 + Math.random() * 2,
     delay: Math.random() * 0.08,
-    color: ACCENTS[Math.floor(Math.random() * ACCENTS.length)],
+    color: ACCENTS[Math.floor(Math.random() * ACCENTS.length)]!,
   }))
 }
 
@@ -53,35 +53,19 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="cursor-ripples" aria-hidden="true">
-    <div
-      v-for="b in bursts"
-      :key="b.id"
-      class="burst"
-      :style="{ left: `${b.x}px`, top: `${b.y}px` }"
-    >
+    <div v-for="b in bursts" :key="b.id" class="burst" :style="{ left: `${b.x}px`, top: `${b.y}px` }">
       <!-- 延迟最长的第三圈结束时才移除整个涟漪，避免提前消失 -->
-      <span
-        v-for="i in 3"
-        :key="i"
-        class="ring"
-        :class="`ring-${i}`"
-        @animationend="i === 3 && remove(b.id)"
-      />
+      <span v-for="i in 3" :key="i" class="ring" :class="`ring-${i}`" @animationend="i === 3 && remove(b.id)" />
 
       <span class="glow" />
 
-      <span
-        v-for="(s, i) in b.sparks"
-        :key="i"
-        class="spark"
-        :style="{
-          '--angle': `${s.angle}rad`,
-          '--dist': `${s.dist}px`,
-          '--size': `${s.size}px`,
-          '--delay': `${s.delay}s`,
-          '--c': s.color,
-        }"
-      />
+      <span v-for="(s, i) in b.sparks" :key="i" class="spark" :style="{
+        '--angle': `${s.angle}rad`,
+        '--dist': `${s.dist}px`,
+        '--size': `${s.size}px`,
+        '--delay': `${s.delay}s`,
+        '--c': s.color,
+      }" />
     </div>
   </div>
 </template>
@@ -140,9 +124,11 @@ onBeforeUnmount(() => {
     transform: translate(-50%, -50%) scale(0.2);
     opacity: 0.55;
   }
+
   45% {
     opacity: 0.3;
   }
+
   100% {
     transform: translate(-50%, -50%) scale(4.5);
     opacity: 0;
@@ -168,6 +154,7 @@ onBeforeUnmount(() => {
     opacity: 0.6;
     filter: blur(0);
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1.4);
     opacity: 0;
@@ -194,9 +181,11 @@ onBeforeUnmount(() => {
     transform: rotate(var(--angle)) translateX(3px) scale(1);
     opacity: 0.7;
   }
+
   70% {
     opacity: 0.5;
   }
+
   100% {
     transform: rotate(var(--angle)) translateX(var(--dist)) scale(0.1);
     opacity: 0;
@@ -204,6 +193,7 @@ onBeforeUnmount(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .ring,
   .glow,
   .spark {

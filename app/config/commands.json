@@ -13,7 +13,12 @@
     "action": "rmrf-force",
     "hidden": true
   },
-  { "name": "chat", "desc": "和LLM对话", "action": "chat" },
+  {
+    "name": "ollama",
+    "desc": "模型服务（list/ps/run/stop）",
+    "action": "ollama",
+    "args": true
+  },
   {
     "name": "docker",
     "desc": "查看容器状态",

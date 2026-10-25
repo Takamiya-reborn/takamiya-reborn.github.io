@@ -49,6 +49,11 @@ export const site = {
       url: "https://www.pixiv.net/users/97966543",
     },
     {
+      label: "Twitter",
+      icon: "simple-icons:x",
+      url: "https://x.com/TakamiyaReborn",
+    },
+    {
       label: "Email",
       icon: "lucide:mail",
       url: "mailto:wzy15091712036@outlook.com",
@@ -194,19 +199,16 @@ export const site = {
 
 export type Site = typeof site;
 
-// 章节元信息：驱动章节标题与导航锚点，id 对应 index.vue 的 <section id>
-// 首条 Intro 指向页面顶部的 #top（英雄区），不渲染章节标题，只供目录与回顶跳转
 export const sections = [
   { id: "top", num: "", title: "Intro" },
   { id: "quote", num: "00", title: "Quote", subtitle: "Random · QUOTE" },
   { id: "about", num: "01", title: "关于我", subtitle: "SaveData.rpgsave" },
-  { id: "skills", num: "02", title: "技能", subtitle: "板载技能" },
-  { id: "projects", num: "03", title: "活跃仓库", subtitle: "自己捣鼓" },
+  { id: "skills", num: "02", title: "技能", subtitle: "技能板" },
+  { id: "projects", num: "03", title: "活跃仓库", subtitle: "busy on" },
   { id: "timeline", num: "04", title: "经历", subtitle: "commits" },
 ] satisfies SectionMeta[];
 
 // 彩蛋与提示文案
-// 按键序列：页脚提示与 useKonami 的监听都从这里取，只改这一处
 const konamiKeys = ["↑", "↑", "↓", "↓", "←", "→", "←", "→", "B", "A"] as const;
 
 export const easterEgg = {

@@ -6,13 +6,11 @@ const ready = ref(false)
 
 // 主题：theme 指令写入 useTheme 状态，这里用 useHead 把它落到 <html data-theme>，
 // 配色由 main.css 的浅色覆盖块接管；theme-color meta 同步换，浏览器地址栏跟着变色
-const { theme, init } = useTheme()
+const { theme } = useTheme()
 useHead({
   htmlAttrs: { 'data-theme': () => (theme.value === 'light' ? 'light' : undefined) },
   meta: [{ name: 'theme-color', content: () => (theme.value === 'light' ? '#f4f6fb' : '#06070d') }],
 })
-
-onMounted(init)
 </script>
 
 <template>

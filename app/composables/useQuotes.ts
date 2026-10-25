@@ -4,10 +4,12 @@ import quotesRaw from '../config/quotes.json?raw'
 import type { Quote } from '~/config/types'
 
 export function useQuotes() {
-  // JSON 解析失败时按空列表处理，卡片展示占位文案而不是白屏
+  // JSON 解析失败时按空列表处理，卡片展示占位文案而不是白屏；
+  // dummy 标尺句只在开发环境保留，生产构建（含 SSG 预渲染）直接过滤
   let quotes: Quote[] = []
   try {
-    quotes = (JSON.parse(quotesRaw) as Quote[]).filter((q) => q.translation || q.text)
+    quotes = (JSON.parse(quotesRaw) as Quote[])
+      .filter((q) => (q.translation || q.text) && (import.meta.dev || !q.dummy))
   } catch {
     // quotes.json 语法错误：回退到空列表
   }

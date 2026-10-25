@@ -247,8 +247,9 @@ function run(raw: string) {
       // 前缀命中唯一已登记指令时视作参数缺失，直接贴出完整用法（如 rm → 用法：rm -rf /）；
       // hidden 不参与，避免剧透彩蛋；命中多个或全不命中按普通 not found 处理
       const near = slashCommands.filter(c => !c.hidden && c.name.startsWith(input) && c.name !== input)
-      if (near.length === 1) {
-        push(`用法：${near[0].name}`, 't-dim')
+      const command = near[0]
+      if (near.length === 1 && command) {
+        push(`用法：${command.name}`, 't-dim')
       }
       else {
         push(`zsh: command not found: ${argv[0]}`, 't-err')

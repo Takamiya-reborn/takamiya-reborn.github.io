@@ -1,0 +1,12 @@
+[
+  {
+    "src": "/bg/xp-grass.jpg",
+    "name": "XP 草地",
+    "dim": 0.5
+  },
+  {
+    "src": "/bg/win7.jpg",
+    "name": "Win7",
+    "dim": 0.5
+  }
+]

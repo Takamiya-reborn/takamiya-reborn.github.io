@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { Quote } from '~/config/types'
 
-// quote 抽取器：quote 卡片在左，抽取按钮和提示独立在右侧
+// quote 抽取器：外壳在 Switch，这里只负责屏幕内容（quote）和真实按键
 const { quotes, draw } = useQuotes()
+// 屏幕背景轮换：Y 位键循环切换，列表末尾再切回默认黑屏
+const { bgs: screenBgs, current: screenBg, next: nextScreenBg } = useScreenBgs()
 
 // 初始句子：直接取第一条，SSG/SSR 阶段就渲染出真 quote，慢网络下
 // 不会先闪"还没有收录"占位文案；随机性留给骰子，挂载时不再额外抽取
@@ -17,10 +19,8 @@ const copied = ref(false)
 // 浮现总时长：行间错开 0.18s，每行 0.6s，与句子长短无关
 const REVEAL_MS = 1000
 
-// 隐藏量高容器：按真实样式渲染每条 quote，取最高的锁住卡片高度
-const measureBox = ref<HTMLElement>()
-// quote 舞台的最小高度，保证换句时卡片高度不抖
-const stageMinHeight = ref<string>()
+// 横向滑动容器：整机锁设计宽度，窄屏左右滑动查看（与技能板同款）
+const viewport = ref<HTMLElement>()
 
 // 主句：有原文用原文，没有则译文顶上
 function mainOf(quote: Quote) {
@@ -74,13 +74,6 @@ async function copy() {
   }
 }
 
-// 按真实排版量出所有 quote 的最大高度，锁住卡片高度
-function measure() {
-  if (!measureBox.value || quotes.length === 0) return
-  const tallest = Math.max(...Array.from(measureBox.value.children, el => el.scrollHeight))
-  stageMinHeight.value = `${tallest}px`
-}
-
 function next() {
   if (rolling.value) return
   const quote = draw()
@@ -93,97 +86,147 @@ function next() {
 }
 
 onMounted(() => {
-  measure()
-  // 字体加载、窗口变宽窄都会改变换行，跟着重量一次
-  document.fonts?.ready.then(measure)
-  window.addEventListener('resize', measure, { passive: true })
+  // 窄屏下容器装不下整机：初始滚到屏幕居中（桌面端无滚动，是 no-op）
+  const vp = viewport.value
+  if (vp) vp.scrollLeft = (vp.scrollWidth - vp.clientWidth) / 2
 })
-
-onBeforeUnmount(() => window.removeEventListener('resize', measure))
 </script>
 
 <template>
-  <div class="quote-layout">
-    <!-- quote 卡片 -->
-    <BaseCard class="quote-card" :hover="false">
-      <!-- 量高容器：与正文同宽渲染全部 quote，撑出最高一条的真实高度 -->
-      <div ref="measureBox" class="quote-measure" aria-hidden="true">
-        <blockquote v-for="(quote, i) in quotes" :key="i" class="quote-body">
-          <p v-if="mainOf(quote)" class="quote-text">{{ mainOf(quote) }}</p>
-          <p v-if="quote.text && quote.translation" class="quote-translation">{{ quote.translation }}</p>
-          <footer v-if="fromOf(quote)" class="quote-from">{{ fromOf(quote) }}</footer>
-        </blockquote>
-      </div>
+  <div ref="viewport" class="switch-viewport">
+    <!-- 游戏机：外壳架构在 Switch，这里注入屏幕内容和真实按键 -->
+    <Switch>
+    <template #screen>
+      <!-- 屏幕：quote 卡片，16:9 锁定比例，高度随 48rem 设计宽自然定死 -->
+      <BaseCard class="quote-card screen" :hover="false" :spotlight="false">
+        <!-- 屏幕背景：登记在 screen-bgs.json 的图 + 压暗层，Y 位键切换；
+            垫在内容之下（z -1 与液晶底色同层，靠 DOM 顺序盖住它） -->
+        <div v-if="screenBg" class="screen-bg" aria-hidden="true"
+          :style="{ backgroundImage: `url(${screenBg.src})`, '--bg-dim': screenBg.dim ?? 0.45 }" />
+        <!-- 屏幕玻璃：斜向反光 + 扫描线，浮在文字上但不挡交互 -->
+        <span class="screen-glass" aria-hidden="true" />
 
-      <div class="quote-stage" :style="{ minHeight: stageMinHeight }">
-        <Transition name="quote-swap" mode="out-in">
-          <blockquote v-if="current" :key="drawCount" class="quote-body">
-            <Icon name="lucide:quote" size="26" class="quote-mark" />
-            <p v-if="mainText" class="quote-text reveal" style="--i: 0">{{ mainText }}</p>
-            <p v-if="current.text && current.translation" class="quote-translation reveal" style="--i: 1">
-              {{ current.translation }}</p>
-            <footer v-if="fromLine" class="quote-from reveal" style="--i: 2">{{ fromLine }}</footer>
-          </blockquote>
-          <p v-else :key="'empty'" class="quote-empty">quotes.json 还没有收录 quote</p>
-        </Transition>
-      </div>
-    </BaseCard>
+        <div class="quote-stage">
+          <Transition name="quote-swap" mode="out-in">
+            <blockquote v-if="current" :key="drawCount" class="quote-body">
+              <Icon name="lucide:quote" size="26" class="quote-mark" />
+              <p v-if="mainText" class="quote-text reveal" style="--i: 0">{{ mainText }}</p>
+              <p v-if="current.text && current.translation" class="quote-translation reveal" style="--i: 1">
+                {{ current.translation }}</p>
+              <footer v-if="fromLine" class="quote-from reveal" style="--i: 2">{{ fromLine }}</footer>
+            </blockquote>
+            <p v-else :key="'empty'" class="quote-empty">quotes.json 还没有收录 quote</p>
+          </Transition>
+        </div>
+      </BaseCard>
+    </template>
 
-    <!-- 右侧抽取区：每个按钮下带一行小字提示 -->
-    <div class="quote-rail">
+    <template #controls>
+      <!-- 真实按键：照真机右 Joy-Con 的 YXAB 菱形排布（X 上 / Y 左 / A 右 / B 下），
+          骰子=X、搜索=A、复制=B，Y 位留一枚空键撑住菱形；提示走原生 title -->
       <div class="quote-actions">
-        <div class="quote-action">
-          <button class="quote-roll" type="button" title="抽一条" :disabled="quotes.length === 0 || rolling" @click="next">
-            <Icon name="lucide:dices" size="26" />
+        <!-- Y 位：切换屏幕背景，循环含"默认黑屏" -->
+        <button class="quote-roll quote-roll--ghost" type="button"
+          :title="screenBg ? `背景 · ${screenBg.name}` : '切换屏幕背景'"
+          :disabled="screenBgs.length === 0" @click="nextScreenBg">
+          <Icon name="lucide:image" size="20" />
+        </button>
+        <div class="quote-action quote-action--x">
+          <button class="quote-roll" type="button" title="点骰子抽取"
+            :disabled="quotes.length === 0 || rolling" @click="next">
+            <Icon name="lucide:dices" size="22" />
           </button>
-          <span class="quote-hint">点骰子抽取</span>
         </div>
-        <div v-if="searchUrl" class="quote-action">
-          <a class="quote-roll" :href="searchUrl" target="_blank" rel="noopener" title="搜索这句话">
-            <Icon name="lucide:search" size="24" />
+        <div v-if="searchUrl" class="quote-action quote-action--a">
+          <a class="quote-roll" :href="searchUrl" target="_blank" rel="noopener" title="没听说过？">
+            <Icon name="lucide:search" size="20" />
           </a>
-          <span class="quote-hint">没听说过？</span>
         </div>
-        <div v-if="current" class="quote-action">
-          <button class="quote-roll" type="button" title="复制这句话" @click="copy">
-            <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" size="24" />
+        <div v-if="current" class="quote-action quote-action--b">
+          <button class="quote-roll" type="button" :title="copied ? '已复制' : '好句子，带走'" @click="copy">
+            <Icon :name="copied ? 'lucide:check' : 'lucide:copy'" size="20" />
           </button>
-          <span class="quote-hint">{{ copied ? '已复制' : '好句子，带走' }}</span>
         </div>
       </div>
-    </div>
+    </template>
+    </Switch>
   </div>
+  <!-- 与技能板同款滑动提示：只在容器装不下整机时出现 -->
+  <p class="scroll-hint" aria-hidden="true">← 左右滑动查看整机 →</p>
 </template>
 
 <style scoped>
-.quote-layout {
-  display: grid;
-  /* quote 卡约 70%，右侧留给抽取区；列参数与 ProfileCard 的 .hero 同参，终端与 quote 卡严格等宽 */
-  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
-  gap: clamp(1.5rem, 3vw, 2.5rem);
-  align-items: stretch;
-}
-
 .quote-card {
   display: flex;
-  /* 占满自己所在的列，不留两侧空隙 */
-  justify-self: stretch;
-  width: 100%;
+  /* 屏幕定宽居中，多余宽度全给两侧按键列，按键视觉上贴向屏幕 */
+  flex: 0 1 48rem;
+  min-width: 0;
   padding: 3.5rem 3rem;
 }
 
-/* 量高容器：贴着卡片内容区绝对定位（inset 对齐 .quote-card 的 padding），
-   不参与布局，visibility 隐藏但保留排版，供 measure() 读取真实高度 */
-.quote-measure {
-  position: absolute;
-  inset: 3.5rem 3rem;
-  visibility: hidden;
-  pointer-events: none;
-  z-index: -1;
+/* 屏幕：凹进机身的液晶屏，换掉卡片外阴影，改用内阴影压出凹陷。
+   配色引用 Switch 挂在 .console 上的固定色板，不随主题切换 */
+.quote-card.screen {
+  /* BaseCard 默认 height: 100% 会吞掉上下机身边，改回内容高；
+     高度不量了：16:9 锁定比例，宽随 flex-basis 48rem、高按比例反推，
+     长短句都在固定屏幕里垂直居中，溢出的极端长句按真机屏幕一样裁掉 */
+  height: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  align-self: center;
+  border-color: rgba(255, 255, 255, 0.08);
+  /* 真机屏幕是直角嵌进机身的 */
+  border-radius: 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 0.9rem 2.2rem rgba(0, 0, 0, 0.38);
 }
 
-/* quote 舞台：最小高度锁住换句时的高度，正文在其中垂直居中 */
+/* 屏幕背景层：图片盖住液晶底色，dim 压暗保文字可读；玻璃层仍在其上。
+   z -1 与 .card-bg 同层，靠 DOM 顺序垫在内容之下 */
+.screen-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+}
+
+.screen-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: var(--bg-dim, 0.45);
+}
+
+/* 液晶底色：纯黑，顶部透一点霓虹蓝背光 */
+.quote-card.screen :deep(.card-bg) {
+  backdrop-filter: none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(0, 194, 219, 0.08), transparent 60%),
+    var(--jc-screen);
+}
+
+/* 屏幕玻璃：斜向反光 + 扫描线，浮在文字上但不挡交互 */
+.screen-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 45%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0 1px,
+      transparent 1px 4px
+    );
+}
+
+/* quote 舞台：撑满屏幕，长短句都在屏幕里垂直居中 */
 .quote-stage {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -204,7 +247,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   position: absolute;
   left: 0;
   top: 0.2rem;
-  color: var(--accent);
+  color: var(--jc-blue);
   opacity: 0.7;
 }
 
@@ -212,7 +255,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   font-family: var(--font-display);
   font-size: 1.3rem;
   line-height: 1.75;
-  color: var(--text);
+  color: var(--jc-text);
   min-height: 1em;
   /* 保留 quote 文案里的手动换行（如诗句按联断行），自然换行照旧由浏览器处理 */
   white-space: pre-line;
@@ -224,7 +267,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   font-size: 0.88rem;
   line-height: 1.7;
   font-style: italic;
-  color: var(--muted);
+  color: var(--jc-muted);
   opacity: 0.85;
 }
 
@@ -233,7 +276,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   align-self: flex-end;
   text-align: right;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--jc-muted);
 }
 
 /* 浮现：每行从左侧轻轻滑入并淡现，行与行按阅读顺序错开，时长与句子长短无关 */
@@ -266,85 +309,96 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
 .quote-empty {
   align-self: center;
   font-size: 0.9rem;
-  color: var(--muted);
-}
-
-/* 右侧抽取区：内容贴列左侧，纵向居中，后续往里加东西直接顺着排 */
-.quote-rail {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 1.5rem;
-  padding-block: 0.5rem;
+  color: var(--jc-muted);
 }
 
 .quote-roll {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 3.4rem;
-  height: 3.4rem;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  width: 2.4rem;
+  height: 2.4rem;
+  color: var(--jc-text);
+  /* 实体按键：凸起的纯黑塑料圆钮，顶部高光 + 底部投影 */
+  background: #0a0b0d;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -0.12rem 0.25rem rgba(0, 0, 0, 0.28);
   transition:
     color 0.2s,
     border-color 0.2s,
-    background 0.2s,
     box-shadow 0.25s,
-    transform 0.2s;
-}
-
-.quote-roll:hover {
-  color: var(--accent-2);
-  border-color: var(--border-strong);
-  background: var(--accent-soft);
-  box-shadow: var(--glow);
+    transform 0.15s;
 }
 
 .quote-roll:active {
-  transform: scale(0.92);
+  /* 按下：键帽沉下去，投影收拢 */
+  transform: translateY(0.15rem);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0.15rem 0.4rem rgba(0, 0, 0, 0.4);
 }
 
 .quote-roll:disabled {
-  opacity: 0.4;
+  /* 禁用只锁点击，外观不变（降透明度会让霓虹底色透上来） */
   cursor: not-allowed;
 }
 
-/* 按钮竖着排，每个按钮右边跟一行提示 */
+/* 按键菱形排布：三枚实体键 + Y 位空键，格位固定住，v-if 缺员也不塌 */
+/* 按键菱形排布：三枚实体键 + Y 位空键，格位固定住，v-if 缺员也不塌。
+   格子故意比按键小（2.5rem < 2.8rem），按键居中溢出格子——
+   菱形里相邻键都是对角相邻，圆心距 = 格子 × √2，缩格子才能真正贴近 */
 .quote-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 2.1rem);
+  grid-template-rows: repeat(3, 2.1rem);
+  gap: 0;
 }
 
+/* 包裹层用 grid 居中：flex 会把超宽的按钮压缩成椭圆（flex-shrink），
+   grid 只让按钮溢出格子、保持 2.8rem 正圆 */
 .quote-action {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  display: grid;
+  place-items: center;
 }
 
-.quote-hint {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+.quote-action--x { grid-area: 1 / 2; }
+.quote-action--a { grid-area: 2 / 3; }
+.quote-action--b { grid-area: 3 / 2; }
+
+/* Y 位键：占位（之后接切换屏幕背景），样式与实体键一致 */
+.quote-roll--ghost {
+  grid-area: 2 / 1;
+}
+
+/* ---- 横向滑动容器：桌面端内容放得下、不产生滚动条，窄屏左右滑动看整机 ----
+   纵轴显式锁死并让出投影空间：overflow-x 单轴 auto 会把另一轴的 visible
+   强算成 auto，机壳的外投影会被裁掉，故用 padding 垫出阴影余量、
+   负 margin 找回占位 */
+.switch-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+  padding-block: 0.5rem 2.75rem;
+  margin-block: -0.5rem -2.75rem;
+}
+
+.scroll-hint {
+  display: none;
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
   color: var(--muted);
-  opacity: 0.75;
+  text-align: center;
 }
 
-/* 窄屏：抽取区收到卡片下方横排 */
-@media (max-width: 40rem) {
-  .quote-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .quote-rail {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    padding-block: 0;
+/* 65rem 整机 + 页面两侧留白：视口 70rem 以下必出滚动，同步亮提示 */
+@media (max-width: 70rem) {
+  .scroll-hint {
+    display: block;
   }
 }
 

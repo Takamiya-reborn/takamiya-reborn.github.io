@@ -1,0 +1,32 @@
+[
+  {
+    "name": "qwen3.8-max:latest",
+    "size": "21 GB",
+    "modified": "2 minutes ago"
+  },
+  {
+    "name": "deepseek-flash:latest",
+    "size": "8.1 GB",
+    "modified": "About a minute ago"
+  },
+  {
+    "name": "glm-5.3-flash:latest",
+    "size": "5.3 GB",
+    "modified": "3 days ago"
+  },
+  {
+    "name": "claude-opus5.5:latest",
+    "cloud": true,
+    "provider": "Anthropic"
+  },
+  {
+    "name": "gpt-6.1-sol:latest",
+    "cloud": true,
+    "provider": "OpenAI"
+  },
+  {
+    "name": "gemini-4-argon:latest",
+    "cloud": true,
+    "provider": "Google"
+  }
+]

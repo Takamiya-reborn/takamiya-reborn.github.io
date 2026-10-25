@@ -88,6 +88,18 @@ export interface Quote {
   authorTranslation?: string;
   /** 出处（可选，如书名 / 游戏）；保持简短，统一用《中文名》·年份，英文原名靠搜索按钮查 */
   source?: string;
+  /** 开发专用标尺句：量屏幕极限用；生产构建直接过滤，不会被随机抽到 */
+  dummy?: boolean;
+}
+
+// 屏幕背景条目：手动维护在 screen-bgs.json，QuoteCard 的 Y 位键轮换切换
+export interface ScreenBg {
+  /** 图片路径；图片放 public/bg/ 下，此处填 '/bg/xxx.webp' 这样的绝对路径 */
+  src: string;
+  /** 名称；作为切换时的提示文案 */
+  name: string;
+  /** 叠加暗度 0~1，压住图片保证屏幕文字可读；省略时用默认值 */
+  dim?: number;
 }
 
 export interface SectionMeta {

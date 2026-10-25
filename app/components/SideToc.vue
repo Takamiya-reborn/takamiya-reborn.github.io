@@ -71,11 +71,8 @@ onUnmounted(() => {
       <span class="toc-text">{{ s.title }}</span>
     </a>
     <!-- 滑动指示条：绝对定位覆盖在条目左边线上，切换时平滑移动 -->
-    <span
-      v-show="indicator.ready"
-      class="toc-indicator"
-      :style="{ transform: `translateY(${indicator.top}px)`, height: `${indicator.height}px` }"
-    />
+    <span v-show="indicator.ready" class="toc-indicator"
+      :style="{ transform: `translateY(${indicator.top}px)`, height: `${indicator.height}px` }" />
   </nav>
 </template>
 
