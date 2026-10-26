@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T05:11:08.484Z",
+  "generatedAt": "2026-10-26T07:59:05.822Z",
   "games": {
     "Terraria": {
       "playtimeMinutes": 35738,
@@ -13,6 +13,14 @@
       "playtimeMinutes": 18742,
       "achievements": null,
       "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/322330/capsule_184x69.jpg"
+    },
+    "Stardew Valley": {
+      "playtimeMinutes": 14092,
+      "achievements": {
+        "unlocked": 41,
+        "total": 49
+      },
+      "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/capsule_184x69.jpg"
     }
   }
 }
