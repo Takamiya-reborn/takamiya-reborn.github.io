@@ -77,15 +77,15 @@ export const site = {
       note: "你甚至可以在里面开车",
     },
     // steam 条目只需 title：抓取脚本按名称在 Steam 游戏库里匹配 AppID；
-    // title 与 Steam 商店名不一致时（如中文名）用 steamName 指定 Steam 侧名称
+    // title 即 Steam 库里的默认名（英文原名），与卡片展示、steam.json 的 key 三者共用；
+    // 若想用中文名作展示，加 steamName 指定 Steam 侧名称（如 steamName: "Don't Starve Together"）
     {
       title: "Terraria",
       platform: "steam",
     },
     {
-      title: "饥荒：联机版",
+      title: "Don't Starve Together",
       platform: "steam",
-      steamName: "Don't Starve Together",
     },
     {
       title: "Stardew Valley",
