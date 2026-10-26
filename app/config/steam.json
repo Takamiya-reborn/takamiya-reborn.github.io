@@ -1,16 +1,18 @@
 {
   "generatedAt": "2026-10-26T05:11:08.484Z",
   "games": {
-    "105600": {
+    "Terraria": {
       "playtimeMinutes": 35738,
       "achievements": {
         "unlocked": 137,
         "total": 137
-      }
+      },
+      "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/105600/capsule_184x69.jpg"
     },
-    "322330": {
+    "饥荒：联机版": {
       "playtimeMinutes": 18742,
-      "achievements": null
+      "achievements": null,
+      "cover": "https://cdn.cloudflare.steamstatic.com/steam/apps/322330/capsule_184x69.jpg"
     }
   }
 }

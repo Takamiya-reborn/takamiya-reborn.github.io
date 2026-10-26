@@ -11,7 +11,7 @@ interface SteamData {
   games: Record<string, SteamGameStats>;
 }
 
-// 返回 appid → 统计数据的映射；条目缺数据时为 null，由调用方回退 site.ts 的静态文案
+// 返回 游戏名 → 统计数据的映射；条目缺数据时为 undefined，由调用方回退 site.ts 的 note 文案
 export function useSteamData() {
   const data = JSON.parse(steamRaw) as SteamData;
   return { games: data.games ?? {} };

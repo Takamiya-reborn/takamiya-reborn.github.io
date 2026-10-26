@@ -23,40 +23,47 @@ const PLATFORMS: Record<GamePlatform, { icon: string; color: string; label: stri
 
 const { games: steamStats } = useSteamData()
 
-// 分钟数 → 展示文案：1 小时以上取整，不足 1 小时保留一位小数
+// 分钟数 → 展示文案：1 小时以上保留一位小数，不足 1 小时显示分钟
 function formatPlaytime(minutes: number): string {
   const hours = minutes / 60
-  return hours >= 1 ? `${hours.toFixed(hours >= 10 ? 0 : 1)} 小时` : `${minutes} 分钟`
+  return hours >= 1 ? `${hours.toFixed(1)} 小时` : `${minutes} 分钟`
 }
 
-// 带 steamAppId + liveNote 的条目用 steam.json 定时注入的数据替换 note；
-// steam.json 缺该条目时回退 site.ts 的 defaultStats（复制自最近一次抓取的保底值）
-const displayGames = computed(() =>
+// 归一渲染模型：所有条目共用同一套槽位——标题行（时长附在标题后）+ 成就行；
+// steam 条目的槽位完全由注入数据生成，不再回退手写 note/progress
+interface GameDisplay extends GameEntry {
+  /** 游玩时长文案（steam 槽位，由数据生成），渲染在标题右侧 */
+  playtime?: string;
+  /** 成就进度（steam 槽位）；null 表示无成就数据，展示 -/- 且不画进度条 */
+  achievements?: { unlocked: number; total: number } | null;
+  /** 成就完成度百分比；无成就数据时为 undefined，不渲染进度条 */
+  achievementPct?: number;
+  /** 游戏 capsule 图（steam 槽位），作条目背景 cover + 压暗 */
+  cover?: string;
+}
+
+const displayGames = computed<GameDisplay[]>(() =>
   props.games.map((game) => {
-    const stat = (game.steamAppId ? steamStats[String(game.steamAppId)] : undefined)
-      ?? game.defaultStats
+    const stat = game.platform === 'steam' ? steamStats[game.title] : undefined
     if (!stat) return game
 
-    let note = game.note
-    if (game.liveNote === 'achievements' && stat.achievements)
-      note = `成就 ${stat.achievements.unlocked} / ${stat.achievements.total}`
-    else if (game.liveNote === 'playtime' && stat.playtimeMinutes != null)
-      note = `已游玩 ${formatPlaytime(stat.playtimeMinutes)}`
-
-    // 进度条以实时成就完成度为准，拿不到数据时回退 site.ts 的静态 progress
-    const progress = stat.achievements?.total
-      ? Math.round((stat.achievements.unlocked / stat.achievements.total) * 100)
-      : game.progress
-
-    return note === game.note && progress === game.progress
-      ? game
-      : { ...game, note, progress }
+    return {
+      ...game,
+      note: undefined,
+      progress: undefined,
+      playtime: stat.playtimeMinutes != null ? formatPlaytime(stat.playtimeMinutes) : undefined,
+      achievements: stat.achievements,
+      achievementPct: stat.achievements?.total
+        ? Math.round((stat.achievements.unlocked / stat.achievements.total) * 100)
+        : undefined,
+      cover: stat.cover,
+    }
   }),
 )
 
 // 按相邻平台分组：每组的标题行放平台名与主页链接，组间由样式画分割线
 const platformGroups = computed(() => {
-  const groups: { platform: GamePlatform; games: GameEntry[] }[] = []
+  const groups: { platform: GamePlatform; games: GameDisplay[] }[] = []
   for (const game of displayGames.value) {
     const last = groups[groups.length - 1]
     if (last && last.platform === game.platform) last.games.push(game)
@@ -82,15 +89,28 @@ const platformGroups = computed(() => {
           </a>
         </div>
         <ul class="np-games">
-          <li v-for="game in group.games" :key="game.title" class="np-item">
+          <li v-for="game in group.games" :key="game.title" class="np-item" :class="{ 'has-bg': !!game.cover }"
+            :style="game.cover ? { '--cover': `url('${game.cover}')` } : undefined">
             <span class="np-platform" :title="PLATFORMS[game.platform].label"
               :style="{ color: PLATFORMS[game.platform].color }">
               <Icon :name="PLATFORMS[game.platform].icon" size="17" />
             </span>
             <div class="np-info">
-              <p class="np-title">{{ game.title }}</p>
+              <p class="np-title">
+                {{ game.title }}<span v-if="game.playtime" class="np-playtime">· {{ game.playtime }}</span>
+              </p>
               <p v-if="game.note" class="np-note">{{ game.note }}</p>
-              <div v-if="game.progress" class="np-progress">
+              <!-- steam 成就行：有数据画进度条（100% 彩虹、未满蓝），无数据显示 -/- -->
+              <div v-if="game.achievements !== undefined" class="np-achieve">
+                <span class="np-pct">
+                  {{ game.achievements ? `${game.achievements.unlocked} / ${game.achievements.total}` : '-/-' }}
+                </span>
+                <div v-if="game.achievementPct != null" class="np-bar">
+                  <div class="np-fill" :class="{ rainbow: game.achievementPct === 100 }"
+                    :style="{ width: `${game.achievementPct}%` }" />
+                </div>
+              </div>
+              <div v-else-if="game.progress" class="np-progress">
                 <div class="np-bar">
                   <div class="np-fill" :style="{ width: `${game.progress}%` }" />
                 </div>
@@ -184,9 +204,35 @@ const platformGroups = computed(() => {
   border-radius: 0.5rem;
 }
 
+/* 有游戏 capsule 图时整行作背景：伪元素 cover 铺满后整体调低透明度，
+   隐约透出纹理即可；用透明度而非压暗，亮暗主题下都能自然融入卡片底色 */
+.np-item.has-bg {
+  position: relative;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.6rem;
+}
+
+.np-item.has-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cover) center / cover no-repeat;
+  border-radius: inherit;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
 .np-title {
   font-size: 1.02rem;
   font-weight: 600;
+}
+
+/* 时长附在标题右侧，弱化为次要信息 */
+.np-playtime {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
 }
 
 .np-note {
@@ -195,7 +241,8 @@ const platformGroups = computed(() => {
   color: var(--muted);
 }
 
-.np-progress {
+.np-progress,
+.np-achieve {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -213,7 +260,12 @@ const platformGroups = computed(() => {
 
 .np-fill {
   height: 100%;
-  /* 一道从红到紫的彩虹渐变，色值取自暗色背景下的 tailwind 400 系，避免刺眼 */
+  background: #306ffe;
+  border-radius: inherit;
+}
+
+/* 全成就：一道从红到紫的彩虹渐变，色值取自暗色背景下的 tailwind 400 系，避免刺眼 */
+.np-fill.rainbow {
   background: linear-gradient(90deg,
       #f87171,
       #fb923c,
@@ -223,7 +275,6 @@ const platformGroups = computed(() => {
       #22d3ee,
       #818cf8,
       #e879f9);
-  border-radius: inherit;
 }
 
 .np-pct {

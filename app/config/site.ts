@@ -76,25 +76,20 @@ export const site = {
       platform: "xbox",
       note: "你甚至可以在里面开车",
     },
+    // steam 条目只需 title：抓取脚本按名称在 Steam 游戏库里匹配 AppID；
+    // title 与 Steam 商店名不一致时（如中文名）用 steamName 指定 Steam 侧名称
     {
       title: "Terraria",
       platform: "steam",
-      steamAppId: 105600,
-      liveNote: "achievements",
-      defaultStats: {
-        playtimeMinutes: 35738,
-        achievements: { unlocked: 137, total: 137 },
-      },
     },
     {
-      title: "饥荒联机版",
+      title: "饥荒：联机版",
       platform: "steam",
-      steamAppId: 322330,
-      liveNote: "playtime",
-      defaultStats: {
-        playtimeMinutes: 18742,
-        achievements: null,
-      },
+      steamName: "Don't Starve Together",
+    },
+    {
+      title: "Stardew Valley",
+      platform: "steam",
     },
   ] satisfies GameEntry[],
 

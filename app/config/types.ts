@@ -53,27 +53,25 @@ export interface TimelineItem {
 
 export type GamePlatform = "steam" | "xbox" | "ns";
 
-/** Steam 统计数据：steam.json 注入与 site.ts 手写保底共用此结构 */
+/** Steam 统计数据：steam.json 注入的结构 */
 export interface SteamGameStats {
   /** 累计游玩分钟数；资料库不公开时为 null */
   playtimeMinutes: number | null;
   /** 成就进度；游戏无成就系统或查询失败时为 null */
   achievements: { unlocked: number; total: number } | null;
+  /** 游戏 header 图（Steam CDN 热链），卡片里作条目背景展示 */
+  cover?: string;
 }
 
 export interface GameEntry {
   title: string;
   platform: GamePlatform;
-  /** 一句状态文案（如 HR 等级、生存天数）；被 liveNote 替换时作为回退显示 */
+  /** 一句状态文案（如 HR 等级、生存天数）；steam 条目有实时数据时被自动生成的时长/成就文案替换 */
   note?: string;
-  /** 进度条百分比（可选）；有成就数据时按成就完成度动态计算，此值仅作回退 */
+  /** 进度条百分比（可选）；steam 条目有成就数据时按成就完成度动态计算，此值仅作回退 */
   progress?: number;
-  /** Steam AppID；配置后从 steam.json 注入定时更新的数据 */
-  steamAppId?: number;
-  /** 用 Steam 注入的数据替换 note：achievements=成就数，playtime=游戏时长 */
-  liveNote?: "achievements" | "playtime";
-  /** 保底统计：steam.json 缺该条目时按 liveNote 渲染此值（复制自最近一次抓取的真实数据） */
-  defaultStats?: SteamGameStats;
+  /** Steam 侧游戏名；title 与 Steam 商店名中文等不一致时，抓取脚本用它匹配游戏库里的 AppID */
+  steamName?: string;
 }
 
 // quote 条目：手动维护在 quotes.json，QuoteCard 随机抽取展示
