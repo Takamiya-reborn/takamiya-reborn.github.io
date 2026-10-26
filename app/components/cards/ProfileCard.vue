@@ -239,13 +239,14 @@ const { nuked } = useNuke()
     grid-template-columns: 1fr;
   }
 
+  /* 窄屏单列堆叠：头像居中，与整页中轴对齐（桌面端靠右列自然居右） */
   .hero-art {
     order: -1;
-    justify-items: start;
+    justify-items: center;
   }
 
-  .avatar-zone {
-    margin-left: 0.5rem;
+  .avatar-bio {
+    margin-top: 1.5rem;
   }
 }
 

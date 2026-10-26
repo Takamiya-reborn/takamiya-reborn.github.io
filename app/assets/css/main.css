@@ -147,6 +147,11 @@ html[data-theme='light'] {
 
 html {
   scroll-behavior: smooth;
+  /* 页面级横滑一律锁死：只写在 body 上时移动端 Safari 拦不住整页平移
+     （标题会被推离原位），html 上用 clip 真正禁止滚动、连程序滚动也不留。
+     需要横向查看的部件（游戏机、技能树）各自在自己的滚动容器里滑，不受影响 */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -157,6 +162,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {

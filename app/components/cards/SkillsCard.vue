@@ -553,6 +553,8 @@ for (const s of [-1, 1]) {
      入场浮现的 translateY(1.6rem) 便会撑出瞬时纵向滚动条 */
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+  /* 滑到尽头不再把手势链给页面（页面横移/浏览器后退滑动），只在自己体内回弹 */
+  overscroll-behavior-x: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--muted) transparent;
 }

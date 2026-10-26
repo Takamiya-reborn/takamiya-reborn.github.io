@@ -351,4 +351,22 @@ const parts = computed(() => {
   font-weight: 600;
   color: var(--text);
 }
+
+/* 窄屏：环形图 + 难度分档横排放不下（内容宽 >400px），改上下堆叠，
+   环形图收小一档，难度栏回到全宽正常可读 */
+@media (max-width: 27.5rem) {
+  .lc-main {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .lc-ring-wrap {
+    width: 9.5rem;
+  }
+
+  .lc-diffs {
+    width: 100%;
+  }
+}
 </style>

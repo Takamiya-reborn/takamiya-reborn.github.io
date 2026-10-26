@@ -515,4 +515,22 @@ const stateLabels = { OPEN: '开放中', MERGED: '已合并', CLOSED: '已关闭
 .gh-pr-state.is-closed {
   color: var(--git-red);
 }
+
+/* 超窄屏兜底：热力图 + 语言栏横排至少需要 ~335px 视口，
+   更窄时改为上下堆叠，语言图例回到两列铺满 */
+@media (max-width: 21rem) {
+  .gh-main {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gh-langside {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .gh-langs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 </style>

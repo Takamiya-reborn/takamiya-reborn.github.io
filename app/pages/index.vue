@@ -317,7 +317,8 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   /* 上大下小：板块间距 = 本节 bottom + 下节 top，对称 padding 会让空白
      全堆在内容下方、显得没居中；标题锚在节首，底部收窄让内容落回中点 */
   padding-block: clamp(2.5rem, 7vh, 4rem) clamp(1.25rem, 3vh, 2rem);
-  scroll-margin-top: 1rem;
+  /* 锚点跳转落点让开固定头部（头部高 ≈ 3.85rem），标题不被盖住 */
+  scroll-margin-top: 4.5rem;
 }
 
 /* 关于区：四行棋盘式「文字+卡片」，拉长战线、降低密度 */
@@ -365,6 +366,18 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   .about-row--flip .about-card {
     grid-column: auto;
     grid-row: auto;
+  }
+
+  /* 窄屏单列堆叠：倾斜卡是 max-width 27~30rem 的固定窄块，居中放置
+     才落在整页中轴上，不再整体偏左；配文列是流式宽度不受影响 */
+  .about-card {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* 经历区右移错位是桌面端的排版花样，窄屏单列下回归与其他板块同轴 */
+  .timeline-wrap {
+    padding-left: 0;
   }
 }
 
@@ -446,6 +459,8 @@ onUnmounted(() => achievementTimers.forEach(clearTimeout))
   right: 1.5rem;
   bottom: 1.5rem;
   z-index: 70;
+  /* 超窄屏收敛宽度：描述文字换行，不让弹窗横向溢出屏幕 */
+  max-width: min(24rem, calc(100vw - 2.5rem));
   display: flex;
   align-items: center;
   gap: 0.8rem;

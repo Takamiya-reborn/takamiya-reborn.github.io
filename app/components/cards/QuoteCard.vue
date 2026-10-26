@@ -387,6 +387,8 @@ onMounted(() => {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+  /* 滑到尽头不再把手势链给页面（页面横移/浏览器后退滑动），只在自己体内回弹 */
+  overscroll-behavior-x: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--muted) transparent;
   /* padding 全部用负 margin 抵消：既给机壳投影留出不被 overflow 裁掉的余量

@@ -132,4 +132,23 @@ const headerSocials = computed(() =>
   box-shadow: 0 4px 16px var(--accent-soft);
   transform: translateY(-3px);
 }
+
+/* 窄屏收紧：5 枚社交图标 + logo 全排桌面端需 ~368px，手机上收一档——
+   图标钮 1.75rem、社交组与 logo 间隙压到 0.6rem、左右留白收窄，
+   320px 视口也能单行放下（约需 295px），图标贴着昵称排不再溢出 */
+@media (max-width: 26rem) {
+  .inner {
+    gap: 0.6rem;
+    padding-inline: 0.75rem;
+  }
+
+  .socials {
+    gap: 0.3rem;
+  }
+
+  .icon-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
 </style>
