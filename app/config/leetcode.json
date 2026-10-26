@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T07:59:10.624Z",
+  "generatedAt": "2026-10-26T16:57:23.092Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 220,
@@ -15,7 +15,7 @@
   "streak": 3,
   "submittedToday": true,
   "daily": {
-    "slug": "count-islands-with-total-value-divisible-by-k",
-    "title": "总价值可以被 K 整除的岛屿数目"
+    "slug": "create-grid-with-exactly-one-path",
+    "title": "构造恰好一条路径的网格"
   }
 }
