@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T16:57:23.092Z",
+  "generatedAt": "2026-10-27T05:27:46.698Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 220,
@@ -13,7 +13,7 @@
     "hard": 1056
   },
   "streak": 3,
-  "submittedToday": true,
+  "submittedToday": false,
   "daily": {
     "slug": "create-grid-with-exactly-one-path",
     "title": "构造恰好一条路径的网格"
