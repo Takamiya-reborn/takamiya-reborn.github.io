@@ -1,6 +1,6 @@
 name: Update data
 
-# 每天拉取 Steam / GitHub 数据写入 app/config/*.json（构建时静态注入，运行时零请求）；
+# 每天拉取 Steam / GitHub 数据写入 app/config/generated/*.json（构建时静态注入，运行时零请求）；
 # 注意 GITHUB_TOKEN 的 push 不会触发 deploy.yml，末尾需显式触发重新部署
 on:
   schedule:
@@ -55,7 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app/config/steam.json app/config/leetcode.json app/config/github.json app/config/repos.json public/avatar.png
+          git add app/config/generated/steam.json app/config/generated/leetcode.json app/config/generated/github.json app/config/generated/repos.json public/avatar.png
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else

@@ -198,9 +198,9 @@ export const sections = [
   { id: "top", num: "", title: "Intro" },
   { id: "quote", num: "00", title: "Quote", subtitle: "Random · QUOTE" },
   { id: "about", num: "01", title: "关于我", subtitle: "SaveData.rpgsave" },
-  { id: "skills", num: "02", title: "技能", subtitle: "技能板" },
-  { id: "projects", num: "03", title: "活跃仓库", subtitle: "busy on" },
-  { id: "timeline", num: "04", title: "经历", subtitle: "commits" },
+  { id: "skills", num: "02", title: "技能", subtitle: "board" },
+  { id: "projects", num: "03", title: "活跃", subtitle: "busy on" },
+  { id: "timeline", num: "04", title: "经历", subtitle: "life commits" },
 ] satisfies SectionMeta[];
 
 // 彩蛋与提示文案
@@ -212,7 +212,7 @@ export const easterEgg = {
   // 页脚的彩蛋提示
   hint: `隐藏彩蛋：${konamiKeys.join(" ")}`,
   // 触发后的 toast
-  toast: "🎮 发动！你发现了彩蛋",
+  toast: "🎮 你发现了彩蛋",
   // 进站成就弹窗
   achievement: {
     title: "成就已解锁",

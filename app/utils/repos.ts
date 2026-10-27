@@ -1,9 +1,8 @@
-// 仓库数据共享层：Actions 定时生成的 app/config/repos.json 在此统一解析，
+// 仓库数据共享层：Actions 定时生成的 repos.json 在此统一解析，
 // 项目区组件与 site.ts 的回退数据都从这里取，映射逻辑只维护一份
 import type { Project } from "~/config/types";
-
-// 构建时注入的仓库数据（?raw 按字符串导入，JSON.parse 一次转对象）
-import reposRaw from "../config/repos.json?raw";
+import reposRaw from "../config/generated/repos.json?raw";
+import { parseJson } from "~/utils/parse";
 
 // GitHub REST API 返回的仓库字段（只取用到的部分）
 export interface GitHubRepo {
@@ -18,7 +17,7 @@ export interface GitHubRepo {
   topics: string[];
 }
 
-// Actions 预生成的 app/config/repos.json 结构（原始仓库字段，见 scripts/fetch-repos.mjs）
+// Actions 预生成的 app/config/generated/repos.json 结构（原始仓库字段，见 scripts/fetch-repos.mjs）
 export interface ReposData {
   generatedAt: string;
   user: string;
@@ -26,7 +25,11 @@ export interface ReposData {
 }
 
 // 解析后的仓库数据，全站共用这一份
-export const reposData = JSON.parse(reposRaw) as ReposData;
+export const reposData = parseJson<ReposData>(reposRaw, {
+  generatedAt: "",
+  user: "",
+  repos: [],
+});
 
 // 主语言 → simple-icons 图标 slug
 const langIcons: Record<string, string> = {

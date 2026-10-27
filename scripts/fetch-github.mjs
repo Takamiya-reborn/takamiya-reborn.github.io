@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 拉取 GitHub 数据生成 app/config/github.json，由 .github/workflows/update-data.yml 定时执行
+// 拉取 GitHub 数据生成 app/config/generated/github.json，由 .github/workflows/update-data.yml 定时执行
 // 用法：GITHUB_TOKEN=xxx node scripts/fetch-github.mjs
 // Token 只需要能读公开数据（Actions 内置 GITHUB_TOKEN 即可），不会进入仓库；
 // 数据口径与个人资料页贡献图一致，私有贡献取决于账号的隐私设置
@@ -123,11 +123,11 @@ const out = {
   prs,
 }
 await writeFile(
-  new URL('../app/config/github.json', import.meta.url),
+  new URL('../app/config/generated/github.json', import.meta.url),
   `${JSON.stringify(out, null, 2)}\n`,
 )
 console.log(
-  `已写入 app/config/github.json：${from} 起 ${days.length} 天共 ${out.total} 次贡献，` +
+  `已写入 app/config/generated/github.json：${from} 起 ${days.length} 天共 ${out.total} 次贡献，` +
   `${languages.length} 种语言，${prs.length} 条最新 PR`,
 )
 

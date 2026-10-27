@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { GithubDay, GithubLanguage, GithubPr } from '~/composables/useGithubActivity'
+import { accentPalette } from '~/utils/theme'
 
 defineProps<{ githubUser?: string }>()
 
@@ -60,8 +61,8 @@ const langColors: Record<string, string> = {
   'Jupyter Notebook': '#da5b0b',
 }
 
-// 未收录的语言回退到主题色池（引用 main.css 六色主题池变量），按名次轮换
-const fallbackColors = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)', 'var(--accent-5)', 'var(--accent-4)', 'var(--accent-6)']
+// 未收录的语言回退到六色主题色池（utils/theme.ts），按名次轮换
+const fallbackColors = accentPalette
 const langColor = (lang: GithubLanguage, index: number) =>
   langColors[lang.name] ?? fallbackColors[index % fallbackColors.length]!
 

@@ -1,14 +1,9 @@
 <script setup lang="ts">
-const props = defineProps<{
-  profile: {
-    name: string
-    avatar: string
-    tagline: string
-    location: string
-    bio: string
-  }
-}>()
+import type { Site } from '~/config/site'
 
+const props = defineProps<{
+  profile: Site['profile']
+}>()
 
 // 头像加载失败（如定时任务尚未生成 avatar.png）时回退为首字母占位
 const avatarFailed = ref(false)
@@ -257,13 +252,5 @@ const { nuked } = useNuke()
   }
 }
 
-@keyframes bob {
-  0% {
-    transform: translateY(0) rotate(-4deg);
-  }
-
-  100% {
-    transform: translateY(-1.1rem) rotate(5deg);
-  }
-}
+/* bob 关键帧在 main.css 全局声明 */
 </style>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { SkillGroup, SkillItem } from '~/config/types'
+import { accentPalette } from '~/utils/theme'
 
 const props = defineProps<{
   groups: SkillGroup[]
 }>()
 
-/* 分组配色：引用 main.css 的六色主题池变量，浅色主题切换时自动跟随 */
-const PALETTE = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)', 'var(--accent-4)', 'var(--accent-5)', 'var(--accent-6)'] as const
+/* 分组配色：六色主题池（utils/theme.ts），浅色主题切换时自动跟随 */
+const PALETTE = accentPalette
 
 /* 技能品牌图标：slug 已对照本地 @iconify-json/simple-icons 逐一核实；
    表外技能按"去符号小写"猜测（Vitest → vitest 这类），猜不中则不渲染图标 */
@@ -87,13 +88,6 @@ function boardTap(e: MouseEvent) {
   if ((e.target as HTMLElement | null)?.closest?.('.skill-pill, .group-pill, .root-pill')) return
   hoveredPath.value = null
 }
-
-/* 移动端树保持设计宽度横向滑动，初始滚到根芯片居中 */
-const viewport = ref<HTMLElement | null>(null)
-onMounted(() => {
-  const el = viewport.value
-  if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2
-})
 
 /* ---- 电路板走线布局 ----
    根芯片居中，主干先对齐再散开：根芯片 → 水平线 → 左右两条竖直
@@ -318,7 +312,7 @@ for (const s of [-1, 1]) {
 <template>
   <div class="skills">
     <!-- 全端统一：电路板走线技能树；移动端保持设计宽度，横向滑动查看 -->
-    <div ref="viewport" class="tree-viewport">
+    <HScrollViewport hint="← 左右滑动查看完整技能树 →">
       <div v-reveal class="tree" role="img" aria-label="技能树：电路板走线风格" @pointerleave="hoverOut($event)" @click="boardTap">
         <svg class="tree-svg" :viewBox="`-610 ${VB_TOP} ${VB_W} ${VB_H}`">
           <!-- 主干与支线走线 -->
@@ -354,8 +348,7 @@ for (const s of [-1, 1]) {
           {{ n.name }}
         </div>
       </div>
-    </div>
-    <p class="scroll-hint" aria-hidden="true">← 左右滑动查看完整技能树 →</p>
+    </HScrollViewport>
   </div>
 </template>
 
@@ -546,39 +539,11 @@ for (const s of [-1, 1]) {
   }
 }
 
-/* ---- 横向滚动容器：桌面端不产生滚动条，移动端容纳 1220px 设计宽度 ---- */
-.tree-viewport {
-  overflow-x: auto;
-  /* 显式锁死纵轴：单轴 auto 会把另一轴的 visible 强算成 auto，
-     入场浮现的 translateY(1.6rem) 便会撑出瞬时纵向滚动条 */
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  /* 滑到尽头不再把手势链给页面（页面横移/浏览器后退滑动），只在自己体内回弹 */
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--muted) transparent;
-}
-
-.scroll-hint {
-  display: none;
-  margin-top: 0.6rem;
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-align: center;
-}
-
-/* 响应式切换须放在 display 声明之后，否则会被同优先级规则覆盖 */
+/* 窄屏锁设计宽度，横向滑动交给 HScrollViewport */
 @media (max-width: 899px) {
-
-  /* 胶囊是固定字号的 HTML 覆盖层，窄屏下按 SVG 等比缩放会互相重叠，
-     因此固定为布局设计宽度，靠横向滑动查看完整树 */
   .tree {
     width: 1220px;
     max-width: none;
-  }
-
-  .scroll-hint {
-    display: block;
   }
 }
 

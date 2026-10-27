@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Quote } from '~/config/types'
 
-// quote 抽取器：外壳在 Switch，这里只负责屏幕内容（quote）和真实按键
+// quote 抽取器：外壳在 SwitchConsole，这里只负责屏幕内容（quote）和真实按键
 const { quotes, draw } = useQuotes()
 // 屏幕背景轮换：Y 位键循环切换，列表末尾再切回默认黑屏
 const { bgs: screenBgs, current: screenBg, next: nextScreenBg } = useScreenBgs()
@@ -18,9 +18,6 @@ const copied = ref(false)
 
 // 浮现总时长：行间错开 0.18s，每行 0.6s，与句子长短无关
 const REVEAL_MS = 1000
-
-// 横向滑动容器：整机锁设计宽度，窄屏左右滑动查看（与技能板同款）
-const viewport = ref<HTMLElement>()
 
 // 主句：有原文用原文，没有则译文顶上
 function mainOf(quote: Quote) {
@@ -84,18 +81,13 @@ function next() {
   // 浮现由 CSS 动画驱动，这里只按总时长解锁按钮
   setTimeout(() => (rolling.value = false), REVEAL_MS)
 }
-
-onMounted(() => {
-  // 窄屏下容器装不下整机：初始滚到屏幕居中（桌面端无滚动，是 no-op）
-  const vp = viewport.value
-  if (vp) vp.scrollLeft = (vp.scrollWidth - vp.clientWidth) / 2
-})
 </script>
 
 <template>
-  <div ref="viewport" class="switch-viewport">
-    <!-- 游戏机：外壳架构在 Switch，这里注入屏幕内容和真实按键 -->
-    <Switch>
+  <!-- shadow-pad：机壳外投影需要裁切余量（见 HScrollViewport） -->
+  <HScrollViewport hint="← 左右滑动查看整机 →" shadow-pad>
+    <!-- 游戏机：外壳架构在 SwitchConsole，这里注入屏幕内容和真实按键 -->
+    <SwitchConsole>
       <template #screen>
         <!-- 屏幕：quote 卡片，16:9 锁定比例，高度随 48rem 设计宽自然定死 -->
         <BaseCard class="quote-card screen" :hover="false" :spotlight="false">
@@ -149,10 +141,8 @@ onMounted(() => {
           </div>
         </div>
       </template>
-    </Switch>
-  </div>
-  <!-- 与技能板同款滑动提示：只在容器装不下整机时出现 -->
-  <p class="scroll-hint" aria-hidden="true">← 左右滑动查看整机 →</p>
+    </SwitchConsole>
+  </HScrollViewport>
 </template>
 
 <style scoped>
@@ -165,7 +155,7 @@ onMounted(() => {
 }
 
 /* 屏幕：凹进机身的液晶屏，换掉卡片外阴影，改用内阴影压出凹陷。
-   配色引用 Switch 挂在 .console 上的固定色板，不随主题切换 */
+   配色引用 SwitchConsole 挂在 .console 上的固定色板，不随主题切换 */
 .quote-card.screen {
   /* BaseCard 默认 height: 100% 会吞掉上下机身边，改回内容高；
      高度不量了：16:9 锁定比例，宽随 flex-basis 48rem、高按比例反推，
@@ -377,40 +367,6 @@ onMounted(() => {
 /* Y 位键：占位（之后接切换屏幕背景），样式与实体键一致 */
 .quote-roll--ghost {
   grid-area: 2 / 1;
-}
-
-/* ---- 横向滑动容器：桌面端内容放得下、不产生滚动条，窄屏左右滑动看整机 ----
-   纵轴显式锁死并让出投影空间：overflow-x 单轴 auto 会把另一轴的 visible
-   强算成 auto，机壳的外投影会被裁掉，故用 padding 垫出阴影余量、
-   负 margin 找回占位 */
-.switch-viewport {
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  /* 滑到尽头不再把手势链给页面（页面横移/浏览器后退滑动），只在自己体内回弹 */
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--muted) transparent;
-  /* padding 全部用负 margin 抵消：既给机壳投影留出不被 overflow 裁掉的余量
-     （机身撑满容器，投影左右贴着裁切边会被切成方形硬边），又不占布局间距。
-     水平 1rem 与容器 padding-block 下限持平，窄屏也不会把页面推出横向滚动 */
-  padding: 0.5rem 1rem 2.75rem;
-  margin: -0.5rem -1rem -2.75rem;
-}
-
-.scroll-hint {
-  display: none;
-  margin-top: 0.6rem;
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-align: center;
-}
-
-/* 65rem 整机 + 页面两侧留白：视口 70rem 以下必出滚动，同步亮提示 */
-@media (max-width: 70rem) {
-  .scroll-hint {
-    display: block;
-  }
 }
 
 /* 换句动画：旧句快速淡出，新句按行浮现 */

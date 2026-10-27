@@ -1,22 +1,15 @@
-// 屏幕背景轮换：手动维护的 app/config/screen-bgs.json 打包时静态读入，
-// Y 位键循环切换；列表为空时按钮禁用
-import bgsRaw from "../config/screen-bgs.json?raw";
+// 屏幕背景轮换：config/content/screen-bgs.json 静态读入，Y 位键循环切换
+import bgsRaw from "../config/content/screen-bgs.json?raw";
 import type { ScreenBg } from "~/config/types";
+import { parseJson } from "~/utils/parse";
 
 export function useScreenBgs() {
-  // JSON 解析失败时按空列表处理，按钮禁用而不是报错
-  let bgs: ScreenBg[] = [];
-  try {
-    bgs = (JSON.parse(bgsRaw) as ScreenBg[]).filter((b) => b.src);
-  } catch {
-    // screen-bgs.json 语法错误：回退到空列表
-  }
+  const bgs = parseJson<ScreenBg[]>(bgsRaw, []).filter((b) => b.src);
 
-  // -1 表示默认黑屏，切换到末尾再下一发即回到默认
+  // -1 = 默认黑屏，末尾再切回默认
   const index = ref(-1);
 
-  // 挂载后预载全部背景图：背景是点 Y 键才内联到 backgroundImage 的，
-  // 不预载的话第一次切换会现场下载、一点一点显出来
+  // 预载全部背景图：不预载的话首次切换现场下载、一点一点显出来
   onMounted(() => {
     for (const b of bgs) {
       const img = new Image();

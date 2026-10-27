@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 拉取 LeetCode 做题数据生成 app/config/leetcode.json，由 .github/workflows/update-data.yml 定时执行
+// 拉取 LeetCode 做题数据生成 app/config/generated/leetcode.json，由 .github/workflows/update-data.yml 定时执行
 // 用法：node scripts/fetch-leetcode.mjs（公开资料，无需鉴权）
 
 import { writeFile } from 'node:fs/promises'
@@ -104,7 +104,7 @@ const out = {
 }
 
 await writeFile(
-  new URL('../app/config/leetcode.json', import.meta.url),
+  new URL('../app/config/generated/leetcode.json', import.meta.url),
   `${JSON.stringify(out, null, 2)}\n`,
 )
-console.log(`已写入 app/config/leetcode.json：${solved.easy + solved.medium + solved.hard} / ${total.easy + total.medium + total.hard}`)
+console.log(`已写入 app/config/generated/leetcode.json：${solved.easy + solved.medium + solved.hard} / ${total.easy + total.medium + total.hard}`)

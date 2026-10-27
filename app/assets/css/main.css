@@ -128,7 +128,7 @@ html[data-theme='light'] {
   --shadow-card: 0 1.5rem 3rem -1rem rgba(15, 23, 42, 0.18);
   --shadow-deep: rgba(15, 23, 42, 0.2);
   /* Switch 机壳投在页面上的外投影：浅底换蓝灰淡影（机身本体配色仍固定）；
-     尺寸受 .switch-viewport 的裁切约束（纵向 ≤ 2.75rem、水平 ≤ 1rem） */
+     尺寸受 HScrollViewport 的 shadow-pad 裁切约束（纵向 ≤ 2.75rem、水平 ≤ 1rem） */
   --jc-drop-1: 0 0.8rem 1.6rem -0.7rem rgba(15, 23, 42, 0.22);
   --jc-drop-2: 0 1.2rem 2rem -0.8rem rgba(15, 23, 42, 0.16);
   --grid-line: rgba(13, 18, 38, 0.05);
@@ -314,7 +314,19 @@ html.theme-switching *::after {
   will-change: auto;
 }
 
-/* 组件专属关键帧已随组件放进各自的 <style scoped>（Vue 会按组件重命名互不冲突） */
+/* 组件专属关键帧仍随组件放进各自的 <style scoped>（Vue 会按组件重命名互不冲突）；
+   多组件共用的关键帧放这里，scoped 组件里 animation: <名> 直接引用全局 */
+
+/* 漂浮起伏：氛围图标、头像环绕徽章共用 */
+@keyframes bob {
+  0% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  100% {
+    transform: translateY(-1.1rem) rotate(5deg);
+  }
+}
 
 /* 减少动效偏好 */
 @media (prefers-reduced-motion: reduce) {

@@ -74,7 +74,7 @@ export interface GameEntry {
   steamName?: string;
 }
 
-// quote 条目：手动维护在 quotes.json，QuoteCard 随机抽取展示
+// quote 条目：手动维护在 config/content/quotes.json，QuoteCard 随机抽取展示
 export interface Quote {
   /** 译文；中文原句直接填这里作为主句，纯中文诗词条目可省略（text 即主句） */
   translation?: string;
@@ -90,7 +90,7 @@ export interface Quote {
   dummy?: boolean;
 }
 
-// 屏幕背景条目：手动维护在 screen-bgs.json，QuoteCard 的 Y 位键轮换切换
+// 屏幕背景条目：手动维护在 config/content/screen-bgs.json，QuoteCard 的 Y 位键轮换切换
 export interface ScreenBg {
   /** 图片路径；图片放 public/bg/ 下，此处填 '/bg/xxx.webp' 这样的绝对路径 */
   src: string;

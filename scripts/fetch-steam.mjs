@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 拉取 Steam 数据生成 app/config/steam.json，由 .github/workflows/update-data.yml 定时执行
+// 拉取 Steam 数据生成 app/config/generated/steam.json，由 .github/workflows/update-data.yml 定时执行
 // 用法：STEAM_API_KEY=xxx node scripts/fetch-steam.mjs
 // Key 只存在于运行环境（GitHub Actions Secrets），不会进入仓库
 
@@ -113,7 +113,7 @@ for (const entry of steamEntries) {
 
 const out = { generatedAt: new Date().toISOString(), games };
 await writeFile(
-  new URL("../app/config/steam.json", import.meta.url),
+  new URL("../app/config/generated/steam.json", import.meta.url),
   `${JSON.stringify(out, null, 2)}\n`,
 );
-console.log("已写入 app/config/steam.json");
+console.log("已写入 app/config/generated/steam.json");

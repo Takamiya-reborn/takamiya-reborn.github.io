@@ -1,8 +1,7 @@
-// GitHub 贡献数据：由 scripts/fetch-github.mjs 定时生成到 app/config/github.json，
-// 构建时静态注入（?raw 按字符串导入，JSON.parse 一次转对象），运行时零请求；
-// days 为空时由调用方隐藏活动区块
+// GitHub 贡献数据：scripts/fetch-github.mjs 定时生成，构建时静态注入，运行时零请求
 
-import githubRaw from "../config/github.json?raw";
+import githubRaw from "../config/generated/github.json?raw";
+import { parseJson } from "~/utils/parse";
 
 export interface GithubDay {
   /** 日期，YYYY-MM-DD */
@@ -35,7 +34,7 @@ export interface GithubPr {
   deletions: number | null;
 }
 
-// Actions 预生成的 app/config/github.json 结构（见 scripts/fetch-github.mjs）
+// Actions 预生成的 github.json 结构（见 scripts/fetch-github.mjs）
 interface GithubData {
   generatedAt: string;
   user: string;
@@ -45,9 +44,14 @@ interface GithubData {
   prs?: GithubPr[];
 }
 
-// 返回贡献逐日数组、合计、语言构成与最新 PR；数据缺失时为空数组，调用方据此隐藏对应区块
+// 贡献逐日、合计、语言构成与最新 PR；空数据由调用方隐藏对应区块
 export function useGithubActivity() {
-  const data = JSON.parse(githubRaw) as GithubData;
+  const data = parseJson<GithubData>(githubRaw, {
+    generatedAt: "",
+    user: "",
+    total: 0,
+    days: [],
+  });
   const days = data.days ?? [];
   return {
     days,

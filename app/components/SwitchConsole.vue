@@ -54,7 +54,7 @@
   /* 外投影颜色走主题变量：机身配色固定不随主题，但投在页面上的影子
      得跟页面背景走——纯黑影在浅色模式的近白底上会变成一块灰色方板。
      尺寸同时受外层滑动容器的裁切约束：纵向伸入 ≤ 2.75rem、水平 ≤ 1rem
-     （即 .switch-viewport 的 padding），超出会被 overflow 切出方形硬边 */
+     （即 HScrollViewport 的 shadow-pad），超出会被 overflow 切出方形硬边 */
   --jc-drop-1: 0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.45);
   --jc-drop-2: 0 1.5rem 2rem -1rem rgba(0, 0, 0, 0.4);
   padding: var(--shell-pad);

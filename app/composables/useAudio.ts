@@ -1,7 +1,7 @@
-// music 命令彩蛋共享状态：commands.ts 的 handler 调用；Audio 元素是模块级单例（仅客户端），
-// 反复点唱只换 src 不叠声。曲库来自 config/music.json（?raw 打包时读入，与 commands.json 同套路），
-// 音频文件由站长自备放 public/audio/，文件缺失时靠 error 事件兜底报错
-import tracksRaw from "../config/music.json?raw";
+// music 命令共享状态：Audio 元素模块级单例（仅客户端），换 src 不叠声；
+// 曲库来自 config/content/music.json，音频自备放 public/audio/，缺失时 error 事件兜底
+import tracksRaw from "../config/content/music.json?raw";
+import { parseJson } from "~/utils/parse";
 
 export interface MusicTrack {
   /** 曲目代号，music play <id> 用 */
@@ -12,7 +12,7 @@ export interface MusicTrack {
   file: string;
 }
 
-export const musicTracks = JSON.parse(tracksRaw) as MusicTrack[];
+export const musicTracks = parseJson<MusicTrack[]>(tracksRaw, []);
 
 let audioEl: HTMLAudioElement | null = null;
 function ensureAudio(): HTMLAudioElement | null {

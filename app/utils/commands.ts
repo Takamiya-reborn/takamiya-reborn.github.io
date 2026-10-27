@@ -1,9 +1,9 @@
-// 终端指令模块：数据（解析 commands.json）与行为（handler 注册表）在此一处
+// 终端指令模块：数据（config/content/commands.json）与行为（handler 注册表）在此一处
 // —— 新增内置指令 = commands.json 加一条 + 下面 commandHandlers 加一个 handler；
-//    target / url 类指令是声明式的，在 Terminal.vue 的分发器里兜底，无需动代码。
-// 解析方式与 repos.ts 一致（?raw 静态导入，打包时读入）
-import commandsRaw from "../config/commands.json?raw";
-import modelsRaw from "../config/ollama-models.json?raw";
+//    target / url 类指令是声明式的，在 Terminal.vue 的分发器里兜底，无需动代码
+import commandsRaw from "../config/content/commands.json?raw";
+import modelsRaw from "../config/content/ollama-models.json?raw";
+import { parseJson } from "~/utils/parse";
 import { site } from "~/config/site";
 import { useWeather, type WeatherMode } from "~/composables/useWeather";
 import { useTheme, type ThemeMode } from "~/composables/useTheme";
@@ -30,7 +30,7 @@ export interface SlashCommand {
   url?: string;
 }
 
-export const slashCommands = JSON.parse(commandsRaw) as SlashCommand[];
+export const slashCommands = parseJson<SlashCommand[]>(commandsRaw, []);
 
 // ollama list 展示的假模型库。本地模型照抄真 ollama list 的输出格式：name 带 tag、
 // size / modified 手填，ID 不用编——由模型名哈希自动生成（真 ollama 的 ID 也是截断哈希）；
@@ -65,7 +65,7 @@ function fakeModelId(name: string): string {
   );
 }
 
-export const ollamaModels = JSON.parse(modelsRaw) as OllamaModel[];
+export const ollamaModels = parseJson<OllamaModel[]>(modelsRaw, []);
 
 // ---- 行为：内置动作注册表 ----
 
@@ -118,7 +118,7 @@ function ollamaHelp(ctx: TerminalContext) {
 // run 是聊天入口——校验模型在库后，先随机“思考”一两秒，再逐字流式回显，
 // 自曝没有人工智能，把访客引去右上角的真人联系方式
 const ollamaSubcommands: Record<string, CommandHandler> = {
-  // list：复刻 ollama list 的表格式输出，模型数据在 config/ollama-models.json，
+  // list：复刻 ollama list 的表格式输出，模型数据在 config/content/ollama-models.json，
   // 按 name 排序、列宽按最长行实时对齐，和真 CLI 一样；
   // 闭源模型不进表格，以 cloud 形式注明 provider
   list: (_sc, ctx) => {
@@ -329,7 +329,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
     );
   },
 
-  // music：终端点唱机——曲库在 config/music.json，音频文件自备放 public/audio/。
+  // music：终端点唱机——曲库在 config/content/music.json，音频文件自备放 public/audio/。
   // 子命令 list / play <name> / stop；裸 play 续播上次曲目
   music: async (sc, ctx) => {
     const { current, playing, play, pause } = useAudio();
