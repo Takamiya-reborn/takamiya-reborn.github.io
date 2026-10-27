@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-27T15:59:57.598Z",
+  "generatedAt": "2026-10-27T20:54:44.662Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 221,
-    "medium": 324,
+    "medium": 325,
     "hard": 79
   },
   "attempting": 3,
@@ -15,7 +15,7 @@
   "streak": 4,
   "submittedToday": true,
   "daily": {
-    "slug": "create-grid-with-exactly-one-path",
-    "title": "构造恰好一条路径的网格"
+    "slug": "minimum-xor-path-in-a-grid",
+    "title": "网格图中最小异或路径"
   }
 }
