@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-10-27T05:27:46.698Z",
+  "generatedAt": "2026-10-27T15:59:57.598Z",
   "userSlug": "takamiya",
   "solved": {
-    "easy": 220,
+    "easy": 221,
     "medium": 324,
     "hard": 79
   },
   "attempting": 3,
   "total": {
     "easy": 1094,
-    "medium": 2333,
+    "medium": 2334,
     "hard": 1056
   },
-  "streak": 3,
-  "submittedToday": false,
+  "streak": 4,
+  "submittedToday": true,
   "daily": {
     "slug": "create-grid-with-exactly-one-path",
     "title": "构造恰好一条路径的网格"
