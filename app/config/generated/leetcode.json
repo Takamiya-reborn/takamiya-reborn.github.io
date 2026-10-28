@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T06:09:33.824Z",
+  "generatedAt": "2026-10-28T16:48:33.383Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 221,
@@ -15,7 +15,7 @@
   "streak": 5,
   "submittedToday": true,
   "daily": {
-    "slug": "minimum-xor-path-in-a-grid",
-    "title": "网格图中最小异或路径"
+    "slug": "palindromic-path-queries-in-a-tree",
+    "title": "查询树上回文路径"
   }
 }
