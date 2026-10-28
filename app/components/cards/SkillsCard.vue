@@ -13,32 +13,26 @@ const PALETTE = accentPalette
    表外技能按"去符号小写"猜测（Vitest → vitest 这类），猜不中则不渲染图标 */
 const ICONS: Record<string, string> = {
   Python: 'simple-icons:python',
-  JavaScript: 'simple-icons:javascript',
   TypeScript: 'simple-icons:typescript',
   'C++': 'simple-icons:cplusplus',
   Go: 'simple-icons:go',
-  HTML: 'simple-icons:html5',
-  CSS: 'simple-icons:css',
+  '.NET': 'simple-icons:dotnet',
   Vue: 'simple-icons:vuedotjs',
   Nuxt: 'simple-icons:nuxtdotjs',
   TailwindCSS: 'simple-icons:tailwindcss',
-  'Anime.js': 'simple-icons:animedotjs',
   Konva: 'simple-icons:konva',
   Django: 'simple-icons:django',
-  Flask: 'simple-icons:flask',
+  FastAPI: 'simple-icons:fastapi',
   PyQt: 'simple-icons:qt',
-  Streamlit: 'simple-icons:streamlit',
-  'Node.js': 'simple-icons:nodedotjs',
   Electron: 'simple-icons:electron',
-  '.NET': 'simple-icons:dotnet',
-  PyTorch: 'simple-icons:pytorch',
+  Avalonia: 'simple-icons:avaloniaui', // slug 是 avaloniaui，fallback 猜 avalonia 猜不中
   Pandas: 'simple-icons:pandas',
-  Polars: 'simple-icons:polars',
-  Ultralytics: 'simple-icons:ultralytics',
-  PydanticAI: 'simple-icons:pydantic',
+  NumPy: 'simple-icons:numpy',
+  PyTorch: 'simple-icons:pytorch',
+  Pydantic: 'simple-icons:pydantic',
+  'Hugging Face': 'simple-icons:huggingface',
   Docker: 'simple-icons:docker',
   Vite: 'simple-icons:vite',
-  npm: 'simple-icons:npm',
   uv: 'simple-icons:uv',
   Godot: 'simple-icons:godotengine',
   Unity: 'simple-icons:unity',
@@ -154,7 +148,7 @@ const chains = props.groups.map((g, gi) => {
 })
 
 /* 贪心分列：每组占 ceil(n/2) 行（双列并排），放进当前较矮的一列，
-   左右两列总行数自然趋近（当前数据左右各 9 行） */
+   左右两列总行数自然趋近（当前数据左右各 8 行） */
 const columns: (typeof chains)[] = [[], []]
 const colRows: [number, number] = [0, 0]
 for (const c of chains) {
@@ -171,10 +165,10 @@ const skillNodes: TreeNode[] = []
 
 /* 分组芯片默认与该组首行技能齐平；个别组按行数下移，与指定技能对齐 */
 const GROUP_Y_OFFSET: Record<string, number> = {
-  编程语言: 2 * P, // 与 Python（换位后第 2 行）齐平
-  后端与桌面: 3 * P, // 与 PyQt（第 4 项）齐平
-  'AI 与数据': 2 * P, // 与 Pandas（第 3 项）齐平
-  前端与图形: 3 * P, // 与 Vue（第 4 项）齐平
+  编程语言: 2 * P, // 与 C++（第 3 项）齐平
+  前端与动画: 2 * P, // 与 TailwindCSS（第 3 项）齐平
+  后端与桌面: 2 * P, // 与 PyQt（第 3 项）齐平
+  'AI 与数据': 2 * P, // 与 PyTorch（第 3 项）齐平
 }
 
 columns.forEach((col, side) => {
@@ -221,29 +215,22 @@ columns.forEach((col, side) => {
   })
 })
 
-/* 指定技能两两互换显示坐标：摊平顺序与父子链路不动（TS 逻辑上仍挂
-   在 JS 下），仅布局层面对调位置 */
-const NODE_POS_SWAP: [string, string][] = [
-  ['Python', 'TypeScript'],
-]
-
-for (const [a, b] of NODE_POS_SWAP) {
-  const na = skillNodes.find(n => n.name === a)
-  const nb = skillNodes.find(n => n.name === b)
-  if (na && nb) {
-    ;[na.x, nb.x] = [nb.x, na.x]
-      ;[na.y, nb.y] = [nb.y, na.y]
-  }
+/* 指定技能列覆盖（垂直对齐）：前端与动画五枚收拢进内列单列纵排；
+   NumPy 并入 Pandas 内列，Pydantic 并入 PyTorch 外列；同列相邻
+   胶囊间隔 P（半格），比常规 2P 更紧凑 */
+const NODE_X_OVERRIDE: Record<string, number> = {
+  Vue: COL_INNER, // 前端组五枚单列纵排
+  Nuxt: COL_INNER,
+  PixiJS: COL_INNER,
+  NumPy: COL_INNER, // 与 Pandas 同列
+  Pydantic: COL_OUTER, // 与 PyTorch 同列
+  // 全板最宽胶囊（12 字符），贴外列 545 右缘会出板框，收 40 进来
+  'Hugging Face': COL_OUTER - 40,
 }
 
-/* 个别技能收短走线：胶囊自所在列向分配排方向挪近指定距离 */
-const NODE_X_PULL: Record<string, number> = {
-  TypeScript: 60, // 自外列向内收 60，走线 205 → 145
-}
-
-for (const [name, pull] of Object.entries(NODE_X_PULL)) {
+for (const [name, x] of Object.entries(NODE_X_OVERRIDE)) {
   const n = skillNodes.find(p => p.name === name)
-  if (n && n.x) n.x -= Math.sign(n.x) * pull
+  if (n) n.x = Math.sign(n.x) * x
 }
 
 /* 坐标 → 覆盖层百分比定位 */

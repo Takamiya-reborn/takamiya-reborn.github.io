@@ -120,55 +120,43 @@ export const site = {
     { name: "After Effects", icon: "/icon/ae.png", desc: "动效合成" },
   ] satisfies MediaSkill[],
 
-  // 技能分组
+  // 技能分组（与 Profile 仓库 README 的技能列表保持同步）
   skillGroups: [
     {
       title: "编程语言",
       icon: "lucide:braces",
       skills: [
         "Python",
-        { name: "JavaScript", children: ["TypeScript"] },
+        "TypeScript",
         "C++",
+        ".NET",
         "Go",
       ],
     },
     {
-      title: "前端与图形",
+      title: "前端与动画",
       icon: "lucide:layout",
       skills: [
-        "HTML",
-        { name: "CSS", children: ["TailwindCSS"] },
         { name: "Vue", children: ["Nuxt"] },
-        "Anime.js",
+        "TailwindCSS",
+        "PixiJS",
         "Konva",
       ],
     },
     {
       title: "后端与桌面",
       icon: "lucide:server",
-      skills: [
-        "Django",
-        "Flask",
-        "Streamlit",
-        "PyQt",
-        { name: "Node.js", children: ["Electron"] },
-        ".NET",
-      ],
+      skills: ["Django", "FastAPI", "PyQt", "Electron", "Avalonia"],
     },
     {
       title: "AI 与数据",
       icon: "lucide:brain-circuit",
-      skills: [
-        { name: "PyTorch", children: ["Ultralytics"] }, // YOLO 系基于 PyTorch
-        { name: "Pandas", children: ["Polars"] }, // Polars 是 Pandas 的现代化替代
-        "PydanticAI",
-      ],
+      skills: ["Pandas", "NumPy", "PyTorch", "Pydantic", "Hugging Face"],
     },
     {
       title: "工具",
       icon: "lucide:wrench",
-      // 路径：JS 工具链（npm → Vite）→ Python 工具链（uv）→ 容器化部署（Docker）
-      skills: [{ name: "npm", children: ["Vite"] }, "uv", "Docker"],
+      skills: ["Docker", "Vite", "uv", "mise"],
     },
     {
       title: "游戏与 3D",
