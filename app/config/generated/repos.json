@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-10-29T17:03:39.310Z",
+  "generatedAt": "2026-10-29T21:22:50.317Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-29T17:03:40Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "autopot",
       "description": "饥荒联机版（Don't Starve Together）料理计算器",
@@ -15,17 +26,6 @@
         "dontstarvetogether",
         "vue3"
       ]
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-29T06:18:44Z",
-      "language": "Vue",
-      "topics": []
     },
     {
       "name": "Takamiya-reborn",
