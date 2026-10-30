@@ -3,6 +3,10 @@ import type { SocialLink } from '~/config/types'
 
 const props = defineProps<{ socials: SocialLink[] }>()
 
+// 节日生效期站名旁边缀上节日问好，与场景彩蛋同规则（见 useHoliday）
+const { active } = useHoliday()
+const greet = computed(() => active.value?.greet || '')
+
 // 导航栏右侧放平台图标 + 邮箱，RSS 不放
 const headerSocials = computed(() =>
   props.socials.filter((s) => !['RSS'].includes(s.label)),
@@ -16,6 +20,8 @@ const headerSocials = computed(() =>
         <Icon name="lucide:sparkle" size="16" class="logo-icon" aria-hidden="true" />
         <span class="logo-text">Takamiya</span>
       </a>
+      <!-- 节日问好：绝对定位挂在导航栏正中间，不参与左右布局 -->
+      <span v-if="greet" class="logo-greet">Happy {{ greet }}</span>
 
       <div class="socials">
         <a v-for="social in headerSocials" :key="social.label" :href="social.url" target="_blank" rel="noopener"
@@ -38,6 +44,7 @@ const headerSocials = computed(() =>
 }
 
 .inner {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -104,6 +111,26 @@ const headerSocials = computed(() =>
   }
 }
 
+/* 节日问好：小一号悬在导航栏正中间，吃站名同款流动渐变 */
+.logo-greet {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: linear-gradient(100deg,
+      var(--gradient-soft) 10%,
+      var(--accent) 45%,
+      var(--accent-2) 60%,
+      var(--gradient-soft) 92.5%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 7s ease-in-out infinite;
+}
+
 .socials {
   display: flex;
   gap: 0.5rem;
@@ -149,6 +176,11 @@ const headerSocials = computed(() =>
   .icon-btn {
     width: 1.75rem;
     height: 1.75rem;
+  }
+
+  /* 问好在窄屏上挤布局，直接不显示 */
+  .logo-greet {
+    display: none;
   }
 }
 </style>

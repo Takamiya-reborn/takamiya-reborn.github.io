@@ -23,6 +23,9 @@ const { nuked } = useNuke()
     <!-- 氛围背景 -->
     <BackdropFx v-if="!nuked" />
 
+    <!-- 节日场景彩蛋：节日命中且未手动选主题时替换背景，平时不渲染 -->
+    <HolidayFx v-if="!nuked" />
+
     <!-- /weather 天气特效：阳光在背景层，雨压内容层，闪电盖全屏（nuked 后世界没了，天气随之消失） -->
     <WeatherFx v-if="!nuked" />
 

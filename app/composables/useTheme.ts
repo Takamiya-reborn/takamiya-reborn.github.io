@@ -9,9 +9,12 @@ let switchTimer: ReturnType<typeof setTimeout> | undefined;
 
 export function useTheme() {
   const theme = useState<ThemeMode>("theme-mode", () => "dark");
+  // 用户是否手动选过主题：选过则节日彩蛋让位，dark/light 精确生效
+  const picked = useState("theme-picked", () => false);
 
   function set(mode: ThemeMode) {
     theme.value = mode;
+    picked.value = true;
     // 换肤瞬间挂过渡类（见 main.css 的 theme-switching 块），窗口期过后移除，
     // 不做成常驻过渡：免得干扰悬停发光这类微交互
     const root = document.documentElement;
@@ -23,5 +26,5 @@ export function useTheme() {
     );
   }
 
-  return { theme, set };
+  return { theme, picked, set };
 }

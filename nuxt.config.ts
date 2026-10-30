@@ -56,5 +56,10 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ["~/assets/fonts/hyw/result.css", "~/assets/css/main.css"],
+  // 节日主题覆盖块一主题一文件放 assets/css/themes/，在此挂载；注册表见 composables/useHoliday.ts
+  css: [
+    "~/assets/fonts/hyw/result.css",
+    "~/assets/css/main.css",
+    "~/assets/css/themes/halloween.css",
+  ],
 });

@@ -1,0 +1,43 @@
+/* 万圣节主题：窗口见 composables/useHoliday.ts，theme 指令切不到；未覆盖的令牌照用深色版 */
+
+html[data-theme='halloween'] {
+  color-scheme: dark;
+
+  --bg: #0a0712;
+  /* 深夜紫黑底 */
+  --bg-soft: #110c1d;
+  --text: #f0e9dc;
+  /* 骨白偏暖，呼应烛光 */
+  --muted: #a395ad;
+
+  --accent: #fb923c;
+  /* orange-400 南瓜橙 */
+  --accent-2: #a3e635;
+  /* lime-400 毒液绿 */
+  --accent-3: #c084fc;
+  /* purple-400 女巫紫 */
+  --accent-4: #fde047;
+  /* yellow-300 糖果玉米黄 */
+  --accent-5: #4ade80;
+  /* green-400 黏液绿 */
+  --accent-6: #f87171;
+  /* red-400 血月红 */
+  --on-accent: #1f1200;
+  /* 压在橙渐变上的深棕字 */
+
+  --grid-line: rgba(192, 132, 252, 0.05);
+  --veil-rain: rgba(16, 10, 30, 0.14);
+  --veil-thunder: rgba(14, 8, 26, 0.26);
+  --fx-drop: rgba(251, 146, 60, 0.55);
+  /* 雨滴染成南瓜橙 */
+  --fx-bolt: #fde047;
+  /* 紫夜底下白闪太素，换黄闪 */
+
+  /* 场景彩蛋令牌：HolidayFx 专用，手动切走主题时组件卸载，无需兜底 */
+  --scene-sky-top: #040208;
+  --scene-sky-mid: #0b0714;
+  --scene-sky-bottom: #130d1c;
+  --scene-bat: #070410;
+  --scene-star: #d8d2e2;
+  --scene-moon-glow: rgba(253, 224, 71, 0.07);
+}

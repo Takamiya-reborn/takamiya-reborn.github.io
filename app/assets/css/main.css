@@ -96,6 +96,7 @@
 /* 浅色主题：Terminal 的 theme light 指令往 <html> 挂 data-theme，在此覆盖同名变量。
    派生令牌（--accent-border/--glow/--gradient-soft 等 color-mix 系列）引用 accent，
    改上面的基色即可，无需重复定义 */
+/* 节日主题在 assets/css/themes/，登记在 composables/useHoliday.ts */
 html[data-theme='light'] {
   color-scheme: light;
 

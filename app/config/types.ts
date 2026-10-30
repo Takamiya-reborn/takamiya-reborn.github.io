@@ -108,3 +108,17 @@ export interface SectionMeta {
   title: string;
   subtitle?: string;
 }
+
+// 节日主题条目：注册表在 composables/useHoliday.ts，覆盖块在 assets/css/themes/<name>.css
+export interface HolidayTheme {
+  /** data-theme 值，须与 assets/css/themes/<name>.css 一致 */
+  name: string;
+  /** 命中窗口起点（本地时区，含当天），month 从 1 起 */
+  start: { month: number; day: number };
+  /** 命中窗口终点（含当天），可与 start 跨年（如 12/20—1/2） */
+  end: { month: number; day: number };
+  /** theme-color meta 色：窗口期地址栏跟页面底色走 */
+  themeColor: string;
+  /** 节日问候词：窗口期终端名字行缀 "Happy <greet>"，不填则不带问候 */
+  greet?: string;
+}

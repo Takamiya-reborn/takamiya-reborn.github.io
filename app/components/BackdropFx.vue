@@ -19,10 +19,6 @@ const party = useState("egg-party", () => false);
       style="top: 30%; right: 7%; animation-delay: -3.2s; animation-duration: 7.5s; color: var(--accent-4)">
       <Icon name="lucide:star" size="28" />
     </span>
-    <span class="float-icon"
-      style="bottom: 22%; left: 9%; animation-delay: -5s; animation-duration: 8s; color: var(--accent-2)">
-      <Icon name="lucide:ghost" size="30" />
-    </span>
     <span class="float-icon" style="bottom: 40%; right: 14%; animation-delay: -2.4s; color: var(--accent-6)">
       <Icon name="lucide:heart" size="24" />
     </span>
