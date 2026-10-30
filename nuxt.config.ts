@@ -1,18 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ['@nuxt/icon'],
+  modules: ["@nuxt/icon"],
 
   // 组件按文件名自动导入（不拼目录前缀）：cards/ProfileCard.vue → <ProfileCard>
-  components: [{ path: '~/components', pathPrefix: false }],
+  components: [{ path: "~/components", pathPrefix: false }],
 
   // 静态生成部署到 GitHub Pages（nuxt generate）
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ['/'],
+      routes: ["/"],
     },
   },
 
@@ -21,35 +21,40 @@ export default defineNuxtConfig({
   // app: { baseURL: '/<repo>/' },
 
   icon: {
-    mode: 'css',
-    cssLayer: 'base',
+    mode: "css",
+    cssLayer: "base",
+    // 静态部署无服务端，构建时扫描源码内全部图标打进客户端 CSS，避免运行时请求 api.iconify.design（国内被墙）
+    clientBundle: {
+      scan: true,
+      sizeLimitKb: 512,
+    },
   },
 
   app: {
     head: {
-      htmlAttrs: { lang: 'zh-CN' },
-      title: 'Takamiya',
+      htmlAttrs: { lang: "zh-CN" },
+      title: "Takamiya",
       meta: [
-        { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { charset: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
         {
-          name: 'description',
-          content: 'Takamiya 的个人主页 —— 关于我、技能、项目与联系方式。',
+          name: "description",
+          content: "Takamiya 的个人主页 —— 关于我、技能、项目与联系方式。",
         },
-        { property: 'og:title', content: 'Takamiya' },
+        { property: "og:title", content: "Takamiya" },
         {
-          property: 'og:description',
-          content: 'Takamiya 的个人主页 —— 关于我、技能、项目与联系方式。',
+          property: "og:description",
+          content: "Takamiya 的个人主页 —— 关于我、技能、项目与联系方式。",
         },
-        { property: 'og:type', content: 'website' },
-        { name: 'theme-color', content: '#06070d' },
+        { property: "og:type", content: "website" },
+        { name: "theme-color", content: "#06070d" },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
         // 字体分片按 unicode-range 按需加载，没有单一入口文件可 preload
       ],
     },
   },
 
-  css: ['~/assets/fonts/hyw/result.css', '~/assets/css/main.css'],
-})
+  css: ["~/assets/fonts/hyw/result.css", "~/assets/css/main.css"],
+});
