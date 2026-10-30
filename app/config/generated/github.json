@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-30T16:48:58.048Z",
+  "generatedAt": "2026-10-30T21:00:04.278Z",
   "user": "Takamiya-reborn",
   "total": 196,
   "days": [
@@ -179,11 +179,11 @@
     },
     {
       "name": "JavaScript",
-      "pct": 29
+      "pct": 28
     },
     {
       "name": "Vue",
-      "pct": 12
+      "pct": 13
     },
     {
       "name": "TypeScript",
