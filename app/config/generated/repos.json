@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-30T06:18:35.449Z",
+  "generatedAt": "2026-10-30T16:48:58.725Z",
   "user": "Takamiya-reborn",
   "repos": [
     {
@@ -9,9 +9,23 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-10-29T21:22:51Z",
+      "pushed_at": "2026-10-30T15:37:59Z",
       "language": "Vue",
       "topics": []
+    },
+    {
+      "name": "DrPaper",
+      "description": "CS论文写作 Agent",
+      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-10-30T10:57:52Z",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "arxiv"
+      ]
     },
     {
       "name": "autopot",
@@ -50,20 +64,6 @@
       "topics": [
         "konva",
         "outerwilds"
-      ]
-    },
-    {
-      "name": "DrPaper",
-      "description": "CS论文写作 Agent",
-      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-21T13:12:44Z",
-      "language": "Python",
-      "topics": [
-        "agent",
-        "arxiv"
       ]
     },
     {
