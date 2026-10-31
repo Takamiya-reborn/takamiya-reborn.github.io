@@ -132,28 +132,41 @@ function think(ms: number) {
   })
 }
 
-// 初始画面：保留原有的 whoami/whereami 自报家门
-const INIT_LINES: TermLine[] = [
-  { text: '✻ takamiya shell 9.318.054 (x86_64-the-eye)', cls: 't-dim' },
-  { text: '输入 help 查看可用指令。', cls: 't-dim' },
-  { text: '$ whoami', cls: 't-cmd' },
-  { text: props.name, cls: 't-name' },
-  { text: '$ whereami', cls: 't-cmd' },
-  { text: props.location, cls: 't-accent' },
-]
+// 开机演出：整行逐条浮现，像自动脚本跑 boot；期间 busy 罩住输入行，演完交还光标。
+// help 提示不再单列一行，输入框 placeholder 已承担
+const introPlaying = ref(false)
 
-// 重置终端：所有状态归零，重放与首次加载相同的初始画面
+async function playIntro() {
+  introPlaying.value = true
+  busy.value = true
+  await delay(250)
+  push('✻ takamiya shell 9.318.054 (x86_64-the-eye)', 't-dim')
+  await delay(300)
+  push('$ whoami', 't-cmd')
+  await delay(150)
+  push(props.name, 't-name')
+  await delay(350)
+  push('$ whereami', 't-cmd')
+  await delay(150)
+  push(props.location, 't-accent')
+  // 空拍收尾：否则末行与输入行同帧出现，没有先后感
+  await delay(300)
+  busy.value = false
+  introPlaying.value = false
+}
+
+// 重置终端：所有状态归零，重放与首次加载相同的开机演出
 function reset() {
   timers.forEach(clearTimeout)
   timers = []
-  busy.value = false
   nuking.value = false
   nuked.value = false
   document.documentElement.classList.remove('page-nuked')
-  history.value = [...INIT_LINES]
+  history.value = []
   draft.value = ''
   cmdLog.value = []
   cmdCursor.value = -1
+  playIntro()
 }
 
 // 输出变化（含演出中逐字增长）或演出结束输入行重新出现后，都滚到底部盯着最新一行
@@ -235,7 +248,8 @@ async function execCommand(sc: SlashCommand) {
       await handler(sc, { push, stream, think, delay, clear: () => (history.value = []), reset, focusInput, nuke })
     }
     finally {
-      busy.value = false
+      // refresh 触发的 reset 会接一场开机演出，busy 交还给演出收尾，这里不抢
+      if (!introPlaying.value) busy.value = false
       // v-if 重建输入行要等下一个 tick，直接 focus 会扑空
       nextTick(focusInput)
     }
@@ -396,7 +410,8 @@ onUnmounted(() => {
   height: clamp(18.5rem, 31vw, 26rem);
   margin-top: 0.9rem;
   font-family: var(--font-mono);
-  background: var(--surface-faint);
+  /* 全不透明深底：衬文字最稳，扫描线玻璃感靠 term-screen 的叠纹保住 */
+  background: var(--bg-soft);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   /* overflow 放开：恐龙站在顶边上不能被裁掉；圆角裁切改由标题栏/屏幕各自负责 */
@@ -603,33 +618,10 @@ onUnmounted(() => {
   color: var(--text);
 }
 
-/* whoami 的输出：当年大标题的流动渐变在此小字号复刻 */
+/* whoami 的输出：与 whereami（木炉星）同为 accent-2 纯色 */
 .t-name {
   font-weight: 600;
-  background: linear-gradient(100deg,
-      var(--gradient-soft) 10%,
-      var(--accent) 45%,
-      var(--accent-2) 60%,
-      var(--gradient-soft) 92.5%);
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: gradient-pan 7s ease-in-out infinite;
-}
-
-@keyframes gradient-pan {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
+  color: var(--accent-2);
 }
 
 .t-out {
