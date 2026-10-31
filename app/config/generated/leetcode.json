@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-30T21:00:02.185Z",
+  "generatedAt": "2026-10-31T06:10:32.712Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 221,
@@ -13,7 +13,7 @@
     "hard": 1056
   },
   "streak": 7,
-  "submittedToday": true,
+  "submittedToday": false,
   "daily": {
     "slug": "twisted-mirror-path-count",
     "title": "统计镜子反射路径数目"
