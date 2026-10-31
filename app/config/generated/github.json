@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-31T06:10:34.230Z",
+  "generatedAt": "2026-10-31T15:51:32.100Z",
   "user": "Takamiya-reborn",
-  "total": 191,
+  "total": 194,
   "days": [
     {
       "date": "2026-09-20",
@@ -169,7 +169,7 @@
     },
     {
       "date": "2026-10-31",
-      "count": 2
+      "count": 5
     }
   ],
   "languages": [
@@ -197,6 +197,16 @@
   "prs": [
     {
       "repo": "fireinrain/asmr-downloader",
+      "url": "https://github.com/fireinrain/asmr-downloader/pull/64",
+      "number": 64,
+      "title": "fix & feat: fix GetUrl logic and add \"ping\" cmd",
+      "state": "OPEN",
+      "date": "2026-10-31T14:18:47Z",
+      "additions": 161,
+      "deletions": 57
+    },
+    {
+      "repo": "fireinrain/asmr-downloader",
       "url": "https://github.com/fireinrain/asmr-downloader/pull/63",
       "number": 63,
       "title": "fix: prefer HOME config while supporting local config",
@@ -214,16 +224,6 @@
       "date": "2026-10-01T14:46:35Z",
       "additions": 639,
       "deletions": 254
-    },
-    {
-      "repo": "fireinrain/asmr-downloader",
-      "url": "https://github.com/fireinrain/asmr-downloader/pull/58",
-      "number": 58,
-      "title": "Feat/57 48 download file",
-      "state": "MERGED",
-      "date": "2026-09-29T13:27:06Z",
-      "additions": 2315,
-      "deletions": 1322
     }
   ]
 }
