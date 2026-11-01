@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T06:40:58.841Z",
+  "generatedAt": "2026-11-01T16:54:15.435Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 221,
@@ -15,7 +15,7 @@
   "streak": 1,
   "submittedToday": true,
   "daily": {
-    "slug": "minimum-moves-to-equal-array-elements",
-    "title": "最小操作次数使数组元素相等"
+    "slug": "minimum-moves-to-equal-array-elements-ii",
+    "title": "最小操作次数使数组元素相等 II"
   }
 }
