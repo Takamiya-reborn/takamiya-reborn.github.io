@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-10-31T20:15:11.581Z",
+  "generatedAt": "2026-11-01T06:40:58.841Z",
   "userSlug": "takamiya",
   "solved": {
     "easy": 221,
-    "medium": 326,
+    "medium": 327,
     "hard": 80
   },
   "attempting": 3,
   "total": {
-    "easy": 1094,
-    "medium": 2334,
-    "hard": 1056
+    "easy": 1095,
+    "medium": 2336,
+    "hard": 1057
   },
-  "streak": 7,
-  "submittedToday": false,
+  "streak": 1,
+  "submittedToday": true,
   "daily": {
     "slug": "minimum-moves-to-equal-array-elements",
     "title": "最小操作次数使数组元素相等"
