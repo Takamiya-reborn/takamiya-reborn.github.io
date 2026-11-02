@@ -34,9 +34,11 @@ jobs:
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
 
-      # 公开资料无需鉴权
+      # 公开资料无需鉴权；runner 的数据中心 IP 会被 leetcode.cn WAF 拦（403），
+      # 失败不阻断其他数据源，leetcode.json 沿用上次提交的快照
       - name: Fetch LeetCode data
         run: node scripts/fetch-leetcode.mjs
+        continue-on-error: true
 
       # 内置 GITHUB_TOKEN 即可读取公开贡献数据，无需额外 Secret
       - name: Fetch GitHub data

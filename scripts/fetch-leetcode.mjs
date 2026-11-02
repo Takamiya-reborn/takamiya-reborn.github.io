@@ -19,6 +19,8 @@ query userPublicProfile($userSlug: String!) {
     username
     submissionProgress { totalSubmissions }
   }
+  # 逐条提交时间戳，供下方按北京时间自然日自算连签
+  recentSubmissions(userSlug: $userSlug) { submitTime }
   # 今日每日一题，公开可查；火焰点击直达该题
   todayRecord {
     date
@@ -44,7 +46,7 @@ if (errors?.length) throw new Error(`GraphQL 错误: ${errors.map(e => e.message
 const progress = data.userProfileUserQuestionProgressV2
 if (!progress) throw new Error(`未找到用户 ${USER_SLUG}，检查 userSlug 是否正确`)
 
-const streakData = await fetchStreak()
+const streakData = calcStreak(data.recentSubmissions.map(s => s.submitTime))
 const dailyQuestion = data.todayRecord?.[0]?.question ?? null
 
 // 按难度整理成 { easy, medium, hard } 的扁平结构
@@ -60,32 +62,25 @@ const total = Object.fromEntries(
   Object.keys(solved).map(d => [d, solved[d] + failed[d] + untouched[d]]),
 )
 
-// 连续提交天数（火焰）：从公开提交日历自算。日历只在此处用于求这两个值，
-// 不落盘——页面不做热力图，只展示一个数字
-async function fetchStreak() {
-  const res = await fetch(`https://leetcode.cn/api/user_submission_calendar/${USER_SLUG}/`, {
-    headers: {
-      // 日历按 UTC 天为 key（{秒级零点时间戳: 提交数}），站点文案也写明「提交按 UTC 时间记录」
-      Referer: `https://leetcode.cn/u/${USER_SLUG}/`,
-      'User-Agent': 'Mozilla/5.0 (personal-site-data-fetch)',
-    },
-  })
-  if (!res.ok) throw new Error(`提交日历 → HTTP ${res.status}`)
-  // 响应体是「JSON 字符串再编码」：'"{{ts:count},...}"'，要 parse 两次
-  const calendar = JSON.parse(JSON.parse(await res.text()))
-
+// 连续提交天数（火焰）：按北京时间自然日自算，与官方活跃图口径一致。
+// 提交习惯是凌晨提交，会落进前一个 UTC 桶，老日历接口按 UTC 天计数会整体错位
+// 且漏计；recentSubmissions 给的是逐条时间戳，最准。一次返回约 20 条，
+// 连签超过 20 天时会数不满，对展示无伤
+function calcStreak(submitTimes) {
   const DAY = 86400
-  const has = (ts) => (calendar[ts] ?? 0) > 0
-  const today = Math.floor(Date.now() / 1000 / DAY) * DAY
+  // 北京时间 = UTC+8 无夏令时，整体平移后取整即为自然日序号
+  const dayOf = (ts) => Math.floor((ts + 8 * 3600) / DAY)
+  const days = new Set(submitTimes.map(dayOf))
+  const today = dayOf(Math.floor(Date.now() / 1000))
   // 今天还没提交不算断签，从昨天起算
-  let cursor = has(today) ? today : today - DAY
+  let cursor = days.has(today) ? today : today - 1
   let streak = 0
-  while (has(cursor)) {
+  while (days.has(cursor)) {
     streak += 1
-    cursor -= DAY
+    cursor -= 1
   }
-  // 未登录态拿不到「每日一题已完成」，用「今天有提交」近似：实心火焰的判据
-  return { streak, submittedToday: has(today) }
+  // 未登录态拿不到「每日一题已完成」，用「今天（北京时间）有提交」近似：实心火焰的判据
+  return { streak, submittedToday: days.has(today) }
 }
 
 const out = {
