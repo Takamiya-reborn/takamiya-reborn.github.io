@@ -56,7 +56,7 @@ export const site = {
     {
       label: "Email",
       icon: "lucide:mail",
-      url: "mailto:wzy15091712036@outlook.com",
+      url: "mailto:wzy.research@outlook.com",
     },
   ] satisfies SocialLink[],
 
@@ -125,13 +125,7 @@ export const site = {
     {
       title: "编程语言",
       icon: "lucide:braces",
-      skills: [
-        "Python",
-        "TypeScript",
-        "C++",
-        ".NET",
-        "Go",
-      ],
+      skills: ["Python", "TypeScript", "C++", ".NET", "Go"],
     },
     {
       title: "前端与动画",
