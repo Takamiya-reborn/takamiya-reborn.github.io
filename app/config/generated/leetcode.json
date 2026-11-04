@@ -11,5 +11,11 @@
     "easy": 1095,
     "medium": 2337,
     "hard": 1057
+  },
+  "streak": 3,
+  "submittedToday": true,
+  "daily": {
+    "slug": "minimum-moves-to-equal-array-elements-iii",
+    "title": "最小操作次数使数组元素相等 III"
   }
 }

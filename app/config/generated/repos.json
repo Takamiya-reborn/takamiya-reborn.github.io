@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-02T17:09:20.151Z",
+  "generatedAt": "2026-11-04T06:55:13.635Z",
   "user": "Takamiya-reborn",
   "repos": [
     {
@@ -9,8 +9,19 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-11-02T17:08:46Z",
+      "pushed_at": "2026-11-03T21:56:10Z",
       "language": "Vue",
+      "topics": []
+    },
+    {
+      "name": "UHelper100",
+      "description": "超星学习通（含高校镜像站）助手脚本",
+      "html_url": "https://github.com/Takamiya-reborn/UHelper100",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-03T16:51:30Z",
+      "language": "TypeScript",
       "topics": []
     },
     {
