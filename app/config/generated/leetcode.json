@@ -1,21 +1,15 @@
 {
-  "generatedAt": "2026-11-02T17:09:17.481Z",
+  "generatedAt": "2026-11-04T16:43:12.313Z",
   "userSlug": "takamiya",
   "solved": {
-    "easy": 222,
+    "easy": 223,
     "medium": 328,
-    "hard": 80
+    "hard": 81
   },
   "attempting": 3,
   "total": {
     "easy": 1095,
-    "medium": 2336,
+    "medium": 2337,
     "hard": 1057
-  },
-  "streak": 3,
-  "submittedToday": true,
-  "daily": {
-    "slug": "minimum-moves-to-equal-array-elements-iii",
-    "title": "最小操作次数使数组元素相等 III"
   }
 }
