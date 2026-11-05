@@ -63,18 +63,24 @@ const langIcons: Record<string, string> = {
 // 未知语言的回退图标池（按名次轮换）
 const rankIcons = ["lucide:rocket", "lucide:terminal", "lucide:cpu"];
 
-// 过滤 fork / 归档 / 本站仓库，按最近推送取前 count 个并映射为 Project
+// 过滤 fork / 归档 / 本站仓库 / profile README 仓库（与用户名同名），按最近推送取前 count 个并映射为 Project
 export function mapRepos(
   repos: GitHubRepo[],
   user: string,
   count: number,
 ): Project[] {
+  const userLower = user.toLowerCase();
   return repos
     .filter(
-      (r) =>
-        !r.fork &&
-        !r.archived &&
-        r.name.toLowerCase() !== `${user}.github.io`.toLowerCase(),
+      (r) => {
+        const name = r.name.toLowerCase();
+        return (
+          !r.fork &&
+          !r.archived &&
+          name !== `${userLower}.github.io` &&
+          name !== userLower
+        );
+      },
     )
     .sort((a, b) => Date.parse(b.pushed_at) - Date.parse(a.pushed_at))
     .slice(0, count)
