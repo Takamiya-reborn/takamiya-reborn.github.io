@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-07T06:28:09.379Z",
+  "generatedAt": "2026-11-07T16:36:30.207Z",
   "user": "Takamiya-reborn",
-  "total": 169,
+  "total": 172,
   "days": [
     {
       "date": "2026-09-27",
@@ -169,17 +169,17 @@
     },
     {
       "date": "2026-11-07",
-      "count": 0
+      "count": 3
     }
   ],
   "languages": [
     {
       "name": "Python",
-      "pct": 46
+      "pct": 47
     },
     {
       "name": "JavaScript",
-      "pct": 25
+      "pct": 24
     },
     {
       "name": "TypeScript",
@@ -195,6 +195,16 @@
     }
   ],
   "prs": [
+    {
+      "repo": "fireinrain/asmr-downloader",
+      "url": "https://github.com/fireinrain/asmr-downloader/pull/65",
+      "number": 65,
+      "title": "fix: count audio files recursively for track count log",
+      "state": "OPEN",
+      "date": "2026-11-07T15:26:54Z",
+      "additions": 31,
+      "deletions": 1
+    },
     {
       "repo": "fireinrain/asmr-downloader",
       "url": "https://github.com/fireinrain/asmr-downloader/pull/64",
@@ -214,16 +224,6 @@
       "date": "2026-10-12T18:21:00Z",
       "additions": 20,
       "deletions": 24
-    },
-    {
-      "repo": "fireinrain/asmr-downloader",
-      "url": "https://github.com/fireinrain/asmr-downloader/pull/60",
-      "number": 60,
-      "title": "fix: refactor code for \"search\" cmd and revise docs",
-      "state": "MERGED",
-      "date": "2026-10-01T14:46:35Z",
-      "additions": 639,
-      "deletions": 254
     }
   ]
 }

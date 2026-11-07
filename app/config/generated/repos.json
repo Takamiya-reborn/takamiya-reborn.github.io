@@ -1,7 +1,21 @@
 {
-  "generatedAt": "2026-11-07T06:28:10.089Z",
+  "generatedAt": "2026-11-07T16:36:30.948Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "DrPaper",
+      "description": "CS论文写作 Agent",
+      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-07T12:39:56Z",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "arxiv"
+      ]
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,7 +23,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-11-06T21:44:30Z",
+      "pushed_at": "2026-11-07T06:28:11Z",
       "language": "Vue",
       "topics": []
     },
@@ -39,20 +53,6 @@
       "topics": [
         "chaoxingmooc",
         "tampermonkey-userscript"
-      ]
-    },
-    {
-      "name": "DrPaper",
-      "description": "CS论文写作 Agent",
-      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-02T12:17:27Z",
-      "language": "Python",
-      "topics": [
-        "agent",
-        "arxiv"
       ]
     },
     {
