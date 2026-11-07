@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-11-07T16:36:30.948Z",
+  "generatedAt": "2026-11-07T20:27:15.836Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-07T16:36:32Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "DrPaper",
       "description": "CS论文写作 Agent",
@@ -15,17 +26,6 @@
         "agent",
         "arxiv"
       ]
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-07T06:28:11Z",
-      "language": "Vue",
-      "topics": []
     },
     {
       "name": "Hello-LoRA",
