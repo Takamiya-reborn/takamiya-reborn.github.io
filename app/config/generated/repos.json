@@ -1,7 +1,22 @@
 {
-  "generatedAt": "2026-11-05T07:14:47.237Z",
+  "generatedAt": "2026-11-08T16:46:29.931Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "Auto-Chaldea",
+      "description": "Fate/GO 辅助工具",
+      "html_url": "https://github.com/Takamiya-reborn/Auto-Chaldea",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-08T16:20:04Z",
+      "language": "Python",
+      "topics": [
+        "autotask",
+        "game-scripts",
+        "opencv"
+      ]
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,9 +24,37 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-11-04T22:07:39Z",
+      "pushed_at": "2026-11-08T06:34:30Z",
       "language": "Vue",
       "topics": []
+    },
+    {
+      "name": "DrPaper",
+      "description": "CS论文写作 Agent",
+      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-07T12:39:56Z",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "arxiv"
+      ]
+    },
+    {
+      "name": "Hello-LoRA",
+      "description": null,
+      "html_url": "https://github.com/Takamiya-reborn/Hello-LoRA",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-05T08:42:24Z",
+      "language": "Python",
+      "topics": [
+        "lora-training",
+        "sd-scripts"
+      ]
     },
     {
       "name": "UHelper100",
@@ -25,20 +68,6 @@
       "topics": [
         "chaoxingmooc",
         "tampermonkey-userscript"
-      ]
-    },
-    {
-      "name": "DrPaper",
-      "description": "CS论文写作 Agent",
-      "html_url": "https://github.com/Takamiya-reborn/DrPaper",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-02T12:17:27Z",
-      "language": "Python",
-      "topics": [
-        "agent",
-        "arxiv"
       ]
     },
     {
@@ -137,35 +166,6 @@
         "linalg",
         "manim",
         "math"
-      ]
-    },
-    {
-      "name": "Auto-Chaldea",
-      "description": "Fate/GO 辅助工具",
-      "html_url": "https://github.com/Takamiya-reborn/Auto-Chaldea",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-09T19:27:49Z",
-      "language": "Python",
-      "topics": [
-        "autotask",
-        "game-scripts",
-        "opencv"
-      ]
-    },
-    {
-      "name": "Hello-LoRA",
-      "description": null,
-      "html_url": "https://github.com/Takamiya-reborn/Hello-LoRA",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-10-08T15:42:15Z",
-      "language": "Python",
-      "topics": [
-        "lora-training",
-        "sd-scripts"
       ]
     },
     {
