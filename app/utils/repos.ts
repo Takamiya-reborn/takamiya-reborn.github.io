@@ -71,17 +71,15 @@ export function mapRepos(
 ): Project[] {
   const userLower = user.toLowerCase();
   return repos
-    .filter(
-      (r) => {
-        const name = r.name.toLowerCase();
-        return (
-          !r.fork &&
-          !r.archived &&
-          name !== `${userLower}.github.io` &&
-          name !== userLower
-        );
-      },
-    )
+    .filter((r) => {
+      const name = r.name.toLowerCase();
+      return (
+        !r.fork &&
+        !r.archived &&
+        name !== `${userLower}.github.io` &&
+        name !== userLower
+      );
+    })
     .sort((a, b) => Date.parse(b.pushed_at) - Date.parse(a.pushed_at))
     .slice(0, count)
     .map((r, i) => ({
@@ -96,5 +94,6 @@ export function mapRepos(
       icon:
         (r.language && langIcons[r.language]) ||
         rankIcons[i % rankIcons.length]!,
+      pushedAt: r.pushed_at,
     }));
 }

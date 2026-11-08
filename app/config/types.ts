@@ -42,6 +42,8 @@ export interface Project {
   /** 仓库地址（可选） */
   repo?: string;
   icon: string;
+  /** 最近推送时间（ISO）；Actions 生成的仓库数据才有，回退配置省略 */
+  pushedAt?: string;
 }
 
 export interface TimelineItem {
