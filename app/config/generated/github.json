@@ -1,12 +1,8 @@
 {
-  "generatedAt": "2026-11-07T20:27:14.941Z",
+  "generatedAt": "2026-11-08T06:34:28.806Z",
   "user": "Takamiya-reborn",
-  "total": 172,
+  "total": 166,
   "days": [
-    {
-      "date": "2026-09-27",
-      "count": 7
-    },
     {
       "date": "2026-09-28",
       "count": 6
@@ -169,7 +165,11 @@
     },
     {
       "date": "2026-11-07",
-      "count": 3
+      "count": 4
+    },
+    {
+      "date": "2026-11-08",
+      "count": 0
     }
   ],
   "languages": [
@@ -200,7 +200,7 @@
       "url": "https://github.com/fireinrain/asmr-downloader/pull/65",
       "number": 65,
       "title": "fix: count audio files recursively for track count log",
-      "state": "OPEN",
+      "state": "MERGED",
       "date": "2026-11-07T15:26:54Z",
       "additions": 31,
       "deletions": 1
