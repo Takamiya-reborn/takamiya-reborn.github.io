@@ -1,7 +1,22 @@
 {
-  "generatedAt": "2026-11-09T07:04:00.089Z",
+  "generatedAt": "2026-11-09T21:01:52.500Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "Auto-Chaldea",
+      "description": "Fate/GO 辅助工具",
+      "html_url": "https://github.com/Takamiya-reborn/Auto-Chaldea",
+      "homepage": "",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-09T20:22:18Z",
+      "language": "Python",
+      "topics": [
+        "autotask",
+        "game-scripts",
+        "opencv"
+      ]
+    },
     {
       "name": "takamiya-reborn.github.io",
       "description": "Personal page",
@@ -9,7 +24,7 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-11-08T20:43:43Z",
+      "pushed_at": "2026-11-09T07:04:01Z",
       "language": "Vue",
       "topics": []
     },
@@ -25,21 +40,6 @@
       "topics": [
         "agent",
         "arxiv"
-      ]
-    },
-    {
-      "name": "Auto-Chaldea",
-      "description": "Fate/GO 辅助工具",
-      "html_url": "https://github.com/Takamiya-reborn/Auto-Chaldea",
-      "homepage": "",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-08T17:11:49Z",
-      "language": "Python",
-      "topics": [
-        "autotask",
-        "game-scripts",
-        "opencv"
       ]
     },
     {
