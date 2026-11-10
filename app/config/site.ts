@@ -58,6 +58,11 @@ export const site = {
       icon: "lucide:mail",
       url: "mailto:wzy.research@outlook.com",
     },
+    {
+      label: "Gmail",
+      icon: "simple-icons:gmail",
+      url: "mailto:takamiya.research@gmail.com",
+    },
   ] satisfies SocialLink[],
 
   games: [
