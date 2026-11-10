@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-11-09T21:01:52.500Z",
+  "generatedAt": "2026-11-10T00:23:52.128Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-09T21:01:53Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "Auto-Chaldea",
       "description": "Fate/GO 辅助工具",
@@ -16,17 +27,6 @@
         "game-scripts",
         "opencv"
       ]
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-09T07:04:01Z",
-      "language": "Vue",
-      "topics": []
     },
     {
       "name": "DrPaper",
