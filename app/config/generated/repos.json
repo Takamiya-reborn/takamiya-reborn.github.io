@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-10T07:39:38.834Z",
+  "generatedAt": "2026-11-10T18:12:04.113Z",
   "user": "Takamiya-reborn",
   "repos": [
     {
@@ -9,8 +9,19 @@
       "homepage": "https://takamiya-reborn.github.io/",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-11-10T00:23:53Z",
+      "pushed_at": "2026-11-10T18:05:45Z",
       "language": "Vue",
+      "topics": []
+    },
+    {
+      "name": "Takamiya-reborn",
+      "description": "I came back from hell",
+      "html_url": "https://github.com/Takamiya-reborn/Takamiya-reborn",
+      "homepage": null,
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-10T15:34:49Z",
+      "language": null,
       "topics": []
     },
     {
@@ -20,7 +31,7 @@
       "homepage": "",
       "fork": false,
       "archived": false,
-      "pushed_at": "2026-11-09T20:22:18Z",
+      "pushed_at": "2026-11-10T08:54:38Z",
       "language": "Python",
       "topics": [
         "autotask",
@@ -69,17 +80,6 @@
         "chaoxingmooc",
         "tampermonkey-userscript"
       ]
-    },
-    {
-      "name": "Takamiya-reborn",
-      "description": "I came back from hell",
-      "html_url": "https://github.com/Takamiya-reborn/Takamiya-reborn",
-      "homepage": null,
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-02T06:44:04Z",
-      "language": null,
-      "topics": []
     },
     {
       "name": "autopot",
