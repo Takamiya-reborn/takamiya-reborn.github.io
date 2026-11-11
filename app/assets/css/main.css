@@ -3,6 +3,16 @@
 /* 汉仪文黑 H85W 的分片 @font-face 由 scripts/split-font.mjs 生成，
    在 nuxt.config 的 css 数组里随 main.css 一起打包 */
 
+/* Press Start 2P：8x8 街机点阵字体（OFL 授权），latin 子集自托管，
+   仅用于首屏向下提示；woff2 来自 fontsource（jsDelivr CDN） */
+@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/press-start-2p/press-start-2p-latin-400.woff2') format('woff2');
+}
+
 :root {
   color-scheme: dark;
 
@@ -83,6 +93,7 @@
     Consolas, 'MF Mono', 'DejaVu Sans Mono', ui-monospace, 'Cascadia Code',
     'JetBrains Mono', 'HYWenHei-85W', 'PingFang SC', 'Microsoft YaHei',
     monospace;
+  --font-pixel: 'Press Start 2P', var(--font-mono);
 
   /* 几何 */
   --radius: 1.25rem;

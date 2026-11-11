@@ -57,6 +57,11 @@ const tiltStyle = computed(() => ({
 
 // rm -rf 彩蛋共享状态：nuked=真删（index.vue 据此卸载页面元素，终端自行 Teleport 悬浮）
 const { nuked } = useNuke()
+
+// 向下提示点击跳转：scrollIntoView 平滑滚动且不改 URL（同 Terminal/SideToc 的方式）
+function scrollToQuote() {
+  document.getElementById('quote')?.scrollIntoView()
+}
 </script>
 
 <template>
@@ -93,11 +98,20 @@ const { nuked } = useNuke()
 
       <p class="avatar-bio">{{ profile.bio }}</p>
     </div>
+
+    <button type="button" class="scroll-cue" aria-label="向下查看内容" @click="scrollToQuote">
+      <!-- 手绘 7x8 像素 ▼（Press Start 2P 无此符号），1 单位 = 1 像素格 -->
+      <svg class="scroll-cue-arrow" viewBox="0 0 8 8" aria-hidden="true" shape-rendering="crispEdges">
+        <path d="M0 2h7v1h-7z M1 3h5v1h-5z M2 4h3v1h-3z M3 5h1v1h-1z" />
+      </svg>
+      <span>PRESS TO CONTINUE</span>
+    </button>
   </section>
 </template>
 
 <style scoped>
 .hero {
+  position: relative;
   display: grid;
   /* 首屏占满一整屏，intro 独占 100vh（dvh 兼容移动端地址栏） */
   min-height: 100dvh;
@@ -106,6 +120,43 @@ const { nuked } = useNuke()
   align-items: center;
   gap: clamp(1.5rem, 3vw, 2.5rem);
   padding-block: clamp(4rem, 10vh, 6.5rem) clamp(2.5rem, 7vh, 4.5rem);
+}
+
+/* 街机待机式向下提示：Press Start 2P 像素字 + 手绘像素 ▼，整行同步硬闪烁 */
+.scroll-cue {
+  position: absolute;
+  right: 50%;
+  bottom: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: var(--muted);
+  font-family: var(--font-pixel);
+  /* Press Start 2P 按 8px 网格设计，取整数倍字号保证像素格锐利 */
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  /* 重置 button 默认样式，只保留像素文字本身 */
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  transform: translateX(50%);
+  transition: color 0.2s ease;
+  animation: scroll-cue-blink 1.2s steps(1) infinite;
+}
+
+/* 像素箭头与文字同高：8 格 × 3px，整数倍缩放保证边缘干净 */
+.scroll-cue-arrow {
+  width: auto;
+  height: 1.5rem;
+  fill: var(--accent);
+}
+
+.scroll-cue:hover,
+.scroll-cue:focus-visible {
+  color: var(--accent);
+  animation: none;
 }
 
 /* 视觉隐藏（仅辅助技术可读）：承载被撤下的大标题 h1 */
@@ -249,6 +300,25 @@ const { nuked } = useNuke()
 @keyframes spin-slow {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* steps(1)：硬切换的街机式闪烁，不做淡入淡出 */
+@keyframes scroll-cue-blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue {
+    animation: none;
   }
 }
 
