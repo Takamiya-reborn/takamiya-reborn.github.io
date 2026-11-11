@@ -1,12 +1,8 @@
 {
-  "generatedAt": "2026-11-10T21:55:22.008Z",
+  "generatedAt": "2026-11-11T06:58:33.969Z",
   "user": "Takamiya-reborn",
-  "total": 14,
+  "total": 13,
   "days": [
-    {
-      "date": "2026-09-30",
-      "count": 1
-    },
     {
       "date": "2026-10-01",
       "count": 2
@@ -169,6 +165,10 @@
     },
     {
       "date": "2026-11-10",
+      "count": 0
+    },
+    {
+      "date": "2026-11-11",
       "count": 0
     }
   ],
