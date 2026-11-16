@@ -27,7 +27,7 @@ export const site = {
     avatar: "/avatar.png",
     tagline: "Full-Stack Developer",
     location: "木炉星",
-    bio: "编程也是一种艺术，只要倾注了自己的创意，哪怕不够高效、让人哭笑不得，也是乐趣所在。",
+    bio: "Square... the shape of evil!!!",
     githubUser,
   },
 
