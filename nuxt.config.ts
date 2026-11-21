@@ -79,5 +79,6 @@ export default defineNuxtConfig({
     "~/assets/fonts/hyw/result.css",
     "~/assets/css/main.css",
     "~/assets/css/themes/halloween.css",
+    "~/assets/css/themes/christmas.css",
   ],
 });

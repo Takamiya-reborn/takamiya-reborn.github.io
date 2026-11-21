@@ -2,11 +2,12 @@
 // 节日场景调度：节日生效期内挂对应节日的定制场景组件，平时不渲染（生效规则见 useHoliday）
 import type { Component } from "vue";
 import HalloweenScene from "./holiday/HalloweenScene.vue";
+import ChristmasScene from "./holiday/ChristmasScene.vue";
 
 const { active } = useHoliday();
 
 // 节日名 → 场景组件注册表
-const scenes: Record<string, Component> = { halloween: HalloweenScene };
+const scenes: Record<string, Component> = { halloween: HalloweenScene, christmas: ChristmasScene };
 
 const scene = computed(() => (active.value ? scenes[active.value.name] : undefined));
 </script>

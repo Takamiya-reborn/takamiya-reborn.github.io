@@ -55,6 +55,20 @@ const CACTUS_L = {
   light: 'M10 0h5v1h-5zM9 1h1v1h-1zM15 1h1v1h-1zM8 2h1v8h-1zM16 2h1v8h-1zM8 10h1v1h-1zM16 10h1v1h-1zM20 10h3v1h-3zM8 11h1v1h-1zM16 11h1v1h-1zM19 11h1v1h-1zM23 11h1v1h-1zM2 12h3v1h-3zM8 12h1v1h-1zM16 12h1v1h-1zM18 12h1v1h-1zM24 12h1v1h-1zM1 13h1v1h-1zM5 13h1v1h-1zM8 13h1v1h-1zM16 13h1v1h-1zM18 13h1v1h-1zM24 13h1v1h-1zM0 14h1v12h-1zM6 14h1v12h-1zM8 14h1v12h-1zM16 14h1v12h-1zM18 14h1v12h-1zM24 14h1v12h-1zM0 26h1v1h-1zM6 26h3v1h-3zM16 26h3v1h-3zM24 26h1v1h-1zM0 27h1v1h-1zM23 27h1v1h-1zM0 28h1v1h-1zM22 28h1v1h-1zM1 29h1v1h-1zM21 29h1v1h-1zM2 30h1v1h-1zM20 30h1v1h-1zM3 31h1v1h-1zM16 31h4v1h-4zM4 32h5v1h-5zM16 32h1v1h-1zM8 33h1v11h-1zM16 33h1v11h-1zM8 44h1v1h-1zM16 44h1v1h-1zM19 44h1v1h-1zM5 45h1v1h-1zM7 45h2v1h-2zM16 45h1v1h-1zM18 45h1v1h-1zM20 45h1v1h-1zM4 46h1v1h-1zM6 46h1v1h-1zM16 46h1v1h-1zM19 46h1v1h-1zM5 47h1v1h-1zM7 47h10v1h-10zM15 48h1v1h-1zM17 48h1v1h-1zM16 49h1v1h-1z',
 }
 
+// 圣诞帽：像素画法，三件套完全对齐恐龙 sprite 风格——暗色砖红主体 + currentColor 低透明度
+// 描边（与恐龙轮廓同一份灰）+ 0.8 透明度霜白绒件；fill 走 christmas 主题令牌，
+// 非 christmas 下令牌未定义 fallback transparent，帽子自然隐形
+// 圣诞帽：用户抠出的 Terraria Santa Hat sprite 逐格转写（11x10，方向已正确不镜像），
+// 2 倍放大斜披在头上；七层全部用 sprite 采样原色（含描边近黑与三档绒边灰），不做再创作；
+// fill 走 christmas 主题令牌，非 christmas 下 fallback transparent 隐形
+const HAT_LINE = 'M14 -6h12v2h-12zM12 -4h4v2h-4zM26 -4h2v2h-2zM10 -2h2v2h-2zM28 -2h2v2h-2zM10 0h2v2h-2zM26 0h4v2h-4zM10 2h2v2h-2zM14 2h2v2h-2zM22 2h4v2h-4zM10 4h2v2h-2zM14 4h2v2h-2zM20 4h2v2h-2zM8 6h2v2h-2zM16 6h4v2h-4zM8 8h2v2h-2zM16 8h2v2h-2zM8 10h2v2h-2zM16 10h2v2h-2zM10 12h6v2h-6z'
+const HAT_SHADE = 'M14 0h2v2h-2zM16 2h2v2h-2z'
+const HAT_RED_HI = 'M16 -4h6v2h-6zM12 -2h2v2h-2zM18 -2h6v2h-6zM12 0h2v2h-2zM12 4h2v2h-2z'
+const HAT_RED = 'M22 -4h4v2h-4zM14 -2h4v2h-4zM16 0h4v2h-4zM12 2h2v2h-2z'
+const HAT_FUR_LOW = 'M16 4h2v2h-2zM10 10h2v2h-2zM14 10h2v2h-2z'
+const HAT_FUR_MID = 'M24 0h2v2h-2zM18 2h4v2h-4zM18 4h2v2h-2zM10 6h2v2h-2zM10 8h2v2h-2zM14 8h2v2h-2zM12 10h2v2h-2z'
+const HAT_FUR_HI = 'M24 -2h4v2h-4zM20 0h4v2h-4zM12 6h4v2h-4zM12 8h2v2h-2z'
+
 const dinoFrame = ref(0)
 const dinoJumping = ref(false)
 const dinoReducedMotion = ref(false)
@@ -355,11 +369,19 @@ onUnmounted(() => {
     <div class="term" :class="{ 'term--floating': nuking }" @click="focusInput"
       @contextmenu.prevent="pasteFromClipboard">
       <!-- 站在窗口顶边上的断网小恐龙：官方 sprite 像素 + 跑步换帧，点击跳跃；rm -rf 后随悬浮窗口一起搬家 -->
-      <svg class="term-dino" :class="{ 'term-dino--jump': dinoJumping }" viewBox="0 0 44 47"
+      <svg class="term-dino" :class="{ 'term-dino--jump': dinoJumping }" viewBox="0 -8 44 55"
         shape-rendering="crispEdges" role="img" aria-label="Chrome 断网小恐龙（点击跳跃）" title="chrome://dino"
         @click.stop="dinoJump" @animationend="dinoJumping = false">
         <path :d="DINO_FRAMES[dinoFrame]!.dark" fill="currentColor" />
         <path :d="DINO_FRAMES[dinoFrame]!.light" fill="currentColor" fill-opacity="0.35" />
+        <!-- 圣诞帽：令牌只在 christmas 主题定义，平时 transparent 隐形 -->
+        <path :d="HAT_LINE" fill="var(--scene-hat-line, transparent)" />
+        <path :d="HAT_SHADE" fill="var(--scene-hat-shade, transparent)" />
+        <path :d="HAT_RED_HI" fill="var(--scene-hat-hi, transparent)" />
+        <path :d="HAT_RED" fill="var(--scene-hat, transparent)" />
+        <path :d="HAT_FUR_LOW" fill="var(--scene-fur-low, transparent)" />
+        <path :d="HAT_FUR_MID" fill="var(--scene-fur-mid, transparent)" />
+        <path :d="HAT_FUR_HI" fill="var(--scene-fur-hi, transparent)" />
       </svg>
       <!-- 顶边右侧的仙人掌（一大一小）与天上的云：同一张官方 sprite 抠出来的，纯装饰 -->
       <!-- 大仙人掌 viewBox 裁到 47：sprite 后 3 行是落地灰尘点缀（35% 透明度几乎不可见），

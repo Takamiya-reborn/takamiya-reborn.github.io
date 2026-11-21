@@ -115,10 +115,12 @@ export interface SectionMeta {
 export interface HolidayTheme {
   /** data-theme 值，须与 assets/css/themes/<name>.css 一致 */
   name: string;
-  /** 命中窗口起点（本地时区，含当天），month 从 1 起 */
-  start: { month: number; day: number };
-  /** 命中窗口终点（含当天），可与 start 跨年（如 12/20—1/2） */
-  end: { month: number; day: number };
+  // 窗口按访客本地时间判断（hour 0-23）：各自时区进入节日才生效，
+  // 全球并集恰为最早时区（UTC+14）进入到最晚时区（UTC-11）过完的整段
+  /** 命中窗口起点（访客本地时间，含该小时整点），month 从 1 起 */
+  start: { month: number; day: number; hour: number };
+  /** 命中窗口终点（访客本地时间，可与 start 跨年，如 12/20—1/2） */
+  end: { month: number; day: number; hour: number };
   /** theme-color meta 色：窗口期地址栏跟页面底色走 */
   themeColor: string;
   /** 节日问候词：窗口期终端名字行缀 "Happy <greet>"，不填则不带问候 */

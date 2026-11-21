@@ -1,0 +1,59 @@
+/* 圣诞节主题（冰雪配色）：窗口见 composables/useHoliday.ts，theme 指令切不到；未覆盖的令牌照用深色版 */
+
+html[data-theme='christmas'] {
+  color-scheme: dark;
+
+  --bg: #060b16;
+  /* 冰原夜蓝，比默认底多一分冷蓝 */
+  --bg-soft: #0a1220;
+  --text: #e6effa;
+  /* 冰晶白，冷调 */
+  --muted: #8fa3bd;
+  /* 霜灰蓝 */
+
+  --accent: #7dd3fc;
+  /* sky-300 冰川蓝 */
+  --accent-2: #67e8f9;
+  /* cyan-300 极光青 */
+  --accent-3: #c4b5fd;
+  /* violet-300 暮空紫 */
+  --accent-4: #fde68a;
+  /* amber-200 烛光暖黄 */
+  --accent-5: #86efac;
+  /* green-300 松林绿 */
+  --accent-6: #fda4af;
+  /* rose-300 浆果红 */
+  --on-accent: #06121f;
+  /* 压在冰蓝渐变上的深底字 */
+
+  --grid-line: rgba(125, 211, 252, 0.05);
+  --veil-rain: rgba(6, 12, 24, 0.14);
+  --veil-thunder: rgba(4, 10, 20, 0.24);
+  --fx-drop: rgba(125, 211, 252, 0.55);
+  /* 雨滴染成冰蓝 */
+  --fx-bolt: #e0f2fe;
+  /* 深夜蓝底上白闪太素，换冰晶闪 */
+
+  /* 场景彩蛋令牌：HolidayFx 专用，手动切走主题时组件卸载，无需兜底 */
+  --scene-sky-top: #030710;
+  --scene-sky-mid: #081120;
+  --scene-sky-bottom: #0e1c30;
+  --scene-star: #dbeafe;
+  --scene-snow: #eaf6ff;
+  /* 帽子七色 = sprite 原色 70% + 冰原夜蓝 30% 的整体压调；原色依次为
+     #c41112 / #e53b3b / #721b00 / #1d1c1b / #f6f6f6 / #cccccc / #8d8d8d */
+  --scene-hat: #8c1116;
+  /* 帽子主红 */
+  --scene-hat-hi: #a32f33;
+  /* 帽子高光红 */
+  --scene-hat-shade: #53180a;
+  /* 帽子暗部红 */
+  --scene-hat-line: #374456;
+  /* 帽子描边用小恐龙描边的深蓝灰，不抢内部色块 */
+  --scene-fur-hi: #afb2b6;
+  /* 绒边亮白 */
+  --scene-fur-mid: #929498;
+  /* 绒边中灰 */
+  --scene-fur-low: #666869;
+  /* 绒边暗灰 */
+}
