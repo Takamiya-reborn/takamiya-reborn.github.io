@@ -84,6 +84,18 @@ function next() {
 </script>
 
 <template>
+  <!-- 按键图例：title 悬停提示手机端看不到，游客也不知道机身按键有真实功能，
+       常驻一行小字对照四个键的用途，键位直接复用按键上的图标 -->
+  <p class="quote-legend" aria-hidden="true">
+    <span class="legend-key"><Icon name="lucide:image" size="16" /></span>换背景
+    <span class="legend-sep">·</span>
+    <span class="legend-key"><Icon name="lucide:dices" size="16" /></span>抽一句
+    <span class="legend-sep">·</span>
+    <span class="legend-key"><Icon name="lucide:search" size="16" /></span>查出处
+    <span class="legend-sep">·</span>
+    <span class="legend-key"><Icon name="lucide:copy" size="16" /></span>复制
+  </p>
+
   <!-- shadow-pad：机壳外投影需要裁切余量（见 HScrollViewport） -->
   <HScrollViewport hint="← 左右滑动查看整机 →" shadow-pad>
     <!-- 游戏机：外壳架构在 SwitchConsole，这里注入屏幕内容和真实按键 -->
@@ -367,6 +379,33 @@ function next() {
 /* Y 位键：占位（之后接切换屏幕背景），样式与实体键一致 */
 .quote-roll--ghost {
   grid-area: 2 / 1;
+}
+
+/* 按键图例：整机上方一行小字，键帽仿实体圆钮缩小版 */
+.quote-legend {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.legend-key {
+  display: inline-grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin-right: 0.3rem;
+  /* 机壳固定色板里的 --jc-text，但图例在 .console 外取不到变量，写字面量 */
+  color: #e8ecf4;
+  vertical-align: -0.15rem;
+  background: #0a0b0d;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+}
+
+.legend-sep {
+  margin-inline: 0.5rem;
+  opacity: 0.5;
 }
 
 /* 换句动画：旧句快速淡出，新句按行浮现 */
