@@ -1,7 +1,18 @@
 {
-  "generatedAt": "2026-11-25T20:08:35.206Z",
+  "generatedAt": "2026-11-26T00:37:37.546Z",
   "user": "Takamiya-reborn",
   "repos": [
+    {
+      "name": "takamiya-reborn.github.io",
+      "description": "Personal page",
+      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
+      "homepage": "https://takamiya-reborn.github.io/",
+      "fork": false,
+      "archived": false,
+      "pushed_at": "2026-11-25T20:08:37Z",
+      "language": "Vue",
+      "topics": []
+    },
     {
       "name": "Auto-Chaldea",
       "description": "Fate/GO 辅助工具",
@@ -44,17 +55,6 @@
         "cubism",
         "l2d"
       ]
-    },
-    {
-      "name": "takamiya-reborn.github.io",
-      "description": "Personal page",
-      "html_url": "https://github.com/Takamiya-reborn/takamiya-reborn.github.io",
-      "homepage": "https://takamiya-reborn.github.io/",
-      "fork": false,
-      "archived": false,
-      "pushed_at": "2026-11-25T09:00:23Z",
-      "language": "Vue",
-      "topics": []
     },
     {
       "name": "Offibot",
